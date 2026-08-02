@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Market Intelligence Prompt Lab</title>
+<style>
+  :root{
+    --bg:#f6f7f5; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#0f766e; --accent-soft:#e6f2f0; --indigo:#3d5a80; --warn:#b45309; --bad:#b91c1c; --good:#15803d;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;}
+  .wrap{max-width:880px;margin:0 auto;padding:20px 16px 80px;}
+  header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;}
+  h1{font-size:1.25rem;margin:0 0 2px;font-weight:700;letter-spacing:-.01em;}
+  .subtitle{color:var(--muted);font-size:.9rem;margin:0;}
+  .gear{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--muted);font-size:.85rem;}
+  .gear:hover,.gear:focus-visible{border-color:var(--accent);color:var(--accent);}
+  button:focus-visible,a.btn:focus-visible,.step:focus-visible{outline:3px solid #94d2cb;outline-offset:2px;}
+  /* stepper */
+  .stepper{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 20px;}
+  .step{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:.78rem;border:1px solid var(--line);color:var(--muted);background:#fff;cursor:default;white-space:nowrap;font-family:inherit;}
+  .step.unlocked{cursor:pointer;}
+  .step.unlocked:hover{border-color:var(--accent);}
+  .step.current{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+  .step.done{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent);}
+  .step .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.7;}
+  /* cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:16px;}
+  .card h2{margin:0 0 6px;font-size:1.05rem;}
+  .card h3{margin:18px 0 6px;font-size:.95rem;}
+  .lede{color:var(--muted);font-size:.92rem;margin:0 0 14px;}
+  .hintbox{background:#fbfaf7;border:1px solid #eee8da;border-radius:8px;padding:10px 14px;font-size:.85rem;color:#57534e;margin:8px 0 4px;}
+  .hintbox b{color:#44403c;}
+  details.help{margin:6px 0 0;}
+  details.help summary{cursor:pointer;font-size:.83rem;color:var(--accent);user-select:none;}
+  details.help .hintbox{margin-top:8px;}
+  .gate{font-size:.8rem;color:var(--muted);margin-top:10px;}
+  /* segment cards */
+  .segGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px;}
+  .segCard{border:2px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;background:#fff;transition:border-color .15s;text-align:left;font-family:inherit;font-size:inherit;color:inherit;}
+  .segCard:hover{border-color:var(--accent);}
+  .segCard.sel{border-color:var(--accent);background:var(--accent-soft);}
+  .segCard h3{margin:0 0 6px;font-size:.98rem;}
+  .segCard p{margin:0;font-size:.83rem;color:var(--muted);}
+  .assump{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;padding:12px 14px;font-size:.92rem;margin:14px 0 4px;}
+  .assump .tagline{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);display:block;margin-bottom:4px;}
+  /* forms */
+  label.f{display:block;font-weight:600;font-size:.92rem;margin:16px 0 4px;}
+  label.f span.tag{font-weight:400;color:var(--muted);font-size:.8rem;}
+  textarea,input[type=text],input[type=password],input[type=number],select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.92rem;font-family:inherit;color:var(--ink);background:#fff;}
+  textarea{min-height:96px;resize:vertical;line-height:1.5;}
+  textarea:focus,input:focus,select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);}
+  textarea.mono, pre.prompt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;}
+  pre.prompt{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto;margin:8px 0;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px;}
+  .chip{border:1px solid var(--line);background:#fff;color:#57534e;border-radius:999px;padding:4px 11px;font-size:.78rem;cursor:pointer;font-family:inherit;}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .chip.used{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+  .starterBtn{border:1px dashed var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:4px 12px;font-size:.78rem;cursor:pointer;font-family:inherit;margin:4px 0 0;}
+  .starterBtn:hover{background:var(--accent-soft);}
+  .metaline{font-size:.78rem;color:var(--muted);margin-top:6px;}
+  /* buttons */
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:.92rem;font-weight:600;cursor:pointer;margin:6px 8px 0 0;font-family:inherit;text-decoration:none;}
+  .btn:hover{filter:brightness(1.08);}
+  .btn.secondary{background:#fff;color:var(--accent);border:1px solid var(--accent);}
+  .btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line);font-weight:500;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .btn.small{padding:6px 12px;font-size:.82rem;}
+  /* badges + tables */
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;}
+  .b-meets{background:#dcfce7;color:var(--good);}
+  .b-partial{background:#fef3c7;color:var(--warn);}
+  .b-not{background:#fee2e2;color:var(--bad);}
+  .b-ready{background:#dcfce7;color:var(--good);}
+  .b-promising{background:#fef3c7;color:var(--warn);}
+  .b-notready{background:#fee2e2;color:var(--bad);}
+  .b-none{background:#f1f5f9;color:var(--muted);}
+  table.diag{width:100%;border-collapse:collapse;font-size:.86rem;margin:8px 0 4px;}
+  table.diag th{text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line);}
+  table.diag td{padding:8px;border-bottom:1px solid #f1f5f9;vertical-align:top;}
+  table.diag td:first-child{font-weight:600;}
+  ul.feedback{margin:6px 0;padding-left:20px;font-size:.9rem;}
+  ul.feedback li{margin-bottom:8px;}
+  .cause{display:inline-block;font-size:.74rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-left:4px;}
+  .revBox{border-left:4px solid var(--indigo);background:#eef2f7;border-radius:0 8px 8px 0;padding:12px 14px;font-size:.92rem;margin:10px 0;}
+  .notice{border-radius:8px;padding:10px 14px;font-size:.86rem;margin:10px 0;}
+  .notice.info{background:#eff6ff;color:#1e40af;}
+  .notice.warn{background:#fffbeb;color:var(--warn);}
+  .notice.err{background:#fef2f2;color:var(--bad);}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid var(--accent-soft);border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  /* versions */
+  .verRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px;flex-wrap:wrap;background:#fff;}
+  .verRow.final{border-color:var(--accent);background:var(--accent-soft);}
+  .verRow .meta{font-size:.82rem;color:var(--muted);}
+  .cmpGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
+  @media(max-width:640px){.cmpGrid{grid-template-columns:1fr;}}
+  .cmpCol{border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.83rem;background:#fff;}
+  .cmpCol h4{margin:0 0 8px;font-size:.9rem;}
+  .cmpCol .fld{margin-bottom:10px;}
+  .cmpCol .fld b{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);}
+  .cmpCol .fld div{white-space:pre-wrap;}
+  /* checklist */
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid #f1f5f9;font-size:.92rem;}
+  .chk input{margin-top:4px;width:17px;height:17px;accent-color:var(--accent);flex:none;}
+  ol.steps{font-size:.92rem;padding-left:22px;}
+  ol.steps li{margin-bottom:6px;}
+  ul.qlist{font-size:.88rem;padding-left:20px;}
+  ul.qlist li{margin-bottom:5px;}
+  /* modal */
+  .modalBack{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .modal{background:#fff;border-radius:var(--radius);max-width:560px;width:100%;padding:22px;max-height:88vh;overflow:auto;}
+  .navRow{display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:8px;}
+  footer.priv{color:var(--muted);font-size:.78rem;margin-top:22px;line-height:1.6;}
+  .copied{color:var(--good);font-size:.82rem;margin-left:8px;}
+  @media(max-width:640px){.card{padding:16px;} body{font-size:15px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="appTitle">India Market Intelligence Prompt Lab</h1>
+      <p class="subtitle" id="appSub">A2V / Plum AV Customer-Education Challenge &middot; Build and test your Prompt&nbsp;1</p>
+    </div>
+    <button class="gear" onclick="openSettings()">&#9881; Settings</button>
+  </header>
+  <div id="stepper" class="stepper" role="navigation" aria-label="Progress"></div>
+  <div id="app"></div>
+  <footer class="priv">
+    <b>Privacy &amp; storage.</b> Everything you type stays in this browser on this device (saved locally so you can close and return; use &ldquo;Start over&rdquo; to erase it). Nothing is sent anywhere by default. Copy &amp; Paste mode &mdash; the standard way to use this lab &mdash; works with the free version of ChatGPT, Claude, or Gemini and requires no API key. Only if you choose to add your <i>own personal</i> API key in Settings will &ldquo;Run in-app&rdquo; send your prompt directly to that provider. Never enter an instructor&rsquo;s or employer&rsquo;s key, and do not enter confidential company or personal information anywhere in this lab.
+  </footer>
+</div>
+
+<div id="modalHost"></div>
+
+<script>
+"use strict";
+/* ================================================================
+   INSTRUCTOR CONFIGURATION
+   Edit the values in CONFIG below for ordinary course updates
+   (titles, segments, assumptions, guidance, chips, Prompt 2 core,
+   Notion link, model defaults). No other code changes are needed.
+   You may instead host a file named prompt-lab-config.json next to
+   this page with the same structure; it overrides CONFIG on load.
+   The Notion link can also be preset via ?notion=URL.
+   ================================================================ */
+var CONFIG = {
+  projectTitle: "India Market Intelligence Prompt Lab",
+  companyName: "A2V / Plum AV",
+  subtitle: "A2V / Plum AV Customer-Education Challenge · Build and test your Prompt 1",
+  notionUrl: "",
+  model: { provider:"anthropic", anthropicModel:"claude-sonnet-4-5", openaiModel:"gpt-4o", temperature:0.3, maxTokens:4000 },
+
+  fixedContext: "Company and project context: A2V / Plum AV is a smaller specialized AV and immersive-experience company. It wants to build demand in India partly through customer education. This project focuses on identifying meaningful customer problems; the final student output will be a digital customer-education prototype. This is not a full market-entry strategy or an AV engineering project.",
+
+  personExample: "Act as a practical India market-intelligence advisor helping a non-technical international business student team. Be careful, skeptical, evidence-driven, and focused on real customer problems, stakeholder logic, and business feasibility.",
+
+  guardrailChips: [
+    "Do not invent facts, evidence, sources, quotations, or statistics.",
+    "Do not conclude that the opportunity is attractive.",
+    "Separate customer pain from purchase-workflow logic.",
+    "Distinguish users, influencers, decision-makers, approvers, and buyers.",
+    "Identify evidence that could weaken or redirect the assumption.",
+    "Identify what public evidence cannot establish.",
+    "Label uncertainty clearly.",
+    "Avoid drifting into AV engineering.",
+    "Avoid producing a complete market-entry strategy.",
+    "Focus on research planning rather than final answers."
+  ],
+
+  segments: {
+    uni: {
+      label: "Universities and Educational Institutions",
+      short: "Universities",
+      contexts: "Classrooms, libraries, auditoriums, event spaces, media facilities, and other shared learning environments.",
+      assumption: "Indian universities and educational institutions may experience sound, acoustic, or immersive-experience problems in classrooms, libraries, auditoriums, event spaces, media facilities, or other shared learning environments. These problems may create an opportunity for A2V / Plum AV to help relevant stakeholders recognize and address a meaningful problem.",
+      searchOrder: [
+        "Official university facility, department, annual-report, accreditation, grievance, and campus-news sources.",
+        "Government procurement portals, direct tenders, RFPs, consultancy scopes, award notices, and project documents.",
+        "Campus newspapers, public student/faculty accounts, event reports, and active studio or content-output pages.",
+        "Competitor, consultant, integrator, and supplier scan through Justdial, IndiaMART, TradeIndia, company sites, and LinkedIn.",
+        "Exact YouTube, Instagram, LinkedIn, or public forum sources only when they add verifiable user or operational evidence."
+      ]
+    },
+    hotel: {
+      label: "Hotels and Hospitality Venues",
+      short: "Hospitality",
+      contexts: "Guest rooms, shared spaces, restaurants, banquet halls, conference rooms, and event venues.",
+      assumption: "Indian hotels and hospitality venues may experience sound, noise, acoustic, or ambience problems affecting guest comfort, event quality, shared spaces, or hotel operations. These problems may create an opportunity for A2V / Plum AV to help relevant stakeholders recognize and address a meaningful problem.",
+      searchOrder: [
+        "Exact Google Reviews, TripAdvisor, Booking, MakeMyTrip, or other property-review pages.",
+        "Property pages, management responses, banquet packages, and official hotel communications.",
+        "Local news, regulatory records, renovation announcements, tenders, and project documents.",
+        "Wedding planners, event-production providers, AV rental firms, integrators, and consultant sources.",
+        "Exact YouTube or Instagram hotel/event content and substantive audience comments; Reddit or public Facebook only as exploratory leads."
+      ]
+    },
+    home: {
+      label: "Middle-Income Households",
+      short: "Households",
+      contexts: "Home entertainment, family gatherings, music, meditation, reading, celebrations, and other shared in-home activities.",
+      assumption: "Some Indian middle-income households may value improved shared experiences involving entertainment, family gatherings, music, meditation, reading, celebrations, or other activities. These activities may create an opportunity for A2V / Plum AV to help customers recognize the value of an improved sound or immersive experience.",
+      searchOrder: [
+        "Individual product reviews, Q&A pages, complaint pages, and household accounts (e.g., Amazon/Flipkart).",
+        "India-focused household, housing, work-from-home, study, wellness, entertainment, gaming, or music communities and articles.",
+        "Exact YouTube or Instagram demonstrations and substantive comments.",
+        "Installer, retailer, warranty, return, trial, and service-policy sources.",
+        "Competitor and substitute scan through Justdial, IndiaMART, TradeIndia, local providers, and relevant company pages."
+      ]
+    }
+  }
+};
+/* ============================ END INSTRUCTOR CONFIGURATION ============================ */
+
+var STAGES = ["Segment","5P Builder","Test","Diagnose","Refine","Export","Validate"];
+
+var FIELDS = [
+  { key:"person", label:"Person", tag:"Who should the AI act as, and what expertise or perspective should it bring?",
+    hint:"Consider specifying: market-intelligence expertise, India context, an international business perspective, evidence discipline, appropriate skepticism, and the ability to support a non-technical student team. The example is a starting point — edit it into your team's own words." },
+  { key:"problem", label:"Problem & Context", tag:"What does the AI need to know about the company, project, segment, and assumption?",
+    hint:"Insert the project context, then make it yours: refine the provisional assumption, clarify the segment, set boundaries, add relevant questions, and note what your team does not yet know. You are NOT expected to state a final customer insight before research begins — but a vague assumption here is the most common cause of a weak search plan." },
+  { key:"process", label:"Process & Task", tag:"What should the AI help your team investigate or plan?",
+    hint:"Prompt 1 should ask the AI to design a market-intelligence SEARCH PLAN — not decide whether the opportunity is attractive, conduct the whole research project, produce a recommendation, or design the prototype. Consider whether the plan should cover: customer pain, affected activities, stakeholders, buyer/purchase-workflow logic, evidence sources, search queries, contradictory evidence, uncertainty, and questions needing stakeholder validation." },
+  { key:"product", label:"Product & Output", tag:"What should the AI produce so your team can begin the evidence search?",
+    hint:"You might request: prioritized research questions, a structured search sequence, search terms, source categories, pain-point questions, purchase-workflow questions, stakeholder mapping, evidence that would support or weaken the assumption, unresolved questions, and validation priorities. Aim for a usable output, not a long essay." },
+  { key:"parameters", label:"Parameters & Guardrails", tag:"What should the AI avoid, distinguish, disclose, or leave unresolved?",
+    hint:"Use the optional reminder chips below — click to add one, then revise or delete it in the box. Choose deliberately; do not just add all of them. Guardrails are what make AI output checkable instead of persuasive." }
+];
+
+var PROMPT_DIMS = ["Task alignment","Context sufficiency","Instruction clarity","Output usability","Evidence discipline","Instruction efficiency"];
+var OUTPUT_DIMS = ["Provisional-assumption clarity","Pain-point logic","Purchase-workflow logic","Stakeholder coverage","Source strategy","Search usability","Falsifiability","Uncertainty","Prompt 2 readiness"];
+
+var HANDOFF_STEPS = [
+  "Run Final Prompt 1 in your selected AI tool.",
+  "Run Prompt 2 in the same conversation.",
+  "Review the candidate evidence and search suggestions.",
+  "Open every original source the team may use.",
+  "Confirm that each source exists and is accessible.",
+  "Determine whether the source supports the attached claim.",
+  "Record verified evidence in the Notion Evidence Board.",
+  "Record consequential AI use in the AI Use Log.",
+  "Complete the Customer Insights Brief only after validation."
+];
+var SOURCE_QUESTIONS = [
+  "Does the original source exist and open?",
+  "Is the source relevant to India?",
+  "Is it relevant to the selected customer context?",
+  "Does it support the specific claim attached to it?",
+  "Is it independent evidence, supplier promotion, or stakeholder self-report?",
+  "Does it concern customer pain, purchase workflow, or both?",
+  "What can the source not establish?",
+  "Does it support, weaken, complicate, narrow, or redirect the assumption?",
+  "Is the claim strong enough to retain?",
+  "Should the team retain, revise, remove, or hold the claim?"
+];
+
+/* ============================== STATE ============================== */
+var DEFAULTS = {
+  stage:0, segment:null,
+  fields:{person:"",problem:"",process:"",product:"",parameters:""},
+  versions:[], curVid:null, finalId:null, finalizedAt:null,
+  handoffTicks:[false,false,false,false,false,false,false,false,false],
+  team:{name:"",section:"",id:""},
+  settings:{provider:"", apiKey:"", model:"", temperature:"", maxTokens:"", notionUrl:""},
+  maxUnlocked:0
+};
+var state = load();
+
+function load(){
+  try{
+    var raw = localStorage.getItem("imipl_v2");
+    if(raw){ var s = JSON.parse(raw); return Object.assign({}, JSON.parse(JSON.stringify(DEFAULTS)), s); }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function save(){ try{ localStorage.setItem("imipl_v2", JSON.stringify(state)); }catch(e){} }
+
+/* Instructor presets: ?notion=URL, optional prompt-lab-config.json */
+(function(){
+  try{
+    var p = new URLSearchParams(location.search).get("notion");
+    if(p) CONFIG.notionUrl = p;
+  }catch(e){}
+  try{
+    fetch("prompt-lab-config.json").then(function(r){ return r.ok? r.json():null; }).then(function(j){
+      if(j){ deepMerge(CONFIG,j); applyTitles(); render(); }
+    }).catch(function(){});
+  }catch(e){}
+})();
+function deepMerge(t,s){ for(var k in s){ if(s[k]&&typeof s[k]==="object"&&!Array.isArray(s[k])&&t[k]){ deepMerge(t[k],s[k]); } else { t[k]=s[k]; } } }
+function applyTitles(){
+  var t=document.getElementById("appTitle"), s=document.getElementById("appSub");
+  if(t) t.textContent=CONFIG.projectTitle;
+  if(s) s.textContent=CONFIG.subtitle;
+  document.title=CONFIG.projectTitle;
+}
+function notionLink(){ return (state.settings.notionUrl||"").trim() || (CONFIG.notionUrl||"").trim(); }
+
+/* ============================== HELPERS ============================== */
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function $(id){ return document.getElementById(id); }
+function seg(){ return CONFIG.segments[state.segment] || null; }
+function go(n){ if(n<=state.maxUnlocked){ state.stage=n; save(); render(); window.scrollTo(0,0); } }
+function unlock(n){ if(n>state.maxUnlocked) state.maxUnlocked=n; }
+function fieldsComplete(){ return FIELDS.every(function(f){ return (state.fields[f.key]||"").trim().length>0; }); }
+function wordCount(t){ t=String(t||"").trim(); return t? t.split(/\s+/).length : 0; }
+function assemblePrompt(f){
+  return "PERSON\n"+(f.person||"").trim()+
+    "\n\nPROBLEM AND CONTEXT\n"+(f.problem||"").trim()+
+    "\n\nPROCESS AND TASK\n"+(f.process||"").trim()+
+    "\n\nPRODUCT AND OUTPUT\n"+(f.product||"").trim()+
+    "\n\nPARAMETERS AND GUARDRAILS\n"+(f.parameters||"").trim();
+}
+function ratingBadge(r){
+  var icon = r==="Meets"?"&#10003; ":(r==="Partially meets"?"&#9651; ":"&#10005; ");
+  var c = r==="Meets"?"b-meets":(r==="Partially meets"?"b-partial":"b-not");
+  return '<span class="badge '+c+'">'+icon+esc(r)+'</span>';
+}
+function overallBadge(o){
+  if(!o) return '<span class="badge b-none">Not diagnosed yet</span>';
+  var c = /Ready to use/i.test(o)?"b-ready":(/Promising/i.test(o)?"b-promising":"b-notready");
+  var icon = /Ready to use/i.test(o)?"&#10003; ":(/Promising/i.test(o)?"&#9651; ":"&#10005; ");
+  return '<span class="badge '+c+'">'+icon+esc(o)+'</span>';
+}
+function copyText(txt, btn){
+  function ok(){ if(btn){ var s=document.createElement("span"); s.className="copied"; s.textContent="Copied!"; btn.after(s); setTimeout(function(){s.remove();},1600);} }
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok, function(){ fallbackCopy(txt); ok(); }); }
+  else { fallbackCopy(txt); ok(); }
+}
+function fallbackCopy(txt){
+  var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){} ta.remove();
+}
+function nowStr(){ return new Date().toLocaleString(); }
+function downloadFile(name, content, mime){
+  var blob=new Blob([content],{type:mime||"text/plain"});
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+function versionById(id){ return state.versions.filter(function(v){return v.id===id;})[0]; }
+function curVersion(){ return state.curVid? versionById(state.curVid) : null; }
+function topWeakness(v){
+  if(v && v.diag && v.diag.weaknesses && v.diag.weaknesses.length) return v.diag.weaknesses[0].issue;
+  return "—";
+}
+
+/* ============================== RENDER ============================== */
+function render(){
+  renderStepper();
+  var r=[renderSegment,renderBuilder,renderTest,renderDiagnose,renderRefine,renderExport,renderValidate][state.stage];
+  $("app").innerHTML = r();
+}
+function renderStepper(){
+  var h="";
+  for(var i=0;i<STAGES.length;i++){
+    var cls="step"+(i===state.stage?" current":(i<state.stage?" done":""))+(i<=state.maxUnlocked?" unlocked":"");
+    h+='<button type="button" class="'+cls+'" '+(i<=state.maxUnlocked?'onclick="go('+i+')"':'disabled aria-disabled="true" style="opacity:.6"')+' aria-current="'+(i===state.stage?"step":"false")+'"><span class="dot" aria-hidden="true"></span>'+STAGES[i]+'</button>';
+  }
+  $("stepper").innerHTML=h;
+}
+
+/* ---------- Stage 0: Segment ---------- */
+function renderSegment(){
+  var h='<div class="card"><h2>Step 1 &middot; Choose your provisional segment</h2>'+
+  '<p class="lede"><b>Why this matters:</b> '+esc(CONFIG.companyName)+' is a smaller immersive and acoustic-experience company exploring how customer education could build demand in India. Your team picks one broad starting segment to investigate &mdash; nothing more is decided here.</p>'+
+  '<div class="segGrid">';
+  Object.keys(CONFIG.segments).forEach(function(k){
+    var s=CONFIG.segments[k];
+    h+='<button type="button" class="segCard'+(state.segment===k?" sel":"")+'" onclick="pickSegment(\''+k+'\')"><h3>'+esc(s.label)+'</h3><p>'+esc(s.contexts)+'</p></button>';
+  });
+  h+='</div>';
+  if(seg()){
+    h+='<div class="assump"><span class="tagline">Starting assumption &mdash; provisional</span>'+esc(seg().assumption)+'</div>';
+  }
+  h+='<div class="notice info" style="margin-top:12px">Your segment is a starting point, not a validated opportunity. Your research may support, narrow, complicate, redirect, or weaken the initial assumption. You are <b>not</b> choosing a final customer, pain point, insight, prototype idea, or recommendation here.</div>'+
+  '<div class="navRow"><span class="gate">Ready to continue when: one segment is selected.</span><button class="btn" '+(state.segment?"":"disabled")+' onclick="toBuilder()">Continue to the 5P Builder &rarr;</button></div></div>';
+  return h;
+}
+function pickSegment(k){
+  if(state.segment && state.segment!==k && (fieldsAnyText() || state.versions.length)){
+    if(!confirm("Switching segments keeps your 5P text and versions, but they were written for another segment. Switch anyway?")) return;
+  }
+  state.segment=k; unlock(1); save(); render();
+}
+function fieldsAnyText(){ return FIELDS.some(function(f){return (state.fields[f.key]||"").trim();}); }
+function toBuilder(){ if(state.segment){ unlock(1); state.stage=1; save(); render(); window.scrollTo(0,0);} }
+
+/* ---------- Stage 1: 5P Builder ---------- */
+function renderBuilder(){
+  var s=seg()||{};
+  var h='<div class="card"><h2>Step 2 &middot; Build Prompt 1 with the 5P frame</h2>'+
+  '<p class="lede"><b>Why this matters:</b> Prompt 1 makes an AI design your team&rsquo;s market-intelligence <b>search plan</b> for the '+esc(s.label||"")+' segment. Write each part in your own words &mdash; the starters and chips are raw material, never the answer. Longer is not better; clearer is better.</p>';
+  FIELDS.forEach(function(f){
+    h+='<label class="f" for="fld_'+f.key+'">'+f.label+' <span class="tag">&mdash; '+esc(f.tag)+'</span></label>';
+    if(f.key==="person"){
+      h+='<button type="button" class="starterBtn" onclick="insertStarter(\'person\')">Insert editable example</button>';
+    }
+    if(f.key==="problem"){
+      h+='<button type="button" class="starterBtn" onclick="insertStarter(\'problem\')">Insert project context + starting assumption</button>';
+    }
+    h+='<textarea id="fld_'+f.key+'" oninput="onField(\''+f.key+'\')" placeholder="Write your '+f.label+' here...">'+esc(state.fields[f.key])+'</textarea>';
+    if(f.key==="parameters"){
+      h+='<div class="chips" id="chipRow">'+CONFIG.guardrailChips.map(function(c,i){
+        return '<button type="button" class="chip'+(state.fields.parameters.indexOf(c)>=0?" used":"")+'" onclick="addChip('+i+')">'+esc(c)+'</button>';
+      }).join("")+'</div>';
+    }
+    h+='<details class="help"><summary>What makes this field strong?</summary><div class="hintbox">'+esc(f.hint)+'</div></details>';
+  });
+  h+='<h3>Live Prompt 1 preview</h3><pre class="prompt" id="preview">'+esc(assemblePrompt(state.fields))+'</pre>'+
+  '<div class="metaline" id="pmeta"></div>'+
+  '<div id="mechCheck"></div>'+
+  '<div class="navRow"><button class="btn ghost" onclick="go(0)">&larr; Segment</button>'+
+  '<span class="gate">Ready to continue when: all five fields have content.</span>'+
+  '<button class="btn" id="toTestBtn" '+(fieldsComplete()?"":"disabled")+' onclick="toTest()">Continue to Test &rarr;</button></div></div>';
+  setTimeout(updateMeta,0);
+  return h;
+}
+function insertStarter(which){
+  var el=$("fld_"+which); if(!el) return;
+  var add="";
+  if(which==="person") add=CONFIG.personExample;
+  if(which==="problem"){
+    add=CONFIG.fixedContext+
+    "\n\nStarting assumption (provisional): "+(seg()?seg().assumption:"")+
+    "\n\nOur team refines this assumption as: [describe the specific activity, the possible problem, and who may experience it]"+
+    "\nBoundaries and questions we want the plan to respect: [add your own]"+
+    "\nWhat we do not yet know: [be honest here]";
+  }
+  el.value = (el.value.trim()? el.value.trim()+"\n\n" : "") + add;
+  onField(which);
+}
+function addChip(i){
+  var c=CONFIG.guardrailChips[i], el=$("fld_parameters");
+  if(state.fields.parameters.indexOf(c)>=0) return;
+  el.value=(el.value.trim()? el.value.trim()+"\n":"")+"- "+c;
+  onField("parameters");
+  var row=$("chipRow"); if(row) row.children[i].classList.add("used");
+}
+function onField(k){
+  state.fields[k]=$("fld_"+k).value;
+  $("preview").textContent=assemblePrompt(state.fields);
+  $("toTestBtn").disabled=!fieldsComplete();
+  updateMeta(); mechCheck(); save();
+}
+function updateMeta(){
+  var el=$("pmeta"); if(!el) return;
+  var missing=FIELDS.filter(function(f){return !(state.fields[f.key]||"").trim();}).map(function(f){return f.label;});
+  var w=wordCount(assemblePrompt(state.fields));
+  el.textContent = "About "+w+" words (informational only — length is not quality). "+
+    (missing.length? "Missing sections: "+missing.join(", ")+"." : "All five sections present.")+
+    " Will be saved automatically as Version "+(state.versions.length+1)+" when you test.";
+}
+function mechCheck(){
+  var msgs=[];
+  FIELDS.forEach(function(f){
+    var t=(state.fields[f.key]||"").trim();
+    if(t && wordCount(t)<6) msgs.push(f.label+" is very short — make sure it says something specific.");
+  });
+  var el=$("mechCheck"); if(!el) return;
+  el.innerHTML = msgs.length? '<div class="notice warn">Quick mechanical check (not a diagnosis): '+esc(msgs.join(" "))+'</div>':"";
+}
+function toTest(){ if(fieldsComplete()){ unlock(2); state.stage=2; save(); render(); window.scrollTo(0,0);} }
+
+/* ---------- Stage 2: Test ---------- */
+function renderTest(){
+  var hasKey = !!(state.settings.apiKey||"").trim();
+  var cv=curVersion();
+  var h='<div class="card"><h2>Step 3 &middot; Test Prompt 1</h2>'+
+  '<p class="lede"><b>Why this matters:</b> you find out what your prompt actually produces. A version of your prompt is saved automatically each time you test, so nothing is lost when you revise.</p>'+
+  '<pre class="prompt">'+esc(assemblePrompt(state.fields))+'</pre>'+
+  '<div class="metaline">About '+wordCount(assemblePrompt(state.fields))+' words (informational only) &middot; will be saved as Version '+(state.versions.length+1)+'</div>'+
+  '<button class="btn secondary small" onclick="copyText(assemblePrompt(state.fields), this)">Copy Prompt 1</button>'+
+
+  '<h3>Standard route &middot; Copy &amp; paste (no API key)</h3>'+
+  '<div class="hintbox">1. Open your team&rsquo;s preferred AI tool (ChatGPT, Claude, Gemini) and start a <b>new conversation</b>.<br>2. Paste Prompt 1 and send it. <b>Keep that conversation open</b> &mdash; you will reuse it for the diagnosis and later for Prompt 2.<br>3. Copy the model&rsquo;s full reply and paste it below.</div>'+
+  '<label class="f" for="pasteOut">Paste the model&rsquo;s search plan here</label>'+
+  '<textarea id="pasteOut" class="mono" style="min-height:140px" placeholder="Paste the full search-plan reply from your AI tool..."></textarea>'+
+  '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+'</button>'+
+
+  '<h3>Optional route &middot; Run in-app with your own key</h3>'+
+  '<div class="notice info">Only for students who have their <b>own personal</b> API key ('+(hasKey?"configured &#10003;":"none configured")+' &mdash; see Settings). The key stays in this browser and is sent only to the provider you chose. Never use an instructor&rsquo;s or employer&rsquo;s key. Without a key, the copy &amp; paste route above does everything this does.</div>'+
+  '<button class="btn secondary" onclick="runInApp()" '+(hasKey?"":"disabled")+'>Run Prompt 1 in-app</button>'+
+  '<div id="runStatus"></div>'+
+
+  (cv? '<h3>Latest test &middot; Version '+cv.id+' ('+esc(cv.outputSource)+')</h3><pre class="prompt">'+esc(cv.output)+'</pre>'+
+       '<button class="btn secondary small" onclick="copyText(versionById('+cv.id+').output, this)">Copy search plan</button>':"")+
+
+  '<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Return to editing</button>'+
+  '<span class="gate">Ready to continue when: a search plan has been saved.</span>'+
+  '<button class="btn" '+(cv?"":"disabled")+' onclick="toDiagnose()">Continue to Diagnose &rarr;</button></div></div>';
+  return h;
+}
+function pushVersion(output, source){
+  var v={
+    id: state.versions.length+1,
+    ts: nowStr(),
+    segment: state.segment,
+    fields: JSON.parse(JSON.stringify(state.fields)),
+    prompt: assemblePrompt(state.fields),
+    words: wordCount(assemblePrompt(state.fields)),
+    output: output,
+    outputSource: source,
+    diag: null
+  };
+  state.versions.push(v); state.curVid=v.id;
+  unlock(3); save();
+  return v;
+}
+function acceptPaste(){
+  var v=$("pasteOut").value.trim();
+  if(!v){ alert("Paste the model's reply first."); return; }
+  pushVersion(v,"pasted from your AI tool");
+  render(); window.scrollTo(0,0);
+}
+function runInApp(){
+  var el=$("runStatus");
+  el.innerHTML='<div class="notice info"><span class="spin"></span>Sending Prompt 1 to the model&hellip; this can take up to a minute.</div>';
+  callModel(assemblePrompt(state.fields)).then(function(txt){
+    pushVersion(txt,"generated in-app");
+    render(); window.scrollTo(0,0);
+  }).catch(function(err){
+    el.innerHTML='<div class="notice err"><b>The AI model could not be reached.</b> Your 5P entries and Prompt 1 are still available. You may copy Prompt 1 and test it in your preferred AI tool.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
+    '<button class="btn secondary small" onclick="runInApp()">Retry</button>'+
+    '<button class="btn secondary small" onclick="copyText(assemblePrompt(state.fields), this)">Copy Prompt 1</button>'+
+    '<button class="btn ghost small" onclick="go(1)">Return to editing</button>';
+  });
+}
+function toDiagnose(){ if(curVersion()){ unlock(3); state.stage=3; save(); render(); window.scrollTo(0,0);} }
+
+/* ---------- Model calls ---------- */
+function modelCfg(){
+  var s=state.settings, m=CONFIG.model;
+  var provider = s.provider || m.provider;
+  var temperature = s.temperature!=="" && s.temperature!=null ? parseFloat(s.temperature) : m.temperature;
+  var maxTokens = s.maxTokens!=="" && s.maxTokens!=null ? parseInt(s.maxTokens,10) : m.maxTokens;
+  var model = (s.model||"").trim() || (provider==="openai"? m.openaiModel : m.anthropicModel);
+  return {provider:provider, model:model, temperature:isNaN(temperature)?0.3:temperature, maxTokens:isNaN(maxTokens)?4000:maxTokens};
+}
+function callModel(prompt){
+  var key=(state.settings.apiKey||"").trim(), c=modelCfg();
+  if(!key) return Promise.reject(new Error("No API key configured."));
+  if(c.provider==="openai"){
+    return fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({model:c.model,temperature:c.temperature,max_tokens:c.maxTokens,messages:[{role:"user",content:prompt}]})
+    }).then(function(r){
+      if(!r.ok) return r.text().then(function(t){throw new Error("Provider error ("+r.status+"). "+t.slice(0,200));});
+      return r.json();
+    }).then(function(j){ return j.choices[0].message.content; });
+  }
+  return fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:c.model,temperature:c.temperature,max_tokens:c.maxTokens,messages:[{role:"user",content:prompt}]})
+  }).then(function(r){
+    if(!r.ok) return r.text().then(function(t){throw new Error("Provider error ("+r.status+"). "+t.slice(0,200));});
+    return r.json();
+  }).then(function(j){ return j.content[0].text; });
+}
+
+/* ---------- Diagnostic prompt ---------- */
+function buildEvalPrompt(v){
+  var s=seg()||{label:"",assumption:""};
+  return [
+"Act as a careful instructional evaluator for an undergraduate international business market-intelligence exercise. The students are non-technical. Their team wrote 'Prompt 1' to make an AI design a market-intelligence SEARCH PLAN for this provisional segment in India: "+s.label+".",
+"The provisional starting assumption for this segment is: "+s.assumption,
+"The company context is a smaller immersive/acoustic-experience firm ("+CONFIG.companyName+") exploring customer education in India.",
+"",
+"Below are (A) the student's Prompt 1 and (B) the search-plan output a model produced from it.",
+"",
+"=== A. STUDENT PROMPT 1 START ===",
+v.prompt,
+"=== A. STUDENT PROMPT 1 END ===",
+"",
+"=== B. MODEL OUTPUT START ===",
+v.output,
+"=== B. MODEL OUTPUT END ===",
+"",
+"Evaluate BOTH, using this rubric. Rate every dimension exactly one of: \"Meets\", \"Partially meets\", \"Does not meet\", each with a brief one-sentence explanation based on the ACTUAL prompt and output (never keyword matching alone).",
+"",
+"Prompt-quality dimensions (evaluate A): Task alignment (asks for a market-intelligence search plan rather than a final conclusion); Context sufficiency (provides the important context the AI cannot safely infer, including a student-refined provisional assumption); Instruction clarity (the central task is clear and distinguishable from secondary instructions); Output usability (requests a practical, usable output); Evidence discipline (prevents unsupported claims and premature conclusions); Instruction efficiency (focused instructions; flag ONLY clear cases of duplication, contradiction, unnecessary restrictions, buried priority, or excessive detail that does not improve the task).",
+"",
+"Output-quality dimensions (evaluate B): Provisional-assumption clarity (treats the assumption as provisional rather than established); Pain-point logic (investigates who experiences what problem and what activity is affected); Purchase-workflow logic (examines when a concern could lead to recognition, prioritization, approval, or purchase); Stakeholder coverage (distinguishes users, influencers, decision-makers, approvers, and buyers); Source strategy (credible and varied source categories); Search usability (practical search terms and a manageable sequence); Falsifiability (explains what could weaken, complicate, narrow, or redirect the assumption); Uncertainty (identifies what public evidence may not establish); Prompt 2 readiness (clear enough to support the next evidence-search step).",
+"",
+"Strict rules for your evaluation:",
+"- Do NOT rewrite the student's prompt, provide a replacement prompt, or solve the assignment.",
+"- Do NOT choose or change the customer problem for the students; if the assumption is vague, say so and explain why it matters, but the fix is theirs to write.",
+"- Do NOT conclude whether the India market opportunity is attractive.",
+"- Treat every factual claim in output B as UNVERIFIED model text, not evidence.",
+"- Do NOT reward prompt length. Do NOT penalize a long prompt unless repetition, contradiction, or buried priorities reduce its effectiveness. Do NOT recommend revision merely to make the prompt shorter.",
+"- Identify AT MOST 2 strengths and AT MOST 3 consequential weaknesses (the ones that would most damage the team's research), across A and B combined. Never provide ten or more suggestions.",
+"- For EACH weakness state: what is weak or missing (issue), why it matters (why_it_matters), and whether the likely cause is \"prompt design\", \"model execution\", or \"both\" (cause). If a good prompt produced an incomplete output, attribute that weakness to model execution, not to the prompt.",
+"- Identify EXACTLY 1 highest-priority revision: a concrete revision OBJECTIVE for Prompt 1 (e.g., 'Clarify that the output must separately investigate customer pain and purchase-workflow logic'). Describe what to change and why in 2-3 sentences. You may quote a short phrase as an illustration, but never write the revised prompt for them. If the top weakness is model execution, the objective may instead be to rerun or to add a safeguard instruction.",
+"- Overall status must be exactly one of: \"Not ready yet\", \"Promising - refine and retest\", \"Ready to use\".",
+"",
+"Reply with ONLY a JSON object, no markdown fences, in exactly this shape:",
+"{",
+"  \"prompt_diagnosis\": [ {\"dimension\": \"Task alignment\", \"rating\": \"...\", \"note\": \"one sentence\"}, ... all 6 dimensions in the order listed ... ],",
+"  \"output_diagnosis\": [ {\"dimension\": \"Provisional-assumption clarity\", \"rating\": \"...\", \"note\": \"one sentence\"}, ... all 9 dimensions in the order listed ... ],",
+"  \"strengths\": [\"...\"],",
+"  \"weaknesses\": [ {\"issue\": \"...\", \"why_it_matters\": \"...\", \"cause\": \"prompt design|model execution|both\"} ],",
+"  \"priority_revision\": \"...\",",
+"  \"overall\": \"...\"",
+"}"
+  ].join("\n");
+}
+function extractJSON(text){
+  var t=String(text||"").trim();
+  t=t.replace(/^```(?:json)?/i,"").replace(/```$/,"").trim();
+  var a=t.indexOf("{"), b=t.lastIndexOf("}");
+  if(a===-1||b===-1||b<=a) throw new Error("No JSON object found.");
+  return JSON.parse(t.slice(a,b+1));
+}
+function normalizeDiag(j){
+  function cap(arr,n){ return Array.isArray(arr)?arr.slice(0,n):[]; }
+  return {
+    prompt_diagnosis: cap(j.prompt_diagnosis,6),
+    output_diagnosis: cap(j.output_diagnosis,9),
+    strengths: cap(j.strengths,2).map(function(s){return typeof s==="string"?s:(s&&s.strength)||JSON.stringify(s);}),
+    weaknesses: cap(j.weaknesses,3).map(function(w){
+      if(typeof w==="string") return {issue:w, why:"", cause:""};
+      return {issue:w.issue||w.weakness||"", why:w.why_it_matters||w.why||"", cause:w.cause||""};
+    }),
+    priority_revision: String(j.priority_revision||""),
+    overall: String(j.overall||"Promising - refine and retest")
+  };
+}
+
+/* ---------- Stage 3: Diagnose ---------- */
+function renderDiagnose(){
+  var v=curVersion();
+  if(!v) return '<div class="card"><div class="notice warn">Run a test first.</div><button class="btn ghost" onclick="go(2)">&larr; Test</button></div>';
+  var hasKey = !!(state.settings.apiKey||"").trim();
+  var h='<div class="card"><h2>Step 4 &middot; Diagnose Version '+v.id+'</h2>'+
+  '<p class="lede"><b>Why this matters:</b> two separate diagnoses &mdash; one of your <b>prompt</b>, one of the <b>search plan it produced</b> &mdash; so you can tell whether a weakness comes from your prompt design or from the model&rsquo;s execution. The diagnosis coaches you; it will not rewrite your prompt, pick your problem, or judge the market.</p>';
+
+  if(!v.diag){
+    h+='<h3>Standard route &middot; Copy &amp; paste</h3>'+
+    '<div class="hintbox">1. Copy the diagnostic prompt. 2. Paste it into the <b>same conversation</b> where you ran Prompt 1. 3. Paste the model&rsquo;s JSON reply below.</div>'+
+    '<button class="btn secondary small" onclick="copyText(buildEvalPrompt(curVersion()), this)">Copy diagnostic prompt</button>'+
+    '<label class="f" for="diagPaste">Paste the JSON diagnosis here</label>'+
+    '<textarea id="diagPaste" class="mono" style="min-height:110px" placeholder="Paste the JSON reply here..."></textarea>'+
+    '<button class="btn" onclick="acceptDiagPaste()">Use this diagnosis</button>';
+    if(hasKey){
+      h+='<h3>Optional route &middot; Diagnose in-app with your own key</h3>'+
+      '<button class="btn secondary" onclick="diagInApp()">Diagnose in-app</button>';
+    }
+    h+='<div id="diagStatus"></div>';
+  } else {
+    h+=renderDiagResult(v.diag);
+    h+='<div class="navRow" style="margin-top:16px">'+
+    '<button class="btn secondary" onclick="reviseFromDiag()">Revise the prompt &rarr;</button>'+
+    '<button class="btn" onclick="go(4)">Review &amp; compare versions &rarr;</button></div>';
+  }
+  h+='<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(2)">&larr; Test</button><span class="gate">Ready to continue when: this version has a diagnosis.</span></div></div>';
+  return h;
+}
+function renderDiagResult(d){
+  var h='<div class="notice info">Overall status: '+overallBadge(d.overall)+'</div>';
+  h+='<h3>Prompt-quality diagnosis</h3><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
+  d.prompt_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(r.note)+'</td></tr>'; });
+  h+='</table><h3>Search-plan output diagnosis</h3><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
+  d.output_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(r.note)+'</td></tr>'; });
+  h+='</table>';
+  if(d.strengths.length){ h+='<h3>What works (max 2)</h3><ul class="feedback">'+d.strengths.map(function(s){return '<li>'+esc(s)+'</li>';}).join("")+'</ul>'; }
+  if(d.weaknesses.length){
+    h+='<h3>Most important weaknesses (max 3)</h3><ul class="feedback">'+d.weaknesses.map(function(w){
+      return '<li><b>'+esc(w.issue)+'</b>'+(w.why?' &mdash; '+esc(w.why):"")+(w.cause?' <span class="cause">cause: '+esc(w.cause)+'</span>':"")+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<h3>Highest-priority revision</h3><div class="revBox">'+esc(d.priority_revision)+'</div>'+
+  '<div class="notice warn">Reminder: the search plan above is unverified AI text, and this in-lab test output is <b>not</b> your official working output. Your official search plan is the one your team produces by running Final Prompt 1 in its own AI tool.</div>';
+  return h;
+}
+function diagInApp(){
+  var el=$("diagStatus");
+  el.innerHTML='<div class="notice info"><span class="spin"></span>Evaluating your prompt and its output&hellip;</div>';
+  callModel(buildEvalPrompt(curVersion())).then(function(txt){
+    attachDiag(normalizeDiag(extractJSON(txt)));
+  }).catch(function(err){
+    el.innerHTML='<div class="notice err"><b>The search plan was produced, but the diagnostic evaluation could not be completed.</b> Your work has not been lost.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
+    '<button class="btn secondary small" onclick="diagInApp()">Retry diagnosis</button>'+
+    '<button class="btn secondary small" onclick="copyText(curVersion().output, this)">Copy search plan</button>'+
+    '<button class="btn ghost small" onclick="go(1)">Return to editing</button>';
+  });
+}
+function acceptDiagPaste(){
+  try{
+    var d=normalizeDiag(extractJSON($("diagPaste").value));
+    if(!d.prompt_diagnosis.length) throw new Error("The JSON is missing prompt_diagnosis.");
+    attachDiag(d);
+  }catch(e){
+    alert("That does not look like the expected JSON. Ask the AI to “reply with only the JSON object” and paste the whole reply.\n\nDetail: "+(e.message||e));
+  }
+}
+function attachDiag(d){
+  var v=curVersion(); if(!v) return;
+  v.diag=d;
+  unlock(4); unlock(5);
+  save(); render(); window.scrollTo(0,0);
+}
+function reviseFromDiag(){ state.stage=1; save(); render(); window.scrollTo(0,0); }
+
+/* ---------- Stage 4: Refine (versions & compare) ---------- */
+function renderRefine(){
+  var h='<div class="card"><h2>Step 5 &middot; Revise &amp; compare versions</h2>'+
+  '<p class="lede"><b>Why this matters:</b> prompt quality improves through testing, not guessing. Revise and retest as often as you like &mdash; there is no required number of revisions, and you are not obliged to accept every diagnostic suggestion. Your team decides which version goes forward.</p>';
+  if(!state.versions.length){ h+='<div class="notice info">No versions yet. Run a test first.</div>'; }
+  else{
+    h+='<h3>Version summary</h3><table class="diag"><tr><th scope="col">Version</th><th scope="col">Overall status</th><th scope="col">Most important weakness</th><th scope="col">Length</th></tr>';
+    state.versions.forEach(function(v){
+      h+='<tr><td>V'+v.id+(state.finalId===v.id?" &#9733;":"")+'</td><td>'+overallBadge(v.diag?v.diag.overall:null)+'</td><td>'+esc(topWeakness(v))+'</td><td>'+v.words+' words</td></tr>';
+    });
+    h+='</table><div class="metaline">Length is informational only. &#9733; = selected as final.</div>';
+  }
+  state.versions.forEach(function(v){
+    var isFinal = state.finalId===v.id;
+    h+='<div class="verRow'+(isFinal?" final":"")+'"><div><b>Version '+v.id+'</b> '+overallBadge(v.diag?v.diag.overall:null)+
+    '<div class="meta">'+esc(v.ts)+' &middot; output '+esc(v.outputSource||"")+'</div></div><div>'+
+    '<button class="btn ghost small" onclick="viewVersion('+v.id+')">View</button> '+
+    '<button class="btn secondary small" onclick="loadVersion('+v.id+')">Reopen in builder</button> '+
+    '<button class="btn small" onclick="chooseFinal('+v.id+')">'+(isFinal?"&#10003; Final":"Use as Final Prompt 1")+'</button></div></div>';
+  });
+  if(state.versions.length>=2){
+    h+='<h3>Compare two versions side by side</h3><div style="display:flex;gap:10px;flex-wrap:wrap">'+
+    '<select id="cmpA" aria-label="First version">'+state.versions.map(function(v){return '<option value="'+v.id+'">Version '+v.id+'</option>';}).join("")+'</select>'+
+    '<select id="cmpB" aria-label="Second version">'+state.versions.map(function(v){return '<option value="'+v.id+'"'+(v.id===state.versions.length?" selected":"")+'>Version '+v.id+'</option>';}).join("")+'</select>'+
+    '<button class="btn secondary small" onclick="doCompare()">Compare</button></div><div id="cmpOut"></div>';
+  }
+  h+='<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Revise in builder</button>'+
+  '<span class="gate">Ready to continue when: a final version is selected.</span>'+
+  '<button class="btn" '+(state.finalId?"":"disabled")+' onclick="toExport()">Continue to Export &rarr;</button></div></div>';
+  return h;
+}
+function viewVersion(id){
+  var v=versionById(id); if(!v) return;
+  openModal('<h2>Version '+v.id+' '+overallBadge(v.diag?v.diag.overall:null)+'</h2>'+
+    '<h3>Prompt ('+v.words+' words)</h3><pre class="prompt">'+esc(v.prompt)+'</pre>'+
+    '<h3>Search plan produced</h3><pre class="prompt">'+esc(v.output)+'</pre>'+
+    (v.diag? renderDiagResult(v.diag) : '<div class="notice info">This version was not diagnosed.</div>')+
+    '<button class="btn ghost" onclick="closeModal()">Close</button>');
+}
+function loadVersion(id){
+  var v=versionById(id); if(!v) return;
+  state.fields=JSON.parse(JSON.stringify(v.fields));
+  state.stage=1; save(); render(); window.scrollTo(0,0);
+}
+function chooseFinal(id){
+  if(!confirm("Your team is selecting Version "+id+" as its final Prompt 1. You may still return and revise it before exporting. Confirm?")) return;
+  state.finalId=id; state.finalizedAt=nowStr(); unlock(5); save(); render();
+}
+function doCompare(){
+  var a=versionById(parseInt($("cmpA").value,10)), b=versionById(parseInt($("cmpB").value,10));
+  if(!a||!b) return;
+  function col(v){
+    var h='<div class="cmpCol"><h4>Version '+v.id+' '+overallBadge(v.diag?v.diag.overall:null)+' <span class="metaline">'+v.words+' words</span></h4>';
+    FIELDS.forEach(function(f){ h+='<div class="fld"><b>'+f.label+'</b><div>'+esc(v.fields[f.key])+'</div></div>'; });
+    h+='<div class="fld"><b>Priority revision given</b><div>'+esc(v.diag?v.diag.priority_revision:"—")+'</div></div></div>';
+    return h;
+  }
+  $("cmpOut").innerHTML='<div class="cmpGrid">'+col(a)+col(b)+'</div>';
+}
+function toExport(){ if(state.finalId){ unlock(5); state.stage=5; save(); render(); window.scrollTo(0,0);} }
+
+/* ---------- Stage 5: Export ---------- */
+function buildPrompt2(){
+  var s=seg()||{label:"",assumption:"",searchOrder:[]};
+  var order=s.searchOrder.map(function(x,i){return (i+1)+". "+x;}).join("\n");
+  return [
+"Continue working as the market-intelligence advisor from the previous response.",
+"",
+"Using the market-intelligence search plan you just produced, help our team begin the evidence search for this provisional opportunity assumption:",
+"",
+"SEGMENT: "+s.label,
+"PROVISIONAL ASSUMPTION: "+s.assumption,
+"",
+"Work through the priority research questions in a practical sequence.",
+"",
+"Separate:",
+"1. evidence about whether customers or users experience a meaningful problem; and",
+"2. evidence about whether relevant stakeholders may recognize, prioritize, approve, or pay to address that problem.",
+"",
+"For each priority research question:",
+"- suggest precise search queries;",
+"- identify the most appropriate public source types and places to search;",
+"- explain what evidence would support, weaken, complicate, narrow, or redirect the assumption;",
+"- identify whether the question concerns customer pain, purchase workflow, or both;",
+"- identify what public evidence is unlikely to establish.",
+"",
+"Recommended places to search for this segment, in rough order of reliability:",
+order,
+"",
+"When browsing or source-search capability is available, identify candidate sources where possible.",
+"",
+"FAIL-SAFE: If you cannot actually browse and open sources in this conversation, say so plainly and provide only the research questions, queries, and search checklist. Never simulate, invent, or reconstruct candidate sources from memory.",
+"",
+"For each candidate source, provide:",
+"- source title;",
+"- organization or publisher;",
+"- publication date, when available;",
+"- direct link;",
+"- source type;",
+"- stakeholder and context;",
+"- the specific claim or signal it may support;",
+"- why it may be relevant;",
+"- any immediate credibility, independence, or relevance concern.",
+"",
+"Do not invent sources, links, quotations, statistics, or findings.",
+"",
+"Do not treat search-result snippets, AI summaries, supplier claims, or promotional material as verified independent evidence.",
+"",
+"Clearly label anything uncertain.",
+"",
+"Organize the response so our team can transfer candidate evidence into our Notion Evidence Board.",
+"",
+"End with:",
+"1. the three highest-priority searches to conduct first;",
+"2. the most important missing stakeholder perspective;",
+"3. the questions that will probably require direct stakeholder validation.",
+"",
+"Do not decide whether the opportunity is attractive. Our team will open, verify, compare, and interpret the original sources before drawing a conclusion."
+  ].join("\n");
+}
+function runInstructions(){
+  return [
+"RUN PROMPT 1 AND PROMPT 2 IN THE SAME CONVERSATION",
+"1. Open your team's preferred AI tool.",
+"2. Start a new conversation.",
+"3. Paste and run Final Prompt 1.",
+"4. Read the search plan it produces.",
+"5. Keep the same conversation open.",
+"6. Paste and run Prompt 2.",
+"7. Do not assume the AI's candidate sources or claims are correct.",
+"8. Move to Notion to validate the evidence.",
+"",
+"Why the same conversation? Prompt 2 refers to the search plan already produced by Prompt 1. Running both prompts in the same conversation allows the AI to build on the prior plan."
+  ].join("\n");
+}
+function sessionRecord(){
+  var s=seg()||{label:"",assumption:""};
+  var fv=versionById(state.finalId);
+  var L=[];
+  L.push("# "+CONFIG.projectTitle+" - Session Record");
+  L.push("Generated: "+nowStr());
+  if(state.team.name||state.team.section||state.team.id){
+    L.push("Team: "+[state.team.name,state.team.section,state.team.id].filter(Boolean).join(" | "));
+  }
+  L.push("Selected segment: "+s.label);
+  L.push("");
+  L.push("## Starting assumption (provisional)");
+  L.push(s.assumption);
+  L.push("");
+  L.push("## Version history");
+  state.versions.forEach(function(v){
+    L.push("### Version "+v.id+" ("+v.ts+")"+(state.finalId===v.id?"  [FINAL]":"")+" - "+v.words+" words");
+    L.push("");
+    L.push("#### Prompt"); L.push("```"); L.push(v.prompt); L.push("```");
+    if(v.diag){
+      L.push("#### Diagnosis");
+      L.push("Overall: "+v.diag.overall);
+      L.push("Prompt quality: "+v.diag.prompt_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
+      L.push("Output quality: "+v.diag.output_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
+      if(v.diag.strengths.length) L.push("Strengths: "+v.diag.strengths.join(" | "));
+      if(v.diag.weaknesses.length) L.push("Weaknesses: "+v.diag.weaknesses.map(function(w){return w.issue+(w.cause?" (cause: "+w.cause+")":"");}).join(" | "));
+      L.push("Priority revision: "+v.diag.priority_revision);
+    } else { L.push("#### Diagnosis"); L.push("Not diagnosed."); }
+    L.push("");
+  });
+  if(fv){
+    L.push("## Final Prompt 1 (Version "+fv.id+", finalized "+(state.finalizedAt||"")+")");
+    L.push("```"); L.push(fv.prompt); L.push("```");
+    L.push("## Final Prompt 1 diagnostic status");
+    L.push(fv.diag? fv.diag.overall : "Not diagnosed");
+    L.push("");
+  }
+  L.push("## Prompt 2 (standardized)"); L.push("```"); L.push(buildPrompt2()); L.push("```");
+  L.push("## Run instructions"); L.push(runInstructions());
+  L.push("");
+  L.push("## Validation checklist (apply to each source or claim)");
+  SOURCE_QUESTIONS.forEach(function(q){ L.push("- "+q); });
+  L.push("");
+  L.push("WARNING: AI output, search-result snippets, and summaries are not verified market evidence.");
+  return L.join("\n");
+}
+function renderExport(){
+  var fv=versionById(state.finalId);
+  if(!fv) return '<div class="card"><div class="notice warn">Choose a final version in the Refine step first.</div><button class="btn ghost" onclick="go(4)">&larr; Refine</button></div>';
+  var s=seg()||{label:""};
+  var h='<div class="card"><h2>Step 6 &middot; Finalize &amp; export</h2>'+
+  '<p class="lede"><b>Why this matters:</b> from here your team works in its own AI tool and in Notion. This page gives you everything to take with you.</p>'+
+
+  '<h3>Final Prompt 1 package</h3>'+
+  '<div class="metaline">Segment: '+esc(s.label)+' &middot; Version '+fv.id+' &middot; Diagnostic status: '+(fv.diag?esc(fv.diag.overall):"Not diagnosed")+' &middot; Finalized: '+esc(state.finalizedAt||"")+'</div>'+
+  '<pre class="prompt">'+esc(fv.prompt)+'</pre>'+
+  '<button class="btn secondary small" onclick="copyText(versionById(state.finalId).prompt, this)">Copy Final Prompt 1</button>'+
+  '<button class="btn secondary small" onclick="downloadFile(\'final-prompt-1.txt\', versionById(state.finalId).prompt, \'text/plain\')">Download Prompt 1</button>'+
+  '<button class="btn ghost small" onclick="go(4)">Return to editing</button>'+
+  '<div class="notice warn">The search plan generated inside this artifact was a <b>test output</b>. Your official working output will be the search plan produced when your team runs Final Prompt 1 in its selected AI tool.</div>'+
+
+  '<h3>Run Prompt 1 and Prompt 2 in the same conversation</h3>'+
+  '<pre class="prompt">'+esc(runInstructions())+'</pre>'+
+
+  '<h3>Prompt 2 &middot; Conduct and organize the evidence search</h3>'+
+  '<p class="lede" style="margin-bottom:6px">Standardized for the whole class and adapted to your segment. Do not edit it &mdash; it carries the evidence-discipline rules every team must follow.</p>'+
+  '<pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
+  '<button class="btn secondary small" onclick="copyText(buildPrompt2(), this)">Copy Prompt 2</button>'+
+  '<button class="btn secondary small" onclick="copyBoth(this)">Copy Both Prompts</button>'+
+
+  '<h3>Optional team information <span class="tag" style="font-weight:400;color:var(--muted);font-size:.8rem">(appears in the session record; no names, emails, or IDs required)</span></h3>'+
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">'+
+  '<input type="text" id="teamName" aria-label="Team name" placeholder="Team name (optional)" value="'+esc(state.team.name)+'" oninput="teamField()">'+
+  '<input type="text" id="teamSection" aria-label="Course section" placeholder="Course section (optional)" value="'+esc(state.team.section)+'" oninput="teamField()">'+
+  '<input type="text" id="teamId" aria-label="Team identifier" placeholder="Team identifier (optional)" value="'+esc(state.team.id)+'" oninput="teamField()">'+
+  '</div>'+
+
+  '<h3>Session record</h3>'+
+  '<p class="lede" style="margin-bottom:6px">Full version history, diagnoses, final prompts, and the validation checklist &mdash; keep it for your AI Use Log.</p>'+
+  '<button class="btn" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download as Markdown</button>'+
+  '<button class="btn secondary" onclick="downloadFile(\'prompt-lab-session.txt\', sessionRecord(), \'text/plain\')">Download as Text</button>'+
+  '<button class="btn secondary" onclick="copyText(sessionRecord(), this)">Copy session record</button>'+
+  '<button class="btn ghost" onclick="resetAll()">Start over</button>'+
+
+  '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(4)">&larr; Refine</button>'+
+  '<button class="btn" onclick="toValidate()">Continue to Validation &rarr;</button></div></div>';
+  return h;
+}
+function copyBoth(btn){
+  var fv=versionById(state.finalId);
+  copyText("=== FINAL PROMPT 1 ===\n\n"+fv.prompt+"\n\n\n=== PROMPT 2 (run in the SAME conversation, after Prompt 1) ===\n\n"+buildPrompt2(), btn);
+}
+function teamField(){
+  state.team.name=$("teamName").value; state.team.section=$("teamSection").value; state.team.id=$("teamId").value; save();
+}
+function toValidate(){ unlock(6); state.stage=6; save(); render(); window.scrollTo(0,0); }
+
+/* ---------- Stage 6: Validate ---------- */
+function renderValidate(){
+  var url=notionLink();
+  var h='<div class="card"><h2>Your Next Step Happens in Notion</h2>'+
+  '<p class="lede"><b>Why this matters:</b> this is where AI stops and your judgment starts. Everything the model produced &mdash; including a &ldquo;Ready to use&rdquo; diagnosis &mdash; is unverified text. Evidence exists only after your team opens the original sources and checks them.</p>'+
+  '<h3>Required steps</h3><ol class="steps">';
+  HANDOFF_STEPS.forEach(function(c,i){
+    h+='<li><label class="chk" style="border:none;padding:2px 0"><input type="checkbox" '+(state.handoffTicks[i]?"checked":"")+' onchange="tickStep('+i+',this.checked)"><span>'+esc(c)+'</span></label></li>';
+  });
+  h+='</ol>';
+  h+='<h3>Validation checklist &mdash; ask this about every source or claim</h3><ul class="qlist">';
+  SOURCE_QUESTIONS.forEach(function(q){ h+='<li>'+esc(q)+'</li>'; });
+  h+='</ul>'+
+  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence.</div>'+
+  '<h3>Notion Evidence Board</h3>';
+  if(url){
+    h+='<a class="btn" href="'+esc(url)+'" target="_blank" rel="noopener">Open the Notion Evidence Board &rarr;</a>';
+  } else {
+    h+='<div class="notice info">Your instructor has not configured the Evidence Board link yet. Ask for the link, or add it under <b>Settings</b>. (Instructors: preset it by adding <code>?notion=YOUR_LINK</code> to this page&rsquo;s URL or editing the CONFIG block / prompt-lab-config.json.)</div>';
+  }
+  h+='<div class="notice info" style="margin-top:14px">Your final research may legitimately conclude that the opportunity is promising, needs more investigation, or is <b>not</b> currently supported. All three are successful outcomes of this project.</div>'+
+  '<div class="navRow"><button class="btn ghost" onclick="go(5)">&larr; Export</button>'+
+  '<button class="btn ghost" onclick="resetAll()">Start a new session</button></div></div>';
+  return h;
+}
+function tickStep(i,v){ state.handoffTicks[i]=v; save(); }
+function resetAll(){
+  if(confirm("This will remove the current segment, prompt versions, and diagnostic results from this browser session. Download your session record first if you want to keep it. Continue?")){
+    var keep=state.settings;
+    state=JSON.parse(JSON.stringify(DEFAULTS)); state.settings=keep; save(); render(); window.scrollTo(0,0);
+  }
+}
+
+/* ---------- Settings modal ---------- */
+function openSettings(){
+  var s=state.settings, m=CONFIG.model;
+  openModal(
+  '<h2>Settings</h2>'+
+  '<p class="lede">All optional. The lab works fully in Copy &amp; Paste mode with no settings at all. Values are stored in this browser only.</p>'+
+  '<label class="f" for="setKey">Your own API key <span class="tag">&mdash; optional; only for the in-app run option. Use a personal key; never an instructor&rsquo;s or employer&rsquo;s key.</span></label>'+
+  '<input type="password" id="setKey" value="'+esc(s.apiKey)+'" placeholder="Leave blank to use Copy & Paste mode">'+
+  '<label class="f" for="setProvider">Provider</label>'+
+  '<select id="setProvider"><option value="anthropic"'+((s.provider||m.provider)==="anthropic"?" selected":"")+'>Anthropic (Claude)</option><option value="openai"'+((s.provider||m.provider)==="openai"?" selected":"")+'>OpenAI</option></select>'+
+  '<label class="f" for="setModel">Model name <span class="tag">&mdash; optional override (defaults: '+esc(m.anthropicModel)+' / '+esc(m.openaiModel)+')</span></label>'+
+  '<input type="text" id="setModel" value="'+esc(s.model)+'">'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+  '<div><label class="f" for="setTemp">Temperature <span class="tag">(default '+m.temperature+')</span></label>'+
+  '<input type="number" step="0.1" min="0" max="1" id="setTemp" value="'+esc(s.temperature)+'" placeholder="'+m.temperature+'"></div>'+
+  '<div><label class="f" for="setMax">Max output tokens <span class="tag">(default '+m.maxTokens+')</span></label>'+
+  '<input type="number" step="100" min="500" id="setMax" value="'+esc(s.maxTokens)+'" placeholder="'+m.maxTokens+'"></div>'+
+  '</div>'+
+  '<label class="f" for="setNotion">Notion Evidence Board link</label>'+
+  '<input type="text" id="setNotion" value="'+esc(s.notionUrl)+'" placeholder="'+(CONFIG.notionUrl? "Instructor default: "+esc(CONFIG.notionUrl) : "https://www.notion.so/...")+'">'+
+  '<div class="notice info" style="margin-top:12px"><b>Where things are stored:</b> everything stays in this browser&rsquo;s local storage on this device. Nothing is sent to your instructor or any server. Only the optional &ldquo;Run in-app&rdquo; button sends your prompt directly to the AI provider above, using your own key.</div>'+
+  '<div class="navRow"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveSettings()">Save</button></div>');
+}
+function saveSettings(){
+  state.settings.provider=$("setProvider").value;
+  state.settings.apiKey=$("setKey").value.trim();
+  state.settings.model=$("setModel").value.trim();
+  state.settings.temperature=$("setTemp").value.trim();
+  state.settings.maxTokens=$("setMax").value.trim();
+  state.settings.notionUrl=$("setNotion").value.trim();
+  save(); closeModal(); render();
+}
+function openModal(inner){
+  $("modalHost").innerHTML='<div class="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true">'+inner+'</div></div>';
+}
+function closeModal(){ $("modalHost").innerHTML=""; }
+
+/* ---------- boot ---------- */
+applyTitles();
+render();
+</script>
+</body>
+</html>
