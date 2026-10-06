@@ -117,6 +117,37 @@
   footer.priv{color:var(--muted);font-size:.78rem;margin-top:22px;line-height:1.6;}
   .copied{color:var(--good);font-size:.82rem;margin-left:8px;}
   @media(max-width:640px){.card{padding:16px;} body{font-size:15px;}}
+  /* v3 additions */
+  .savebar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #cfe5e1;border-radius:8px;padding:7px 12px;font-size:.8rem;color:var(--accent);margin:12px 0 0;}
+  .savebar a,.savebar button.lnk{color:var(--accent);background:none;border:none;font:inherit;text-decoration:underline;cursor:pointer;padding:0;margin-left:10px;}
+  .setup{border:2px dashed var(--accent);background:#fff;border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;}
+  .setup h2{font-size:1rem;margin:0 0 4px;}
+  .setup .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .setup .row input{flex:1 1 260px;}
+  .stmt{background:#12403b;color:#f3f7f6;border-radius:10px;padding:14px 16px;font-family:Georgia,"Times New Roman",serif;font-size:1rem;line-height:1.55;margin:10px 0 6px;}
+  .stmt .blank{color:#9fd3cb;}
+  .stmt .tagline{display:block;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#9fd3cb;margin-bottom:6px;}
+  .frameGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;}
+  @media(max-width:640px){.frameGrid{grid-template-columns:1fr;}}
+  .frameGrid label{font-size:.82rem;font-weight:600;margin:8px 0 2px;display:block;}
+  .frameGrid label span{font-weight:400;color:var(--muted);}
+  .frameGrid input{padding:8px 10px;font-size:.88rem;}
+  details.sharpen{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;background:#fcfdfc;}
+  details.sharpen summary{cursor:pointer;font-weight:600;font-size:.88rem;color:var(--accent);}
+  .aiRow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;}
+  .aiRow .lbl{font-size:.82rem;color:var(--muted);margin-right:2px;}
+  .bigNotion{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0;}
+  .stepNum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:.75rem;font-weight:700;margin-right:6px;flex:none;}
+  .evTableWrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin:8px 0;}
+  table.ev{border-collapse:collapse;font-size:.78rem;min-width:640px;width:100%;}
+  table.ev th{background:#f8fafc;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  table.ev td{padding:6px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top;max-width:240px;}
+  table.ev td.flag{color:var(--warn);}
+  .decisionBox{border:1px solid #cdd8e6;background:#f7f9fc;border-radius:8px;padding:12px 14px;margin:14px 0 4px;}
+  .decisionBox label{font-weight:600;font-size:.92rem;display:block;margin-bottom:4px;}
+  pre.plainDiag{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.88rem;max-height:520px;overflow:auto;}
+  details.more{margin-top:12px;}
+  details.more summary{cursor:pointer;font-size:.85rem;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -128,10 +159,12 @@
     </div>
     <button class="gear" onclick="openSettings()">&#9881; Settings</button>
   </header>
+  <div id="savebar" class="savebar" aria-live="polite"></div>
   <div id="stepper" class="stepper" role="navigation" aria-label="Progress"></div>
   <div id="app"></div>
+  <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)">
   <footer class="priv">
-    <b>Privacy &amp; storage.</b> Everything you type stays in this browser on this device (saved locally so you can close and return; use &ldquo;Start over&rdquo; to erase it). Nothing is sent anywhere by default. Copy &amp; Paste mode &mdash; the standard way to use this lab &mdash; works with the free version of ChatGPT, Claude, or Gemini and requires no API key. Only if you choose to add your <i>own personal</i> API key in Settings will &ldquo;Run in-app&rdquo; send your prompt directly to that provider. Never enter an instructor&rsquo;s or employer&rsquo;s key, and do not enter confidential company or personal information anywhere in this lab.
+    <b>Privacy &amp; storage.</b> Everything you type stays in this browser on this device (saved automatically so you can close and return; use &ldquo;Save backup file&rdquo; to move your work to another device or teammate, and &ldquo;Start over&rdquo; to erase it). Nothing is sent anywhere by default. Copy &amp; Paste mode &mdash; the standard way to use this lab &mdash; works with the free version of ChatGPT, Claude, or Gemini and requires no API key. Only if you choose to add your <i>own personal</i> API key in Settings will &ldquo;Run in-app&rdquo; send your prompt directly to that provider. Never enter an instructor&rsquo;s or employer&rsquo;s key, and do not enter confidential company or personal information anywhere in this lab.
   </footer>
 </div>
 
@@ -153,6 +186,19 @@ var CONFIG = {
   companyName: "A2V / Plum AV",
   subtitle: "A2V / Plum AV Customer-Education Challenge · Build and test your Prompt 1",
   notionUrl: "",
+  /* Buttons that copy a prompt and open a fresh chat in the team's AI tool */
+  aiTools: [
+    { name:"ChatGPT", url:"https://chatgpt.com/" },
+    { name:"Claude",  url:"https://claude.ai/new" },
+    { name:"Gemini",  url:"https://gemini.google.com/app" }
+  ],
+  /* Column names must match the team Evidence Board in Notion exactly (used for the CSV import) */
+  evidenceColumns: ["Source title","Organization / publisher","Publication date","Direct link","Source type","Pain / Purchase","Claim it may support","What it cannot establish","Independence","Status","Notes"],
+  evidenceOptions: {
+    "Source type": ["Official / institutional","Tender / procurement","Review page","News / media","Report / data","Community / forum","Video / social","Supplier / vendor","Other"],
+    "Pain / Purchase": ["Customer pain","Purchase workflow","Both","Unclear"],
+    "Independence": ["Independent evidence","Supplier promotion","Self-report","Unclear"]
+  },
   model: { provider:"anthropic", anthropicModel:"claude-sonnet-4-5", openaiModel:"gpt-4o", temperature:0.3, maxTokens:4000 },
 
   fixedContext: "Company and project context: A2V / Plum AV is a smaller specialized AV and immersive-experience company. It wants to build demand in India partly through customer education. This project focuses on identifying meaningful customer problems; the final student output will be a digital customer-education prototype. This is not a full market-entry strategy or an AV engineering project.",
@@ -216,7 +262,19 @@ var CONFIG = {
 };
 /* ============================ END INSTRUCTOR CONFIGURATION ============================ */
 
-var STAGES = ["Segment","5P Builder","Test","Diagnose","Refine","Export","Validate"];
+var STAGES = ["Segment","5P Builder","Test","Diagnose","Refine","Finalize","Evidence → Notion"];
+
+/* Short framing fields that sharpen the provisional assumption (borrowed sentence-builder) */
+var FRAME = [
+  { key:"customer",    label:"Who might experience the problem?", tip:"a role or group, not all of India" },
+  { key:"setting",     label:"Where, in what setting?",           tip:"city, institution or venue type, home context" },
+  { key:"activity",    label:"What are they trying to do?",       tip:"an activity you can picture" },
+  { key:"problem",     label:"What might get in their way?",      tip:"a possibility, not a fact" },
+  { key:"consequence", label:"Why could it matter?",              tip:"a possible consequence" },
+  { key:"trigger",     label:"When might they pay attention?",    tip:"an event or decision moment; “not known yet” is fine" },
+  { key:"alternative", label:"What else could explain it?",       tip:"one alternative explanation" },
+  { key:"firstq",      label:"What should we investigate first?", tip:"the most important unanswered question" }
+];
 
 var FIELDS = [
   { key:"person", label:"Person", tag:"Who should the AI act as, and what expertise or perspective should it bring?",
@@ -237,12 +295,12 @@ var OUTPUT_DIMS = ["Provisional-assumption clarity","Pain-point logic","Purchase
 var HANDOFF_STEPS = [
   "Run Final Prompt 1 in your selected AI tool.",
   "Run Prompt 2 in the same conversation.",
-  "Review the candidate evidence and search suggestions.",
+  "Paste the Prompt 2 reply on this page and send the candidate sources to your Evidence Board (every row arrives as “Not yet opened”).",
   "Open every original source the team may use.",
   "Confirm that each source exists and is accessible.",
   "Determine whether the source supports the attached claim.",
-  "Record verified evidence in the Notion Evidence Board.",
-  "Record consequential AI use in the AI Use Log.",
+  "In Notion, update each row’s Status, Effect on assumption, Evidence category, and Verified by.",
+  "Paste the lab record into your team page and record consequential AI use in the AI Use Log.",
   "Complete the Customer Insights Brief only after validation."
 ];
 var SOURCE_QUESTIONS = [
@@ -262,6 +320,8 @@ var SOURCE_QUESTIONS = [
 var DEFAULTS = {
   stage:0, segment:null,
   fields:{person:"",problem:"",process:"",product:"",parameters:""},
+  frame:{customer:"",setting:"",activity:"",problem:"",consequence:"",trigger:"",alternative:"",firstq:""},
+  pasteDraft:"", diagDraft:"", prompt2Reply:"", savedAt:"",
   versions:[], curVid:null, finalId:null, finalizedAt:null,
   handoffTicks:[false,false,false,false,false,false,false,false,false],
   team:{name:"",section:"",id:""},
@@ -277,13 +337,52 @@ function load(){
   }catch(e){}
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
-function save(){ try{ localStorage.setItem("imipl_v2", JSON.stringify(state)); }catch(e){} }
+var storageOK = true;
+function save(){
+  state.savedAt = new Date().toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+  try{ localStorage.setItem("imipl_v2", JSON.stringify(state)); storageOK=true; }catch(e){ storageOK=false; }
+  renderSavebar();
+}
+function renderSavebar(){
+  var el=document.getElementById("savebar"); if(!el) return;
+  var team = state.team.name ? esc(state.team.name)+" &middot; " : "";
+  var msg = storageOK
+    ? team+"Saved automatically in this browser"+(state.savedAt? " &middot; "+esc(state.savedAt):"")
+    : "This browser is not saving your work &mdash; use &ldquo;Save backup file&rdquo; before closing.";
+  el.innerHTML='<span>'+msg+'</span><span><button class="lnk" onclick="downloadBackup()">Save backup file</button><button class="lnk" onclick="document.getElementById(\'restoreFile\').click()">Open backup file</button></span>';
+}
+function downloadBackup(){
+  var copy=JSON.parse(JSON.stringify(state)); copy.settings.apiKey="";
+  var nm=(state.team.name||"team").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
+  downloadFile("prompt-lab-backup-"+nm+".json", JSON.stringify({app:"imipl", v:3, state:copy}, null, 1), "application/json");
+}
+function restoreBackup(input){
+  var f=input.files&&input.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var j=JSON.parse(r.result); var s=j.state||j;
+      if(!s.fields||!Array.isArray(s.versions)) throw new Error("not a Prompt Lab backup");
+      if(!confirm("Replace the work in this browser with the backup file (\""+f.name+"\")?")) return;
+      var keepKey=state.settings.apiKey;
+      state=Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), s);
+      state.settings.apiKey=keepKey; save(); render(); window.scrollTo(0,0);
+    }catch(e){ alert("That file could not be opened as a Prompt Lab backup. ("+(e.message||e)+")"); }
+    input.value="";
+  };
+  r.readAsText(f);
+}
 
-/* Instructor presets: ?notion=URL, optional prompt-lab-config.json */
+/* Instructor presets: ?notion=URL&team=NAME, optional prompt-lab-config.json
+   Tip: give each team its own link, e.g. ...?team=Team%203&notion=<that team's Notion page>  */
 (function(){
   try{
-    var p = new URLSearchParams(location.search).get("notion");
+    var q = new URLSearchParams(location.search);
+    var p = q.get("notion");
     if(p) CONFIG.notionUrl = p;
+    var t = q.get("team");
+    if(t && !state.team.name) state.team.name = t;
+    if(p && t) CONFIG.teamLink = true;   /* a per-team link: no setup needed */
   }catch(e){}
   try{
     fetch("prompt-lab-config.json").then(function(r){ return r.ok? r.json():null; }).then(function(j){
@@ -299,6 +398,39 @@ function applyTitles(){
   document.title=CONFIG.projectTitle;
 }
 function notionLink(){ return (state.settings.notionUrl||"").trim() || (CONFIG.notionUrl||"").trim(); }
+function needsSetup(){ return !(state.settings.notionUrl||"").trim() && !CONFIG.teamLink; }
+function renderSetup(){
+  if(!needsSetup()) return "";
+  return '<div class="setup"><h2>One-time setup &middot; where should your work go?</h2>'+
+  '<p class="lede" style="margin:0">Paste the link to <b>your team&rsquo;s page in Notion</b> (open it in Notion &rarr; <i>Share</i> &rarr; <i>Copy link</i>). Every &ldquo;Open Notion&rdquo; button in this lab will then take you straight there.</p>'+
+  '<div class="row"><input type="text" id="setupTeam" aria-label="Team name" placeholder="Team name, e.g. Team 3" value="'+esc(state.team.name)+'" style="flex:0 1 200px">'+
+  '<input type="text" id="setupNotion" aria-label="Team Notion page link" placeholder="https://www.notion.so/... (your team page)">'+
+  '<button class="btn small" onclick="saveSetup()">Save</button></div>'+
+  '<div class="metaline">You can change this later in Settings. Skip it for now if you don&rsquo;t have the link yet.</div></div>';
+}
+function saveSetup(){
+  var u=($("setupNotion").value||"").trim(), t=($("setupTeam").value||"").trim();
+  if(u && !/^https?:\/\//i.test(u)){ alert("That doesn't look like a link. It should start with https://"); return; }
+  if(t) state.team.name=t;
+  if(u) state.settings.notionUrl=u;
+  save(); render();
+}
+function openNotion(){
+  var url=notionLink();
+  if(!url){ alert("Add your team's Notion page link first (Settings, top right)."); openSettings(); return; }
+  window.open(url,"_blank","noopener");
+}
+function aiButtons(getText, label){
+  /* copies the text, then opens a fresh chat in the chosen tool */
+  return '<div class="aiRow"><span class="lbl">'+(label||"Copy &amp; open a new chat in:")+'</span>'+
+    CONFIG.aiTools.map(function(t,i){
+      return '<button class="btn small" onclick="copyAndOpen('+getText+','+i+',this)">'+esc(t.name)+' &#8599;</button>';
+    }).join("")+'</div>';
+}
+function copyAndOpen(txt,i,btn){
+  copyText(txt,btn);
+  var t=CONFIG.aiTools[i]; if(t) window.open(t.url,"_blank","noopener");
+}
 
 /* ============================== HELPERS ============================== */
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -322,6 +454,7 @@ function ratingBadge(r){
 }
 function overallBadge(o){
   if(!o) return '<span class="badge b-none">Not diagnosed yet</span>';
+  if(/text reply/i.test(o)) return '<span class="badge b-none">Diagnosed (text reply)</span>';
   var c = /Ready to use/i.test(o)?"b-ready":(/Promising/i.test(o)?"b-promising":"b-notready");
   var icon = /Ready to use/i.test(o)?"&#10003; ":(/Promising/i.test(o)?"&#9651; ":"&#10005; ");
   return '<span class="badge '+c+'">'+icon+esc(o)+'</span>';
@@ -350,6 +483,7 @@ function topWeakness(v){
 
 /* ============================== RENDER ============================== */
 function render(){
+  renderSavebar();
   renderStepper();
   var r=[renderSegment,renderBuilder,renderTest,renderDiagnose,renderRefine,renderExport,renderValidate][state.stage];
   $("app").innerHTML = r();
@@ -365,7 +499,7 @@ function renderStepper(){
 
 /* ---------- Stage 0: Segment ---------- */
 function renderSegment(){
-  var h='<div class="card"><h2>Step 1 &middot; Choose your provisional segment</h2>'+
+  var h=renderSetup()+'<div class="card"><h2>Step 1 &middot; Choose your provisional segment</h2>'+
   '<p class="lede"><b>Why this matters:</b> '+esc(CONFIG.companyName)+' is a smaller immersive and acoustic-experience company exploring how customer education could build demand in India. Your team picks one broad starting segment to investigate &mdash; nothing more is decided here.</p>'+
   '<div class="segGrid">';
   Object.keys(CONFIG.segments).forEach(function(k){
@@ -400,7 +534,8 @@ function renderBuilder(){
       h+='<button type="button" class="starterBtn" onclick="insertStarter(\'person\')">Insert editable example</button>';
     }
     if(f.key==="problem"){
-      h+='<button type="button" class="starterBtn" onclick="insertStarter(\'problem\')">Insert project context + starting assumption</button>';
+      h+=renderSharpen();
+      h+='<button type="button" class="starterBtn" onclick="insertStarter(\'problem\')">Insert project context + starting assumption + our statement</button>';
     }
     h+='<textarea id="fld_'+f.key+'" oninput="onField(\''+f.key+'\')" placeholder="Write your '+f.label+' here...">'+esc(state.fields[f.key])+'</textarea>';
     if(f.key==="parameters"){
@@ -419,6 +554,42 @@ function renderBuilder(){
   setTimeout(updateMeta,0);
   return h;
 }
+/* ---- Sharpen-the-assumption mini builder ---- */
+function frameCount(){ var f=state.frame||{}; return FRAME.filter(function(x){return (f[x.key]||"").trim();}).length; }
+function fv(k,ph){ var v=((state.frame||{})[k]||"").trim(); return v? esc(v) : '<span class="blank">['+ph+']</span>'; }
+function stmtHTML(){
+  return 'We are investigating whether '+fv("customer","customer")+' in '+fv("setting","setting")+', while '+fv("activity","activity")+
+    ', may experience '+fv("problem","possible problem")+'. This could lead to '+fv("consequence","possible consequence")+
+    '. They may pay attention when '+fv("trigger","decision moment")+'.';
+}
+function stmtText(){
+  var f=state.frame||{}; function v(k,ph){ return (f[k]||"").trim() || "["+ph+"]"; }
+  var s="We are investigating whether "+v("customer","customer")+" in "+v("setting","setting")+", while "+v("activity","activity")+
+    ", may experience "+v("problem","possible problem")+". This could lead to "+v("consequence","possible consequence")+
+    ". They may pay attention when "+v("trigger","decision moment")+".";
+  if((f.alternative||"").trim()) s+="\nAn alternative explanation we will test: "+f.alternative.trim();
+  if((f.firstq||"").trim()) s+="\nWhat we most need to find out first: "+f.firstq.trim();
+  return s;
+}
+function renderSharpen(){
+  var n=frameCount();
+  var h='<details class="sharpen"'+(n||!(state.fields.problem||"").trim()?" open":"")+'><summary>Sharpen your starting assumption first (recommended, ~5 minutes) &middot; <span id="frameN">'+n+'</span> of '+FRAME.length+' filled</summary>'+
+  '<p class="metaline" style="margin:6px 0 0">Short answers. &ldquo;Not known yet&rdquo; is a good answer. Don&rsquo;t invent prices, buying rules, or technical causes.</p>'+
+  '<div class="frameGrid">';
+  FRAME.forEach(function(x){
+    h+='<div><label for="fr_'+x.key+'">'+esc(x.label)+' <span>&mdash; '+esc(x.tip)+'</span></label>'+
+       '<input type="text" id="fr_'+x.key+'" value="'+esc((state.frame||{})[x.key])+'" oninput="onFrame(\''+x.key+'\')"></div>';
+  });
+  h+='</div><div class="stmt" id="stmt"><span class="tagline">Our working statement &middot; provisional</span>'+stmtHTML()+'</div>'+
+  '<div class="metaline">Filled boxes are not evidence &mdash; they only make your search plan sharper. The button below adds this statement to Problem &amp; Context.</div></details>';
+  return h;
+}
+function onFrame(k){
+  state.frame[k]=$("fr_"+k).value;
+  var fn=$("frameN"); if(fn) fn.textContent=frameCount();
+  var s=$("stmt"); if(s) s.innerHTML='<span class="tagline">Our working statement &middot; provisional</span>'+stmtHTML();
+  save();
+}
 function insertStarter(which){
   var el=$("fld_"+which); if(!el) return;
   var add="";
@@ -426,9 +597,12 @@ function insertStarter(which){
   if(which==="problem"){
     add=CONFIG.fixedContext+
     "\n\nStarting assumption (provisional): "+(seg()?seg().assumption:"")+
-    "\n\nOur team refines this assumption as: [describe the specific activity, the possible problem, and who may experience it]"+
-    "\nBoundaries and questions we want the plan to respect: [add your own]"+
-    "\nWhat we do not yet know: [be honest here]";
+    (frameCount()
+      ? "\n\nOur team's sharpened working statement (provisional, not yet evidence):\n"+stmtText()+
+        "\nBoundaries and questions we want the plan to respect: [add your own]"
+      : "\n\nOur team refines this assumption as: [describe the specific activity, the possible problem, and who may experience it]"+
+        "\nBoundaries and questions we want the plan to respect: [add your own]"+
+        "\nWhat we do not yet know: [be honest here]");
   }
   el.value = (el.value.trim()? el.value.trim()+"\n\n" : "") + add;
   onField(which);
@@ -473,13 +647,15 @@ function renderTest(){
   '<p class="lede"><b>Why this matters:</b> you find out what your prompt actually produces. A version of your prompt is saved automatically each time you test, so nothing is lost when you revise.</p>'+
   '<pre class="prompt">'+esc(assemblePrompt(state.fields))+'</pre>'+
   '<div class="metaline">About '+wordCount(assemblePrompt(state.fields))+' words (informational only) &middot; will be saved as Version '+(state.versions.length+1)+'</div>'+
-  '<button class="btn secondary small" onclick="copyText(assemblePrompt(state.fields), this)">Copy Prompt 1</button>'+
+  '<h3><span class="stepNum">1</span>Copy Prompt 1 and open a new chat</h3>'+
+  aiButtons("assemblePrompt(state.fields)")+
+  '<div class="metaline">The button copies Prompt 1 and opens a new chat. Just paste (Ctrl/Cmd + V) and send. Using another AI tool? <button class="btn ghost small" style="margin:0 0 0 4px" onclick="copyText(assemblePrompt(state.fields), this)">Copy only</button></div>'+
+  '<div class="notice info"><b>Keep that chat open.</b> You will paste the diagnosis prompt and later Prompt 2 into the <b>same</b> chat.</div>'+
 
-  '<h3>Standard route &middot; Copy &amp; paste (no API key)</h3>'+
-  '<div class="hintbox">1. Open your team&rsquo;s preferred AI tool (ChatGPT, Claude, Gemini) and start a <b>new conversation</b>.<br>2. Paste Prompt 1 and send it. <b>Keep that conversation open</b> &mdash; you will reuse it for the diagnosis and later for Prompt 2.<br>3. Copy the model&rsquo;s full reply and paste it below.</div>'+
-  '<label class="f" for="pasteOut">Paste the model&rsquo;s search plan here</label>'+
-  '<textarea id="pasteOut" class="mono" style="min-height:140px" placeholder="Paste the full search-plan reply from your AI tool..."></textarea>'+
-  '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+'</button>'+
+  '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
+  '<label class="f" for="pasteOut" style="margin-top:4px">The model&rsquo;s full search plan <span class="tag">&mdash; use the AI&rsquo;s own copy button under its reply; no special format needed</span></label>'+
+  '<textarea id="pasteOut" class="mono" style="min-height:140px" oninput="state.pasteDraft=this.value;save()" placeholder="Paste the full search-plan reply from your AI tool...">'+esc(state.pasteDraft||"")+'</textarea>'+
+  '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+' &amp; continue to Diagnose &rarr;</button>'+
 
   '<h3>Optional route &middot; Run in-app with your own key</h3>'+
   '<div class="notice info">Only for students who have their <b>own personal</b> API key ('+(hasKey?"configured &#10003;":"none configured")+' &mdash; see Settings). The key stays in this browser and is sent only to the provider you chose. Never use an instructor&rsquo;s or employer&rsquo;s key. Without a key, the copy &amp; paste route above does everything this does.</div>'+
@@ -514,14 +690,15 @@ function acceptPaste(){
   var v=$("pasteOut").value.trim();
   if(!v){ alert("Paste the model's reply first."); return; }
   pushVersion(v,"pasted from your AI tool");
-  render(); window.scrollTo(0,0);
+  state.pasteDraft=""; state.diagDraft="";
+  state.stage=3; save(); render(); window.scrollTo(0,0);
 }
 function runInApp(){
   var el=$("runStatus");
   el.innerHTML='<div class="notice info"><span class="spin"></span>Sending Prompt 1 to the model&hellip; this can take up to a minute.</div>';
   callModel(assemblePrompt(state.fields)).then(function(txt){
     pushVersion(txt,"generated in-app");
-    render(); window.scrollTo(0,0);
+    state.stage=3; save(); render(); window.scrollTo(0,0);
   }).catch(function(err){
     el.innerHTML='<div class="notice err"><b>The AI model could not be reached.</b> Your 5P entries and Prompt 1 are still available. You may copy Prompt 1 and test it in your preferred AI tool.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
     '<button class="btn secondary small" onclick="runInApp()">Retry</button>'+
@@ -640,11 +817,12 @@ function renderDiagnose(){
   '<p class="lede"><b>Why this matters:</b> two separate diagnoses &mdash; one of your <b>prompt</b>, one of the <b>search plan it produced</b> &mdash; so you can tell whether a weakness comes from your prompt design or from the model&rsquo;s execution. The diagnosis coaches you; it will not rewrite your prompt, pick your problem, or judge the market.</p>';
 
   if(!v.diag){
-    h+='<h3>Standard route &middot; Copy &amp; paste</h3>'+
-    '<div class="hintbox">1. Copy the diagnostic prompt. 2. Paste it into the <b>same conversation</b> where you ran Prompt 1. 3. Paste the model&rsquo;s JSON reply below.</div>'+
-    '<button class="btn secondary small" onclick="copyText(buildEvalPrompt(curVersion()), this)">Copy diagnostic prompt</button>'+
-    '<label class="f" for="diagPaste">Paste the JSON diagnosis here</label>'+
-    '<textarea id="diagPaste" class="mono" style="min-height:110px" placeholder="Paste the JSON reply here..."></textarea>'+
+    h+='<h3><span class="stepNum">1</span>Copy the diagnosis prompt</h3>'+
+    '<button class="btn" onclick="copyText(buildEvalPrompt(curVersion()), this)">Copy diagnosis prompt</button>'+
+    '<div class="metaline">Paste it into the <b>same chat</b> where you ran Prompt 1 and send it.</div>'+
+    '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
+    '<label class="f" for="diagPaste" style="margin-top:4px">The diagnosis reply <span class="tag">&mdash; paste the whole reply; no cleanup needed. If it isn&rsquo;t in the table format, the lab keeps it as text.</span></label>'+
+    '<textarea id="diagPaste" class="mono" style="min-height:110px" oninput="state.diagDraft=this.value;save()" placeholder="Paste the diagnosis reply here...">'+esc(state.diagDraft||"")+'</textarea>'+
     '<button class="btn" onclick="acceptDiagPaste()">Use this diagnosis</button>';
     if(hasKey){
       h+='<h3>Optional route &middot; Diagnose in-app with your own key</h3>'+
@@ -653,6 +831,8 @@ function renderDiagnose(){
     h+='<div id="diagStatus"></div>';
   } else {
     h+=renderDiagResult(v.diag);
+    h+='<div class="decisionBox"><label for="decision">Our decision &amp; reasoning <span class="tag" style="font-weight:400;color:var(--muted);font-size:.8rem">&mdash; what do you accept, change, or reject from this feedback, and why? (goes into your Notion record and AI Use Log)</span></label>'+
+       '<textarea id="decision" style="min-height:70px" oninput="curVersion().decision=this.value;save()" placeholder="We will change… because… / We will keep… because… / We reject… because…">'+esc(v.decision||"")+'</textarea></div>';
     h+='<div class="navRow" style="margin-top:16px">'+
     '<button class="btn secondary" onclick="reviseFromDiag()">Revise the prompt &rarr;</button>'+
     '<button class="btn" onclick="go(4)">Review &amp; compare versions &rarr;</button></div>';
@@ -661,6 +841,11 @@ function renderDiagnose(){
   return h;
 }
 function renderDiagResult(d){
+  if(d.plain){
+    return '<div class="notice info">The reply was not in table format, so it is kept as text below. That&rsquo;s fine &mdash; read it for the strengths, the weaknesses, and the <b>one</b> highest-priority revision.</div>'+
+      '<pre class="plainDiag">'+esc(d.raw)+'</pre>'+
+      '<div class="notice warn">Reminder: the search plan is unverified AI text, and this in-lab test output is <b>not</b> your official working output.</div>';
+  }
   var h='<div class="notice info">Overall status: '+overallBadge(d.overall)+'</div>';
   h+='<h3>Prompt-quality diagnosis</h3><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
   d.prompt_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(r.note)+'</td></tr>'; });
@@ -690,13 +875,19 @@ function diagInApp(){
   });
 }
 function acceptDiagPaste(){
+  var raw=($("diagPaste").value||"").trim();
+  if(!raw){ alert("Paste the diagnosis reply first."); return; }
+  var d=null;
   try{
-    var d=normalizeDiag(extractJSON($("diagPaste").value));
-    if(!d.prompt_diagnosis.length) throw new Error("The JSON is missing prompt_diagnosis.");
-    attachDiag(d);
-  }catch(e){
-    alert("That does not look like the expected JSON. Ask the AI to “reply with only the JSON object” and paste the whole reply.\n\nDetail: "+(e.message||e));
+    d=normalizeDiag(extractJSON(raw));
+    if(!d.prompt_diagnosis.length) d=null;
+  }catch(e){ d=null; }
+  if(!d){
+    /* No special format needed: keep the reply as readable text instead of rejecting it */
+    d={plain:true, raw:raw, prompt_diagnosis:[], output_diagnosis:[], strengths:[], weaknesses:[], priority_revision:"", overall:"Diagnosed (text reply)"};
   }
+  state.diagDraft="";
+  attachDiag(d);
 }
 function attachDiag(d){
   var v=curVersion(); if(!v) return;
@@ -712,9 +903,9 @@ function renderRefine(){
   '<p class="lede"><b>Why this matters:</b> prompt quality improves through testing, not guessing. Revise and retest as often as you like &mdash; there is no required number of revisions, and you are not obliged to accept every diagnostic suggestion. Your team decides which version goes forward.</p>';
   if(!state.versions.length){ h+='<div class="notice info">No versions yet. Run a test first.</div>'; }
   else{
-    h+='<h3>Version summary</h3><table class="diag"><tr><th scope="col">Version</th><th scope="col">Overall status</th><th scope="col">Most important weakness</th><th scope="col">Length</th></tr>';
+    h+='<h3>Version summary</h3><table class="diag"><tr><th scope="col">Version</th><th scope="col">Overall status</th><th scope="col">Most important weakness</th><th scope="col">Our decision</th><th scope="col">Length</th></tr>';
     state.versions.forEach(function(v){
-      h+='<tr><td>V'+v.id+(state.finalId===v.id?" &#9733;":"")+'</td><td>'+overallBadge(v.diag?v.diag.overall:null)+'</td><td>'+esc(topWeakness(v))+'</td><td>'+v.words+' words</td></tr>';
+      h+='<tr><td>V'+v.id+(state.finalId===v.id?" &#9733;":"")+'</td><td>'+overallBadge(v.diag?v.diag.overall:null)+'</td><td>'+esc(topWeakness(v))+'</td><td>'+esc(v.decision||"—")+'</td><td>'+v.words+' words</td></tr>';
     });
     h+='</table><div class="metaline">Length is informational only. &#9733; = selected as final.</div>';
   }
@@ -760,7 +951,8 @@ function doCompare(){
   function col(v){
     var h='<div class="cmpCol"><h4>Version '+v.id+' '+overallBadge(v.diag?v.diag.overall:null)+' <span class="metaline">'+v.words+' words</span></h4>';
     FIELDS.forEach(function(f){ h+='<div class="fld"><b>'+f.label+'</b><div>'+esc(v.fields[f.key])+'</div></div>'; });
-    h+='<div class="fld"><b>Priority revision given</b><div>'+esc(v.diag?v.diag.priority_revision:"—")+'</div></div></div>';
+    h+='<div class="fld"><b>Priority revision given</b><div>'+esc(v.diag?(v.diag.plain?"(text reply — see View)":v.diag.priority_revision):"—")+'</div></div>'+
+       '<div class="fld"><b>Our decision</b><div>'+esc(v.decision||"—")+'</div></div></div>';
     return h;
   }
   $("cmpOut").innerHTML='<div class="cmpGrid">'+col(a)+col(b)+'</div>';
@@ -816,15 +1008,28 @@ order,
 "",
 "Clearly label anything uncertain.",
 "",
-"Organize the response so our team can transfer candidate evidence into our Notion Evidence Board.",
-"",
 "End with:",
 "1. the three highest-priority searches to conduct first;",
 "2. the most important missing stakeholder perspective;",
 "3. the questions that will probably require direct stakeholder validation.",
 "",
-"Do not decide whether the opportunity is attractive. Our team will open, verify, compare, and interpret the original sources before drawing a conclusion."
+"Do not decide whether the opportunity is attractive. Our team will open, verify, compare, and interpret the original sources before drawing a conclusion.",
+"",
+"EVIDENCE BOARD TABLE (this goes straight into our Notion Evidence Board):",
+"After everything above, list every candidate source again in ONE code block labeled csv. Use exactly this header row and one row per source:",
+csvHeaderForPrompt(),
+"Rules for the table:",
+"- Wrap every value in double quotes. Leave a value empty (\"\") when you do not know it. Never guess a link or a date.",
+"- Publication date: YYYY-MM-DD, or empty.",
+"- Source type: one of "+CONFIG.evidenceOptions["Source type"].join(" | ")+".",
+"- Pain / Purchase: one of "+CONFIG.evidenceOptions["Pain / Purchase"].join(" | ")+".",
+"- Independence: one of "+CONFIG.evidenceOptions["Independence"].join(" | ")+".",
+"- Notes: any credibility, independence, or relevance concern.",
+"- If you could not actually browse and open sources, output the header row only."
   ].join("\n");
+}
+function promptCols(){ return CONFIG.evidenceColumns.filter(function(c){ return c!=="Status"; }); }
+function csvHeaderForPrompt(){ return promptCols().map(function(c){return '"'+c+'"';}).join(",");
 }
 function runInstructions(){
   return [
@@ -841,6 +1046,44 @@ function runInstructions(){
 "Why the same conversation? Prompt 2 refers to the search plan already produced by Prompt 1. Running both prompts in the same conversation allows the AI to build on the prior plan."
   ].join("\n");
 }
+function mdCell(t){ return String(t==null?"":t).replace(/\r?\n+/g," ").replace(/\|/g,"/").trim() || "—"; }
+/* Notion-ready record: headings, a table, and code blocks all paste cleanly into a Notion page */
+function notionRecord(){
+  var s=seg()||{label:"",assumption:""};
+  var fv=versionById(state.finalId);
+  var L=[];
+  L.push("## Prompt Lab record — "+(state.team.name||"our team"));
+  L.push("Segment: **"+s.label+"** · Versions tested: "+state.versions.length+(fv?" · Final: Version "+fv.id:"")+" · Saved "+nowStr());
+  L.push("");
+  if(frameCount()){
+    L.push("### Our working statement (provisional)");
+    L.push(stmtText());
+    L.push("");
+  }
+  L.push("### What we changed and why");
+  L.push("| Version | Diagnostic status | Most important weakness | Our decision & reasoning |");
+  L.push("|---|---|---|---|");
+  state.versions.forEach(function(v){
+    L.push("| V"+v.id+(state.finalId===v.id?" (final)":"")+" | "+mdCell(v.diag?v.diag.overall:"Not diagnosed")+" | "+mdCell(v.diag&&v.diag.plain?"(text reply)":topWeakness(v))+" | "+mdCell(v.decision)+" |");
+  });
+  L.push("");
+  if(fv){
+    L.push("### Final Prompt 1 (Version "+fv.id+")");
+    L.push("```"); L.push(fv.prompt); L.push("```");
+    L.push("");
+  }
+  L.push("### Prompt 2 (standard)");
+  L.push("```"); L.push(buildPrompt2()); L.push("```");
+  L.push("");
+  L.push("### AI Use Log entry (copy into the log)");
+  L.push("| Date | Tool | What we asked | What we kept or changed | How we checked it |");
+  L.push("|---|---|---|---|---|");
+  L.push("| "+new Date().toLocaleDateString()+" | [ChatGPT / Claude / Gemini] | Designed and diagnosed Prompt 1 (market-intelligence search plan), "+state.versions.length+" version(s) | "+mdCell(fv&&fv.decision?fv.decision:"[summarize]")+" | Diagnosis treated as coaching only; search plan treated as unverified AI text |");
+  L.push("");
+  L.push("> AI output, search-result snippets, and summaries are not verified market evidence.");
+  return L.join("\n");
+}
+/* Full history (every prompt and diagnosis) kept as a downloadable file */
 function sessionRecord(){
   var s=seg()||{label:"",assumption:""};
   var fv=versionById(state.finalId);
@@ -854,28 +1097,29 @@ function sessionRecord(){
   L.push("");
   L.push("## Starting assumption (provisional)");
   L.push(s.assumption);
+  if(frameCount()){ L.push(""); L.push("## Our working statement"); L.push(stmtText()); }
   L.push("");
   L.push("## Version history");
   state.versions.forEach(function(v){
     L.push("### Version "+v.id+" ("+v.ts+")"+(state.finalId===v.id?"  [FINAL]":"")+" - "+v.words+" words");
     L.push("");
     L.push("#### Prompt"); L.push("```"); L.push(v.prompt); L.push("```");
-    if(v.diag){
-      L.push("#### Diagnosis");
+    L.push("#### Diagnosis");
+    if(v.diag && v.diag.plain){ L.push(v.diag.raw); }
+    else if(v.diag){
       L.push("Overall: "+v.diag.overall);
       L.push("Prompt quality: "+v.diag.prompt_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
       L.push("Output quality: "+v.diag.output_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
       if(v.diag.strengths.length) L.push("Strengths: "+v.diag.strengths.join(" | "));
       if(v.diag.weaknesses.length) L.push("Weaknesses: "+v.diag.weaknesses.map(function(w){return w.issue+(w.cause?" (cause: "+w.cause+")":"");}).join(" | "));
       L.push("Priority revision: "+v.diag.priority_revision);
-    } else { L.push("#### Diagnosis"); L.push("Not diagnosed."); }
+    } else { L.push("Not diagnosed."); }
+    L.push("#### Our decision"); L.push(v.decision||"(not recorded)");
     L.push("");
   });
   if(fv){
     L.push("## Final Prompt 1 (Version "+fv.id+", finalized "+(state.finalizedAt||"")+")");
     L.push("```"); L.push(fv.prompt); L.push("```");
-    L.push("## Final Prompt 1 diagnostic status");
-    L.push(fv.diag? fv.diag.overall : "Not diagnosed");
     L.push("");
   }
   L.push("## Prompt 2 (standardized)"); L.push("```"); L.push(buildPrompt2()); L.push("```");
@@ -887,46 +1131,48 @@ function sessionRecord(){
   L.push("WARNING: AI output, search-result snippets, and summaries are not verified market evidence.");
   return L.join("\n");
 }
+function bothPrompts(){
+  var fv=versionById(state.finalId);
+  return "=== FINAL PROMPT 1 ===\n\n"+fv.prompt+"\n\n\n=== PROMPT 2 (run in the SAME conversation, after Prompt 1) ===\n\n"+buildPrompt2();
+}
 function renderExport(){
   var fv=versionById(state.finalId);
   if(!fv) return '<div class="card"><div class="notice warn">Choose a final version in the Refine step first.</div><button class="btn ghost" onclick="go(4)">&larr; Refine</button></div>';
   var s=seg()||{label:""};
-  var h='<div class="card"><h2>Step 6 &middot; Finalize &amp; export</h2>'+
-  '<p class="lede"><b>Why this matters:</b> from here your team works in its own AI tool and in Notion. This page gives you everything to take with you.</p>'+
+  var h='<div class="card"><h2>Step 6 &middot; Finalize &amp; save to Notion</h2>'+
+  '<p class="lede"><b>Why this matters:</b> two quick moves. Save your lab record in your team&rsquo;s Notion page, then run your final prompts in your own AI tool.</p>'+
+  '<div class="metaline">Segment: '+esc(s.label)+' &middot; Final: Version '+fv.id+' &middot; Diagnostic status: '+(fv.diag?esc(fv.diag.overall):"Not diagnosed")+'</div>'+
 
-  '<h3>Final Prompt 1 package</h3>'+
-  '<div class="metaline">Segment: '+esc(s.label)+' &middot; Version '+fv.id+' &middot; Diagnostic status: '+(fv.diag?esc(fv.diag.overall):"Not diagnosed")+' &middot; Finalized: '+esc(state.finalizedAt||"")+'</div>'+
-  '<pre class="prompt">'+esc(fv.prompt)+'</pre>'+
-  '<button class="btn secondary small" onclick="copyText(versionById(state.finalId).prompt, this)">Copy Final Prompt 1</button>'+
-  '<button class="btn secondary small" onclick="downloadFile(\'final-prompt-1.txt\', versionById(state.finalId).prompt, \'text/plain\')">Download Prompt 1</button>'+
-  '<button class="btn ghost small" onclick="go(4)">Return to editing</button>'+
-  '<div class="notice warn">The search plan generated inside this artifact was a <b>test output</b>. Your official working output will be the search plan produced when your team runs Final Prompt 1 in its selected AI tool.</div>'+
+  '<h3><span class="stepNum">1</span>Save your lab record in Notion</h3>'+
+  '<div class="bigNotion"><button class="btn" onclick="copyText(notionRecord(), this)">Copy for Notion</button>'+
+  '<button class="btn secondary" onclick="openNotion()">Open our Notion page &#8599;</button>'+
+  '<span class="metaline" style="flex-basis:100%">Click into an empty line on your team page and paste (Ctrl/Cmd + V). Notion turns it into headings, a decision table, the two prompts as code blocks, and a ready AI Use Log row.</span></div>'+
+  '<details class="help"><summary>Preview what will be pasted</summary><pre class="prompt">'+esc(notionRecord())+'</pre></details>'+
 
-  '<h3>Run Prompt 1 and Prompt 2 in the same conversation</h3>'+
-  '<pre class="prompt">'+esc(runInstructions())+'</pre>'+
-
-  '<h3>Prompt 2 &middot; Conduct and organize the evidence search</h3>'+
-  '<p class="lede" style="margin-bottom:6px">Standardized for the whole class and adapted to your segment. Do not edit it &mdash; it carries the evidence-discipline rules every team must follow.</p>'+
-  '<pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
+  '<h3><span class="stepNum">2</span>Run Final Prompt 1, then Prompt 2, in one new chat</h3>'+
+  aiButtons("versionById(state.finalId).prompt","Copy Prompt 1 &amp; open a new chat in:")+
+  '<div class="metaline">When the search plan finishes, come back and copy Prompt 2 into the <b>same</b> chat:</div>'+
   '<button class="btn secondary small" onclick="copyText(buildPrompt2(), this)">Copy Prompt 2</button>'+
-  '<button class="btn secondary small" onclick="copyBoth(this)">Copy Both Prompts</button>'+
+  '<button class="btn ghost small" onclick="copyText(bothPrompts(), this)">Copy both prompts</button>'+
+  '<div class="notice warn">The search plan made inside this lab was a <b>test output</b>. Your official search plan is the one produced when your team runs Final Prompt 1 in its own AI tool.</div>'+
+  '<details class="help"><summary>Read Final Prompt 1 and Prompt 2</summary>'+
+  '<h3>Final Prompt 1</h3><pre class="prompt">'+esc(fv.prompt)+'</pre>'+
+  '<h3>Prompt 2 &middot; standard for the whole class (do not edit)</h3><pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
+  '<p class="metaline">Prompt 2 ends by asking the AI for a table of candidate sources. You will paste that reply on the next step, and the lab turns the table into rows for your Evidence Board.</p></details>'+
 
-  '<h3>Optional team information <span class="tag" style="font-weight:400;color:var(--muted);font-size:.8rem">(appears in the session record; no names, emails, or IDs required)</span></h3>'+
-  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">'+
+  '<details class="more"><summary>More options (team details, full history file, start over)</summary>'+
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:10px">'+
   '<input type="text" id="teamName" aria-label="Team name" placeholder="Team name (optional)" value="'+esc(state.team.name)+'" oninput="teamField()">'+
   '<input type="text" id="teamSection" aria-label="Course section" placeholder="Course section (optional)" value="'+esc(state.team.section)+'" oninput="teamField()">'+
   '<input type="text" id="teamId" aria-label="Team identifier" placeholder="Team identifier (optional)" value="'+esc(state.team.id)+'" oninput="teamField()">'+
   '</div>'+
-
-  '<h3>Session record</h3>'+
-  '<p class="lede" style="margin-bottom:6px">Full version history, diagnoses, final prompts, and the validation checklist &mdash; keep it for your AI Use Log.</p>'+
-  '<button class="btn" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download as Markdown</button>'+
-  '<button class="btn secondary" onclick="downloadFile(\'prompt-lab-session.txt\', sessionRecord(), \'text/plain\')">Download as Text</button>'+
-  '<button class="btn secondary" onclick="copyText(sessionRecord(), this)">Copy session record</button>'+
-  '<button class="btn ghost" onclick="resetAll()">Start over</button>'+
+  '<p class="metaline">The full history file keeps every version, every diagnosis, and every decision.</p>'+
+  '<button class="btn secondary small" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download full history (.md)</button>'+
+  '<button class="btn secondary small" onclick="copyText(sessionRecord(), this)">Copy full history</button>'+
+  '<button class="btn ghost small" onclick="resetAll()">Start over</button></details>'+
 
   '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(4)">&larr; Refine</button>'+
-  '<button class="btn" onclick="toValidate()">Continue to Validation &rarr;</button></div></div>';
+  '<button class="btn" onclick="toValidate()">I ran Prompt 2 &mdash; send sources to Notion &rarr;</button></div></div>';
   return h;
 }
 function copyBoth(btn){
@@ -939,27 +1185,136 @@ function teamField(){
 function toValidate(){ unlock(6); state.stage=6; save(); render(); window.scrollTo(0,0); }
 
 /* ---------- Stage 6: Validate ---------- */
+/* ---------- Evidence table → Notion CSV ---------- */
+function parseCSV(text){
+  var rows=[], row=[], cell="", q=false, i, c;
+  for(i=0;i<text.length;i++){
+    c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q=false; }
+      else cell+=c;
+    } else {
+      if(c==='"') q=true;
+      else if(c===','){ row.push(cell); cell=""; }
+      else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=""; }
+      else if(c!=='\r') cell+=c;
+    }
+  }
+  if(cell!==""||row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(function(r){ return r.some(function(x){return String(x).trim();}); });
+}
+function parseMdTable(lines){
+  return lines.filter(function(l){ return /^\s*\|/.test(l) && !/^\s*\|(\s*:?-+:?\s*\|)+\s*$/.test(l); })
+    .map(function(l){ return l.trim().replace(/^\|/,"").replace(/\|$/,"").split("|").map(function(x){return x.trim();}); });
+}
+function findEvidenceTable(reply){
+  var t=String(reply||"");
+  var m=t.match(/```[ \t]*csv[^\n]*\n([\s\S]*?)```/i);
+  if(m) return parseCSV(m[1]);
+  var blocks=t.match(/```[^\n]*\n[\s\S]*?```/g)||[];
+  for(var b=0;b<blocks.length;b++){
+    var inner=blocks[b].replace(/^```[^\n]*\n/,"").replace(/```$/,"");
+    if(/source title/i.test(inner.split("\n")[0])) return parseCSV(inner);
+  }
+  var lines=t.split(/\r?\n/);
+  for(var i=0;i<lines.length;i++){
+    if(/source title/i.test(lines[i])){
+      if(/^\s*\|/.test(lines[i])){
+        var md=[]; for(var j=i;j<lines.length && /^\s*\|/.test(lines[j]);j++) md.push(lines[j]);
+        return parseMdTable(md);
+      }
+      if(lines[i].indexOf(",")>=0){
+        var cs=[]; for(var k=i;k<lines.length && lines[k].trim();k++) cs.push(lines[k]);
+        return parseCSV(cs.join("\n"));
+      }
+    }
+  }
+  return null;
+}
+function normHead(h){ return String(h||"").toLowerCase().replace(/[^a-z]/g,""); }
+function evidenceFromReply(reply){
+  var table=findEvidenceTable(reply);
+  var out={rows:[], found:!!table, flags:0};
+  if(!table||!table.length) return out;
+  var head=table[0].map(normHead), idx={};
+  CONFIG.evidenceColumns.forEach(function(c){ idx[c]=head.indexOf(normHead(c)); });
+  if(idx["Source title"]<0) { out.found=false; return out; }
+  table.slice(1).forEach(function(r){
+    var o={}, notes=[];
+    CONFIG.evidenceColumns.forEach(function(c){ o[c]= idx[c]>=0 ? String(r[idx[c]]||"").trim() : ""; });
+    if(!o["Source title"] && !o["Direct link"]) return;
+    Object.keys(CONFIG.evidenceOptions).forEach(function(c){
+      if(!o[c]) return;
+      var hit=CONFIG.evidenceOptions[c].filter(function(opt){ return opt.toLowerCase()===o[c].toLowerCase(); })[0];
+      if(hit) o[c]=hit; else { notes.push(c+" given as “"+o[c]+"”"); o[c]=""; }
+    });
+    if(o["Publication date"] && !/^\d{4}-\d{2}-\d{2}$/.test(o["Publication date"])){ notes.push("date given as “"+o["Publication date"]+"”"); o["Publication date"]=""; }
+    if(o["Direct link"] && !/^https?:\/\//i.test(o["Direct link"])){ notes.push("link given as “"+o["Direct link"]+"”"); o["Direct link"]=""; }
+    if(!o["Direct link"]) notes.push("no direct link: find the original source");
+    o._flag=notes.length>0; if(o._flag) out.flags++;
+    o["Status"]="Not yet opened";
+    o["Notes"]=["AI candidate, unverified."].concat(notes.length?["Check: "+notes.join("; ")+"."]:[]).concat(o["Notes"]?[o["Notes"]]:[]).join(" ");
+    out.rows.push(o);
+  });
+  return out;
+}
+function evidenceCSV(rows){
+  function qv(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }
+  var L=[CONFIG.evidenceColumns.map(qv).join(",")];
+  rows.forEach(function(r){ L.push(CONFIG.evidenceColumns.map(function(c){return qv(r[c]);}).join(",")); });
+  return L.join("\n")+"\n";
+}
+function renderEvPreview(){
+  var reply=state.prompt2Reply||"";
+  if(!reply.trim()) return '<div class="metaline">Your candidate sources will appear here.</div>';
+  var ev=evidenceFromReply(reply);
+  if(!ev.found) return '<div class="notice warn">No evidence table found in this reply. Ask the AI in the same chat: <i>&ldquo;Please give the Evidence Board table now, as one csv code block with the exact header row I asked for.&rdquo;</i> Then paste the new reply here.</div>';
+  if(!ev.rows.length) return '<div class="notice warn">The table is empty. The AI may not have been able to browse. That is an honest result: use its search queries to find sources yourself, and add them to the Evidence Board directly.</div>';
+  var cols=["Source title","Organization / publisher","Source type","Pain / Purchase","Direct link","Notes"];
+  var h='<div class="notice info"><b>'+ev.rows.length+' candidate source'+(ev.rows.length>1?"s":"")+'</b> ready for your Evidence Board'+(ev.flags?' &middot; '+ev.flags+' need'+(ev.flags>1?"":"s")+' extra checking (shown in orange)':'')+'. Every row will arrive as <b>Not yet opened</b>.</div>'+
+  '<div class="evTableWrap"><table class="ev"><tr>'+cols.map(function(c){return '<th>'+esc(c)+'</th>';}).join("")+'</tr>';
+  ev.rows.forEach(function(r){
+    h+='<tr>'+cols.map(function(c){ return '<td'+(c==="Notes"&&r._flag?' class="flag"':'')+'>'+esc(r[c]||"—")+'</td>'; }).join("")+'</tr>';
+  });
+  h+='</table></div>';
+  return h;
+}
+function onPrompt2Reply(){
+  state.prompt2Reply=$("p2Reply").value; save();
+  var p=$("evPreview"); if(p) p.innerHTML=renderEvPreview();
+}
+function downloadEvidence(){
+  var ev=evidenceFromReply(state.prompt2Reply||"");
+  if(!ev.rows.length){ alert("Paste the Prompt 2 reply first. The lab needs its evidence table."); return; }
+  var nm=(state.team.name||"team").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
+  downloadFile("evidence-board-"+nm+".csv", evidenceCSV(ev.rows), "text/csv");
+}
+
+/* ---------- Stage 6: Evidence → Notion ---------- */
 function renderValidate(){
-  var url=notionLink();
-  var h='<div class="card"><h2>Your Next Step Happens in Notion</h2>'+
-  '<p class="lede"><b>Why this matters:</b> this is where AI stops and your judgment starts. Everything the model produced &mdash; including a &ldquo;Ready to use&rdquo; diagnosis &mdash; is unverified text. Evidence exists only after your team opens the original sources and checks them.</p>'+
-  '<h3>Required steps</h3><ol class="steps">';
+  var h='<div class="card"><h2>Step 7 &middot; Send candidate sources to your Evidence Board</h2>'+
+  '<p class="lede"><b>Why this matters:</b> no retyping. The sources the AI suggested go into Notion as rows marked <b>Not yet opened</b>. Your real work starts there: open each source, check it, and decide.</p>'+
+  '<h3><span class="stepNum">1</span>Paste the whole Prompt 2 reply</h3>'+
+  '<textarea id="p2Reply" class="mono" style="min-height:130px" oninput="onPrompt2Reply()" placeholder="Paste the AI\'s full reply to Prompt 2 here (use its copy button)...">'+esc(state.prompt2Reply||"")+'</textarea>'+
+  '<div id="evPreview">'+renderEvPreview()+'</div>'+
+  '<h3><span class="stepNum">2</span>Download the file, then merge it into the board</h3>'+
+  '<div class="bigNotion"><button class="btn" onclick="downloadEvidence()">Download Evidence Board file (.csv)</button>'+
+  '<button class="btn secondary" onclick="openNotion()">Open our Notion page &#8599;</button>'+
+  '<ol class="steps" style="flex-basis:100%;margin:6px 0 0">'+
+  '<li>In Notion, open your team&rsquo;s <b>📋 Evidence Board</b> as a full page.</li>'+
+  '<li>Click <b>&bull;&bull;&bull;</b> (top right) &rarr; <b>Merge with CSV</b> &rarr; choose the file you just downloaded.</li>'+
+  '<li>The rows appear with Status = <b>Not yet opened</b>. Do not delete the &ldquo;AI candidate&rdquo; note until you have opened the source.</li></ol></div>'+
+  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence. A row on the board is a lead to check, not a finding.</div></div>';
+
+  h+='<div class="card"><h2>Your next steps in Notion</h2><ol class="steps">';
   HANDOFF_STEPS.forEach(function(c,i){
     h+='<li><label class="chk" style="border:none;padding:2px 0"><input type="checkbox" '+(state.handoffTicks[i]?"checked":"")+' onchange="tickStep('+i+',this.checked)"><span>'+esc(c)+'</span></label></li>';
   });
-  h+='</ol>';
-  h+='<h3>Validation checklist &mdash; ask this about every source or claim</h3><ul class="qlist">';
+  h+='</ol><h3>Validation checklist &mdash; ask this about every source or claim</h3><ul class="qlist">';
   SOURCE_QUESTIONS.forEach(function(q){ h+='<li>'+esc(q)+'</li>'; });
   h+='</ul>'+
-  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence.</div>'+
-  '<h3>Notion Evidence Board</h3>';
-  if(url){
-    h+='<a class="btn" href="'+esc(url)+'" target="_blank" rel="noopener">Open the Notion Evidence Board &rarr;</a>';
-  } else {
-    h+='<div class="notice info">Your instructor has not configured the Evidence Board link yet. Ask for the link, or add it under <b>Settings</b>. (Instructors: preset it by adding <code>?notion=YOUR_LINK</code> to this page&rsquo;s URL or editing the CONFIG block / prompt-lab-config.json.)</div>';
-  }
-  h+='<div class="notice info" style="margin-top:14px">Your final research may legitimately conclude that the opportunity is promising, needs more investigation, or is <b>not</b> currently supported. All three are successful outcomes of this project.</div>'+
-  '<div class="navRow"><button class="btn ghost" onclick="go(5)">&larr; Export</button>'+
+  '<div class="notice info" style="margin-top:14px">Your final research may legitimately conclude that the opportunity is promising, needs more investigation, or is <b>not</b> currently supported. All three are successful outcomes of this project.</div>'+
+  '<div class="navRow"><button class="btn ghost" onclick="go(5)">&larr; Finalize</button>'+
   '<button class="btn ghost" onclick="resetAll()">Start a new session</button></div></div>';
   return h;
 }
@@ -989,7 +1344,9 @@ function openSettings(){
   '<div><label class="f" for="setMax">Max output tokens <span class="tag">(default '+m.maxTokens+')</span></label>'+
   '<input type="number" step="100" min="500" id="setMax" value="'+esc(s.maxTokens)+'" placeholder="'+m.maxTokens+'"></div>'+
   '</div>'+
-  '<label class="f" for="setNotion">Notion Evidence Board link</label>'+
+  '<label class="f" for="setTeam">Team name</label>'+
+  '<input type="text" id="setTeam" value="'+esc(state.team.name)+'" placeholder="e.g. Team 3">'+
+  '<label class="f" for="setNotion">Our team&rsquo;s Notion page link <span class="tag">&mdash; where &ldquo;Open our Notion page&rdquo; goes</span></label>'+
   '<input type="text" id="setNotion" value="'+esc(s.notionUrl)+'" placeholder="'+(CONFIG.notionUrl? "Instructor default: "+esc(CONFIG.notionUrl) : "https://www.notion.so/...")+'">'+
   '<div class="notice info" style="margin-top:12px"><b>Where things are stored:</b> everything stays in this browser&rsquo;s local storage on this device. Nothing is sent to your instructor or any server. Only the optional &ldquo;Run in-app&rdquo; button sends your prompt directly to the AI provider above, using your own key.</div>'+
   '<div class="navRow"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveSettings()">Save</button></div>');
@@ -1001,6 +1358,7 @@ function saveSettings(){
   state.settings.temperature=$("setTemp").value.trim();
   state.settings.maxTokens=$("setMax").value.trim();
   state.settings.notionUrl=$("setNotion").value.trim();
+  state.team.name=$("setTeam").value.trim();
   save(); closeModal(); render();
 }
 function openModal(inner){
