@@ -192,7 +192,7 @@ var CONFIG = {
     { name:"Claude",  url:"https://claude.ai/new" },
     { name:"Gemini",  url:"https://gemini.google.com/app" }
   ],
-  /* Column names must match the team Evidence Board in Notion exactly (used for the CSV import) */
+  /* Column names for the AI's candidate-source table (shown in Step 7 as a list of leads to check) */
   evidenceColumns: ["Source title","Organization / publisher","Publication date","Direct link","Source type","Pain / Purchase","Claim it may support","What it cannot establish","Independence","Status","Notes"],
   evidenceOptions: {
     "Source type": ["Official / institutional","Tender / procurement","Review page","News / media","Report / data","Community / forum","Video / social","Supplier / vendor","Other"],
@@ -262,7 +262,7 @@ var CONFIG = {
 };
 /* ============================ END INSTRUCTOR CONFIGURATION ============================ */
 
-var STAGES = ["Segment","5P Builder","Test","Diagnose","Refine","Finalize","Evidence → Notion"];
+var STAGES = ["Segment","5P Builder","Test","Diagnose","Refine","Finalize","Check sources"];
 
 /* Short framing fields that sharpen the provisional assumption (borrowed sentence-builder) */
 var FRAME = [
@@ -295,25 +295,18 @@ var OUTPUT_DIMS = ["Provisional-assumption clarity","Pain-point logic","Purchase
 var HANDOFF_STEPS = [
   "Run Final Prompt 1 in your selected AI tool.",
   "Run Prompt 2 in the same conversation.",
-  "Paste the Prompt 2 reply on this page and send the candidate sources to your Evidence Board (every row arrives as “Not yet opened”).",
+  "Paste the Prompt 2 reply on this page to see the AI’s candidate sources. Each one is a lead to check, not a finding.",
   "Open every original source the team may use.",
-  "Confirm that each source exists and is accessible.",
-  "Determine whether the source supports the attached claim.",
-  "In Notion, update each row’s Status, Effect on assumption, Evidence category, and Verified by.",
-  "Paste the lab record into your team page and record consequential AI use in the AI Use Log.",
-  "Complete the Customer Insights Brief only after validation."
+  "Run the four checks below on each source.",
+  "Copy your checked sources into Week 1 — Customer Insights Brief → Verified evidence signals — 3 to 5 (1–2 sentences per cell).",
+  "Paste the lab record into your team page.",
+  "Complete the rest of the Customer Insights Brief only after the checks."
 ];
 var SOURCE_QUESTIONS = [
-  "Does the original source exist and open?",
-  "Is the source relevant to India?",
-  "Is it relevant to the selected customer context?",
-  "Does it support the specific claim attached to it?",
-  "Is it independent evidence, supplier promotion, or stakeholder self-report?",
-  "Does it concern customer pain, purchase workflow, or both?",
-  "What can the source not establish?",
-  "Does it support, weaken, complicate, narrow, or redirect the assumption?",
-  "Is the claim strong enough to retain?",
-  "Should the team retain, revise, remove, or hold the claim?"
+  "Does the source open?",
+  "Does it say what we claim it says?",
+  "Is it about India and this customer?",
+  "Is it independent, or is someone selling something? (A seller’s claim can stay — say so in the Limitation column of your Brief.)"
 ];
 
 /* ============================== STATE ============================== */
@@ -1015,7 +1008,7 @@ order,
 "",
 "Do not decide whether the opportunity is attractive. Our team will open, verify, compare, and interpret the original sources before drawing a conclusion.",
 "",
-"EVIDENCE BOARD TABLE (this goes straight into our Notion Evidence Board):",
+"CANDIDATE SOURCE TABLE (our team will open and check every source before using it):",
 "After everything above, list every candidate source again in ONE code block labeled csv. Use exactly this header row and one row per source:",
 csvHeaderForPrompt(),
 "Rules for the table:",
@@ -1041,7 +1034,7 @@ function runInstructions(){
 "5. Keep the same conversation open.",
 "6. Paste and run Prompt 2.",
 "7. Do not assume the AI's candidate sources or claims are correct.",
-"8. Move to Notion to validate the evidence.",
+"8. Check each source, then copy the ones that pass into Week 1 — Customer Insights Brief → Verified evidence signals — 3 to 5 (1–2 sentences per cell).",
 "",
 "Why the same conversation? Prompt 2 refers to the search plan already produced by Prompt 1. Running both prompts in the same conversation allows the AI to build on the prior plan."
   ].join("\n");
@@ -1158,7 +1151,7 @@ function renderExport(){
   '<details class="help"><summary>Read Final Prompt 1 and Prompt 2</summary>'+
   '<h3>Final Prompt 1</h3><pre class="prompt">'+esc(fv.prompt)+'</pre>'+
   '<h3>Prompt 2 &middot; standard for the whole class (do not edit)</h3><pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
-  '<p class="metaline">Prompt 2 ends by asking the AI for a table of candidate sources. You will paste that reply on the next step, and the lab turns the table into rows for your Evidence Board.</p></details>'+
+  '<p class="metaline">Prompt 2 ends by asking the AI for a table of candidate sources. You will paste that reply on the next step, and the lab shows the sources as a list of leads to check.</p></details>'+
 
   '<details class="more"><summary>More options (team details, full history file, start over)</summary>'+
   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:10px">'+
@@ -1172,7 +1165,7 @@ function renderExport(){
   '<button class="btn ghost small" onclick="resetAll()">Start over</button></details>'+
 
   '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(4)">&larr; Refine</button>'+
-  '<button class="btn" onclick="toValidate()">I ran Prompt 2 &mdash; send sources to Notion &rarr;</button></div></div>';
+  '<button class="btn" onclick="toValidate()">I ran Prompt 2 &mdash; check my sources &rarr;</button></div></div>';
   return h;
 }
 function copyBoth(btn){
@@ -1268,10 +1261,10 @@ function renderEvPreview(){
   var reply=state.prompt2Reply||"";
   if(!reply.trim()) return '<div class="metaline">Your candidate sources will appear here.</div>';
   var ev=evidenceFromReply(reply);
-  if(!ev.found) return '<div class="notice warn">No evidence table found in this reply. Ask the AI in the same chat: <i>&ldquo;Please give the Evidence Board table now, as one csv code block with the exact header row I asked for.&rdquo;</i> Then paste the new reply here.</div>';
-  if(!ev.rows.length) return '<div class="notice warn">The table is empty. The AI may not have been able to browse. That is an honest result: use its search queries to find sources yourself, and add them to the Evidence Board directly.</div>';
+  if(!ev.found) return '<div class="notice warn">No evidence table found in this reply. Ask the AI in the same chat: <i>&ldquo;Please give the candidate source table now, as one csv code block with the exact header row I asked for.&rdquo;</i> Then paste the new reply here.</div>';
+  if(!ev.rows.length) return '<div class="notice warn">The table is empty. The AI may not have been able to browse. That is an honest result: use its search queries to find sources yourself, check them, and copy the ones that pass into your Brief.</div>';
   var cols=["Source title","Organization / publisher","Source type","Pain / Purchase","Direct link","Notes"];
-  var h='<div class="notice info"><b>'+ev.rows.length+' candidate source'+(ev.rows.length>1?"s":"")+'</b> ready for your Evidence Board'+(ev.flags?' &middot; '+ev.flags+' need'+(ev.flags>1?"":"s")+' extra checking (shown in orange)':'')+'. Every row will arrive as <b>Not yet opened</b>.</div>'+
+  var h='<div class="notice info"><b>'+ev.rows.length+' candidate source'+(ev.rows.length>1?"s":"")+'</b> to check'+(ev.flags?' &middot; '+ev.flags+' need'+(ev.flags>1?"":"s")+' extra checking (shown in orange)':'')+'. None of them is evidence until a teammate opens it.</div>'+
   '<div class="evTableWrap"><table class="ev"><tr>'+cols.map(function(c){return '<th>'+esc(c)+'</th>';}).join("")+'</tr>';
   ev.rows.forEach(function(r){
     h+='<tr>'+cols.map(function(c){ return '<td'+(c==="Notes"&&r._flag?' class="flag"':'')+'>'+esc(r[c]||"—")+'</td>'; }).join("")+'</tr>';
@@ -1292,25 +1285,24 @@ function downloadEvidence(){
 
 /* ---------- Stage 6: Evidence → Notion ---------- */
 function renderValidate(){
-  var h='<div class="card"><h2>Step 7 &middot; Send candidate sources to your Evidence Board</h2>'+
-  '<p class="lede"><b>Why this matters:</b> no retyping. The sources the AI suggested go into Notion as rows marked <b>Not yet opened</b>. Your real work starts there: open each source, check it, and decide.</p>'+
+  var h='<div class="card"><h2>Step 7 &middot; Check your candidate sources</h2>'+
+  '<p class="lede"><b>Why this matters:</b> the sources the AI suggested are leads, not findings. Your real work starts here: open each source, check it, and keep only the ones that pass.</p>'+
   '<h3><span class="stepNum">1</span>Paste the whole Prompt 2 reply</h3>'+
   '<textarea id="p2Reply" class="mono" style="min-height:130px" oninput="onPrompt2Reply()" placeholder="Paste the AI\'s full reply to Prompt 2 here (use its copy button)...">'+esc(state.prompt2Reply||"")+'</textarea>'+
   '<div id="evPreview">'+renderEvPreview()+'</div>'+
-  '<h3><span class="stepNum">2</span>Download the file, then merge it into the board</h3>'+
-  '<div class="bigNotion"><button class="btn" onclick="downloadEvidence()">Download Evidence Board file (.csv)</button>'+
-  '<button class="btn secondary" onclick="openNotion()">Open our Notion page &#8599;</button>'+
+  '<h3><span class="stepNum">2</span>Check each source, then copy the ones that pass into your Brief</h3>'+
+  '<div class="bigNotion"><button class="btn secondary" onclick="openNotion()">Open our Notion page &#8599;</button>'+
   '<ol class="steps" style="flex-basis:100%;margin:6px 0 0">'+
-  '<li>In Notion, open your team&rsquo;s <b>📋 Evidence Board</b> as a full page.</li>'+
-  '<li>Click <b>&bull;&bull;&bull;</b> (top right) &rarr; <b>Merge with CSV</b> &rarr; choose the file you just downloaded.</li>'+
-  '<li>The rows appear with Status = <b>Not yet opened</b>. Do not delete the &ldquo;AI candidate&rdquo; note until you have opened the source.</li></ol></div>'+
-  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence. A row on the board is a lead to check, not a finding.</div></div>';
+  '<li>Open each source in the list above.</li>'+
+  '<li>Run the four checks: Does it open? Does it say what we claim? Is it about India and this customer? Is it independent, or is someone selling something?</li>'+
+  '<li>Copy your checked sources into <b>Week 1 &mdash; Customer Insights Brief &rarr; Verified evidence signals &mdash; 3 to 5 (1&ndash;2 sentences per cell)</b>.</li></ol></div>'+
+  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence. A source in this list is a lead to check, not a finding.</div></div>';
 
   h+='<div class="card"><h2>Your next steps in Notion</h2><ol class="steps">';
   HANDOFF_STEPS.forEach(function(c,i){
     h+='<li><label class="chk" style="border:none;padding:2px 0"><input type="checkbox" '+(state.handoffTicks[i]?"checked":"")+' onchange="tickStep('+i+',this.checked)"><span>'+esc(c)+'</span></label></li>';
   });
-  h+='</ol><h3>Validation checklist &mdash; ask this about every source or claim</h3><ul class="qlist">';
+  h+='</ol><h3>Check before you move on &mdash; ask these about every source</h3><ul class="qlist">';
   SOURCE_QUESTIONS.forEach(function(q){ h+='<li>'+esc(q)+'</li>'; });
   h+='</ul>'+
   '<div class="notice info" style="margin-top:14px">Your final research may legitimately conclude that the opportunity is promising, needs more investigation, or is <b>not</b> currently supported. All three are successful outcomes of this project.</div>'+
