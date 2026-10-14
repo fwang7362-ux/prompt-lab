@@ -299,7 +299,7 @@ var HANDOFF_STEPS = [
   "Open every original source the team may use.",
   "Run the four checks below on each source.",
   "Copy your checked sources into Week 1 — Customer Insights Brief → Verified evidence signals — 3 to 5 (1–2 sentences per cell).",
-  "Paste the lab record into your team page.",
+  "Paste the lab record at the bottom of your Week 1 Brief, under Team notes and decisions log.",
   "Complete the rest of the Customer Insights Brief only after the checks."
 ];
 var SOURCE_QUESTIONS = [
@@ -367,7 +367,7 @@ function restoreBackup(input){
 }
 
 /* Instructor presets: ?notion=URL&team=NAME, optional prompt-lab-config.json
-   Tip: give each team its own link, e.g. ...?team=Team%203&notion=<that team's Notion page>  */
+   Tip: give each team its own link, e.g. ...?team=Team%203&notion=<that team's Week 1 Brief page>  */
 (function(){
   try{
     var q = new URLSearchParams(location.search);
@@ -395,9 +395,9 @@ function needsSetup(){ return !(state.settings.notionUrl||"").trim() && !CONFIG.
 function renderSetup(){
   if(!needsSetup()) return "";
   return '<div class="setup"><h2>One-time setup &middot; where should your work go?</h2>'+
-  '<p class="lede" style="margin:0">Paste the link to <b>your team&rsquo;s page in Notion</b> (open it in Notion &rarr; <i>Share</i> &rarr; <i>Copy link</i>). Every &ldquo;Open Notion&rdquo; button in this lab will then take you straight there.</p>'+
+  '<p class="lede" style="margin:0">Paste the link to <b>your team&rsquo;s Week 1 &mdash; Customer Insights Brief page in Notion</b> (open it in Notion &rarr; <i>Share</i> &rarr; <i>Copy link</i>). Every &ldquo;Open our Week 1 Brief&rdquo; button in this lab will then take you straight there. If you opened the lab from your team page, this is already done.</p>'+
   '<div class="row"><input type="text" id="setupTeam" aria-label="Team name" placeholder="Team name, e.g. Team 3" value="'+esc(state.team.name)+'" style="flex:0 1 200px">'+
-  '<input type="text" id="setupNotion" aria-label="Team Notion page link" placeholder="https://www.notion.so/... (your team page)">'+
+  '<input type="text" id="setupNotion" aria-label="Week 1 Brief page link" placeholder="https://www.notion.so/... (your Week 1 Brief page)">'+
   '<button class="btn small" onclick="saveSetup()">Save</button></div>'+
   '<div class="metaline">You can change this later in Settings. Skip it for now if you don&rsquo;t have the link yet.</div></div>';
 }
@@ -410,7 +410,7 @@ function saveSetup(){
 }
 function openNotion(){
   var url=notionLink();
-  if(!url){ alert("Add your team's Notion page link first (Settings, top right)."); openSettings(); return; }
+  if(!url){ alert("Add the link to your team's Week 1 Brief page first (Settings, top right)."); openSettings(); return; }
   window.open(url,"_blank","noopener");
 }
 function aiButtons(getText, label){
@@ -1133,13 +1133,13 @@ function renderExport(){
   if(!fv) return '<div class="card"><div class="notice warn">Choose a final version in the Refine step first.</div><button class="btn ghost" onclick="go(4)">&larr; Refine</button></div>';
   var s=seg()||{label:""};
   var h='<div class="card"><h2>Step 6 &middot; Finalize &amp; save to Notion</h2>'+
-  '<p class="lede"><b>Why this matters:</b> two quick moves. Save your lab record in your team&rsquo;s Notion page, then run your final prompts in your own AI tool.</p>'+
+  '<p class="lede"><b>Why this matters:</b> two quick moves. Save your lab record in your team&rsquo;s Week 1 Brief, then run your final prompts in your own AI tool.</p>'+
   '<div class="metaline">Segment: '+esc(s.label)+' &middot; Final: Version '+fv.id+' &middot; Diagnostic status: '+(fv.diag?esc(fv.diag.overall):"Not diagnosed")+'</div>'+
 
   '<h3><span class="stepNum">1</span>Save your lab record in Notion</h3>'+
   '<div class="bigNotion"><button class="btn" onclick="copyText(notionRecord(), this)">Copy for Notion</button>'+
-  '<button class="btn secondary" onclick="openNotion()">Open our Notion page &#8599;</button>'+
-  '<span class="metaline" style="flex-basis:100%">Click into an empty line on your team page and paste (Ctrl/Cmd + V). Notion turns it into headings, a decision table, the two prompts as code blocks, and a ready AI Use Log row.</span></div>'+
+  '<button class="btn secondary" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
+  '<span class="metaline" style="flex-basis:100%">Scroll to <b>Team notes and decisions log</b> at the bottom of your Week 1 Brief, click an empty line, and paste (Ctrl/Cmd + V). Notion turns it into headings, a decision table, the two prompts as code blocks, and a ready AI Use Log row.</span></div>'+
   '<details class="help"><summary>Preview what will be pasted</summary><pre class="prompt">'+esc(notionRecord())+'</pre></details>'+
 
   '<h3><span class="stepNum">2</span>Run Final Prompt 1, then Prompt 2, in one new chat</h3>'+
@@ -1291,7 +1291,7 @@ function renderValidate(){
   '<textarea id="p2Reply" class="mono" style="min-height:130px" oninput="onPrompt2Reply()" placeholder="Paste the AI\'s full reply to Prompt 2 here (use its copy button)...">'+esc(state.prompt2Reply||"")+'</textarea>'+
   '<div id="evPreview">'+renderEvPreview()+'</div>'+
   '<h3><span class="stepNum">2</span>Check each source, then copy the ones that pass into your Brief</h3>'+
-  '<div class="bigNotion"><button class="btn secondary" onclick="openNotion()">Open our Notion page &#8599;</button>'+
+  '<div class="bigNotion"><button class="btn secondary" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
   '<ol class="steps" style="flex-basis:100%;margin:6px 0 0">'+
   '<li>Open each source in the list above.</li>'+
   '<li>Run the four checks: Does it open? Does it say what we claim? Is it about India and this customer? Is it independent, or is someone selling something?</li>'+
@@ -1338,7 +1338,7 @@ function openSettings(){
   '</div>'+
   '<label class="f" for="setTeam">Team name</label>'+
   '<input type="text" id="setTeam" value="'+esc(state.team.name)+'" placeholder="e.g. Team 3">'+
-  '<label class="f" for="setNotion">Our team&rsquo;s Notion page link <span class="tag">&mdash; where &ldquo;Open our Notion page&rdquo; goes</span></label>'+
+  '<label class="f" for="setNotion">Our team&rsquo;s Week 1 Brief page link <span class="tag">&mdash; where &ldquo;Open our Week 1 Brief&rdquo; goes</span></label>'+
   '<input type="text" id="setNotion" value="'+esc(s.notionUrl)+'" placeholder="'+(CONFIG.notionUrl? "Instructor default: "+esc(CONFIG.notionUrl) : "https://www.notion.so/...")+'">'+
   '<div class="notice info" style="margin-top:12px"><b>Where things are stored:</b> everything stays in this browser&rsquo;s local storage on this device. Nothing is sent to your instructor or any server. Only the optional &ldquo;Run in-app&rdquo; button sends your prompt directly to the AI provider above, using your own key.</div>'+
   '<div class="navRow"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveSettings()">Save</button></div>');
