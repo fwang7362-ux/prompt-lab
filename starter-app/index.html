@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starter App Builder</title>
+<style id="app-css">
+/* ===== The customer app (this part is copied into the downloaded app file) ===== */
+.sa{--a:#0f766e;--a-soft:#e6f2f0;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);background:#fff;min-height:100%;display:flex;flex-direction:column;font-size:17px;line-height:1.5;}
+.sa *{box-sizing:border-box;}
+.sa .sa-label{background:#f3f4f6;color:#4b5563;font-size:.72rem;text-align:center;padding:6px 12px;border-bottom:1px solid var(--line);}
+.sa .sa-dots{display:flex;gap:6px;justify-content:center;padding:14px 0 4px;}
+.sa .sa-dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block;}
+.sa .sa-dots i.on{background:var(--a);}
+.sa .sa-body{flex:1;padding:18px 22px 26px;display:flex;flex-direction:column;}
+.sa .sa-kicker{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--a);margin:6px 0 8px;}
+.sa h1{font-size:1.55rem;line-height:1.25;margin:0 0 12px;letter-spacing:-.01em;}
+.sa h2{font-size:1.25rem;line-height:1.3;margin:0 0 10px;}
+.sa p{margin:0 0 12px;}
+.sa .sa-muted{color:var(--muted);font-size:.92rem;}
+.sa .sa-empty{color:#9ca3af;font-style:italic;}
+.sa .sa-spacer{flex:1;min-height:16px;}
+.sa .sa-btn{display:block;width:100%;border:none;border-radius:12px;background:var(--a);color:#fff;font-size:1.02rem;font-weight:600;
+  padding:15px 18px;cursor:pointer;font-family:inherit;margin-top:10px;text-align:center;}
+.sa .sa-btn:disabled{opacity:.45;cursor:default;}
+.sa .sa-btn.ghost{background:#fff;color:var(--a);border:2px solid var(--a);}
+.sa .sa-btn:focus-visible{outline:3px solid #93c5fd;outline-offset:2px;}
+.sa .sa-card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 12px;}
+.sa .sa-card .sa-ex{color:var(--muted);font-size:.88rem;margin:4px 0 10px;}
+.sa .sa-two{display:flex;gap:8px;}
+.sa .sa-pick{flex:1;border:2px solid var(--line);background:#fff;border-radius:10px;padding:10px 8px;font-size:.9rem;font-family:inherit;cursor:pointer;color:var(--ink);}
+.sa .sa-pick.sel{border-color:var(--a);background:var(--a-soft);color:var(--a);font-weight:600;}
+.sa .sa-big{font-size:2.6rem;font-weight:700;color:var(--a);line-height:1;margin:6px 0 10px;}
+.sa .sa-trust{border-left:5px solid var(--a);background:var(--a-soft);padding:16px 18px;border-radius:0 12px 12px 0;font-size:1.15rem;font-weight:600;margin:6px 0 14px;}
+.sa .sa-steps{margin:0 0 12px;padding-left:22px;}
+.sa .sa-steps li{margin-bottom:6px;}
+.sa .sa-meter{height:12px;border-radius:6px;background:#f3f4f6;overflow:hidden;margin:8px 0 4px;}
+.sa .sa-meter span{display:block;height:100%;width:0;background:var(--a);transition:width .08s linear;}
+.sa .sa-status{font-weight:600;margin:8px 0;min-height:1.5em;}
+.sa .sa-try{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:.95rem;}
+.sa .sa-try b{width:52px;flex:none;}
+.sa .sa-try .sa-bar{flex:1;height:14px;background:#f3f4f6;border-radius:7px;overflow:hidden;}
+.sa .sa-try .sa-bar span{display:block;height:100%;background:var(--a);}
+.sa .sa-try em{width:64px;text-align:right;font-style:normal;flex:none;}
+.sa .sa-note{font-size:.8rem;color:var(--muted);margin-top:8px;}
+.sa .sa-foot{font-size:.72rem;color:#9ca3af;text-align:center;padding:10px 12px 16px;}
+</style>
+<style>
+/* ===== The builder page (for the team only) ===== */
+:root{--bg:#f6f7f5;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--accent:#0f766e;--accent-soft:#e6f2f0;--warn:#b45309;--bad:#b91c1c;--good:#15803d;}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;}
+body.viewing{background:#fff;}
+#viewer{min-height:100vh;}
+body.viewing #viewer{max-width:520px;margin:0 auto;}
+body.viewing .sa{min-height:100vh;}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 80px;}
+.top h1{font-size:1.3rem;margin:0 0 2px;}
+.top p{margin:0;color:var(--muted);font-size:.92rem;}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;margin-top:18px;}
+@media(min-width:960px){.grid{grid-template-columns:minmax(0,1fr) 400px;} .previewCol{position:sticky;top:16px;align-self:start;}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;}
+.card h2{font-size:1.05rem;margin:0 0 4px;}
+.card .lede{color:var(--muted);font-size:.9rem;margin:0 0 6px;}
+.routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px;}
+.route{border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:.9rem;background:#fbfaf7;}
+.route b{display:block;margin-bottom:2px;}
+label.f{display:block;font-weight:600;font-size:.9rem;margin:14px 0 4px;}
+label.f small{font-weight:400;color:var(--muted);}
+input[type=text],textarea,select{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:.92rem;font-family:inherit;color:var(--ink);background:#fff;}
+textarea{min-height:64px;resize:vertical;}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 14px;}
+.item{border:1px dashed var(--line);border-radius:10px;padding:2px 12px 12px;margin-top:10px;}
+.check{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.92rem;}
+.check input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);}
+.hint{background:#fbfaf7;border:1px solid #eee8da;border-radius:8px;padding:9px 12px;font-size:.84rem;color:#57534e;margin:10px 0 0;}
+.btn{display:inline-block;border:none;border-radius:9px;background:var(--accent);color:#fff;font-size:.92rem;font-weight:600;padding:10px 16px;cursor:pointer;font-family:inherit;text-decoration:none;margin:6px 8px 0 0;}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent);}
+.btn.danger{background:#fff;color:var(--bad);border:1px solid #fecaca;}
+.btn:focus-visible{outline:3px solid #94d2cb;outline-offset:2px;}
+.linkbox{word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:10px;max-height:120px;overflow:auto;}
+.flags{margin:8px 0 0;padding:0;list-style:none;}
+.flags li{border-left:4px solid var(--warn);background:#fffbeb;padding:8px 10px;margin:6px 0;font-size:.86rem;border-radius:0 6px 6px 0;}
+.flags li.ok{border-color:var(--good);background:#f0fdf4;}
+.msg{font-size:.86rem;margin-top:8px;min-height:1.2em;}
+.msg.good{color:var(--good);} .msg.bad{color:var(--bad);}
+.phone{border:10px solid #111827;border-radius:34px;overflow:hidden;background:#fff;height:720px;max-height:82vh;display:flex;flex-direction:column;}
+.phone #preview{flex:1;overflow:auto;}
+.previewCol h2{font-size:.95rem;margin:0 0 8px;color:var(--muted);font-weight:600;}
+.previewCol .pnote{font-size:.8rem;color:var(--muted);margin-top:8px;}
+.counter{font-weight:400;color:var(--muted);font-size:.78rem;float:right;}
+.counter.over{color:var(--bad);}
+</style>
+</head>
+<body>
+
+<div id="viewer" hidden></div>
+
+<div id="builder" class="wrap" hidden>
+  <header class="top">
+    <h1>Starter App Builder</h1>
+    <p>IBM 4801 × GLIM sprint · turn GLIM's content into a phone app your customer can open from a chat message.</p>
+  </header>
+
+  <div class="grid">
+    <div>
+      <section class="card">
+        <h2>How this works</h2>
+        <p class="lede">Your app has four screens, matching GLIM's four boxes on your Week 2 page: <b>hook → help them see the problem → one trust line → one next step</b>. Type GLIM's content into the boxes below and watch the phone preview. Then pick a route.</p>
+        <div class="routes">
+          <div class="route"><b>Route A · Make our link</b>Fill in the boxes, press <i>Make our link</i>, and share it. Nothing to install. Best if you want a working app fast.</div>
+          <div class="route"><b>Route B · Change it with an AI tool</b>Fill in the boxes, press <i>Download our app file</i>, then change the design or add features with an AI tool and publish your own link. More freedom, more to check.</div>
+        </div>
+        <p class="hint"><b>Your work stays in this browser</b> until you press <i>Start over</i>. One person types; to move to another computer, make the link and use <i>Continue from a link</i> there.</p>
+      </section>
+
+      <section class="card">
+        <h2>About your app</h2>
+        <div class="row2">
+          <div><label class="f" for="f-team">Team <small>(shown small at the bottom)</small></label><input type="text" id="f-team" data-k="team" placeholder="Team 4"></div>
+          <div><label class="f" for="f-title">App name <small>(shown in the browser tab)</small></label><input type="text" id="f-title" data-k="title" placeholder="Can your members focus?"></div>
+        </div>
+        <div class="row2">
+          <div><label class="f" for="f-company">Company name shown on the app</label>
+            <select id="f-company" data-k="company">
+              <option value="none">None (use until Dr. Wang confirms)</option>
+              <option value="a2v">A2V Consulting Group</option>
+              <option value="plum">Plum AV</option>
+              <option value="both">A2V Consulting Group and Plum AV</option>
+            </select></div>
+          <div><label class="f" for="f-color">Main color</label>
+            <select id="f-color" data-k="color">
+              <option value="teal">Teal</option><option value="indigo">Indigo</option><option value="maroon">Maroon</option>
+              <option value="green">Green</option><option value="saffron">Saffron</option>
+            </select></div>
+        </div>
+        <p class="hint">Every app shows a fixed line at the top: <i>"Student-built app · research prototype · not an offer from any company."</i> You can't remove it.</p>
+      </section>
+
+      <section class="card">
+        <h2>Screen 1 · Hook <small style="font-weight:400;color:var(--muted)">(GLIM box 1)</small></h2>
+        <p class="lede">Meet the customer at their moment, in their words. Not "Welcome!"</p>
+        <label class="f" for="f-h1">Headline <span class="counter" data-for="f-h1" data-max="90"></span></label>
+        <input type="text" id="f-h1" data-k="hook.headline" placeholder="Members complaining they can't focus?">
+        <label class="f" for="f-h2">One supporting line <small>(optional)</small></label>
+        <textarea id="f-h2" data-k="hook.line" placeholder="It may not just be 'how open spaces are.' Take one minute to check your space."></textarea>
+        <label class="f" for="f-h3">Start button text</label>
+        <input type="text" id="f-h3" data-k="hook.button" placeholder="Check my space">
+      </section>
+
+      <section class="card">
+        <h2>Screen 2 · Help them see the problem <small style="font-weight:400;color:var(--muted)">(GLIM box 2)</small></h2>
+        <p class="lede">2–3 things the customer can notice in their own space. They tap "Yes, this happens here" or "Not here." This is where they diagnose; you don't sell.</p>
+        <label class="f" for="f-n0">Line above the cards</label>
+        <input type="text" id="f-n0" data-k="notice.intro" placeholder="Do any of these happen in your space?">
+        <div class="item"><label class="f" for="f-n1">Sign 1</label><input type="text" id="f-n1" data-k="notice.items.0.text" placeholder="Phone calls in the open area draw complaints">
+          <label class="f" for="f-n1e">Local example <small>(optional)</small></label><input type="text" id="f-n1e" data-k="notice.items.0.example" placeholder="e.g., members moving to the stairwell to take calls"></div>
+        <div class="item"><label class="f" for="f-n2">Sign 2</label><input type="text" id="f-n2" data-k="notice.items.1.text" placeholder="People wear headphones even when no music is playing">
+          <label class="f" for="f-n2e">Local example <small>(optional)</small></label><input type="text" id="f-n2e" data-k="notice.items.1.example" placeholder=""></div>
+        <div class="item"><label class="f" for="f-n3">Sign 3 <small>(optional)</small></label><input type="text" id="f-n3" data-k="notice.items.2.text" placeholder="Video calls in meeting rooms sound hollow or echoey">
+          <label class="f" for="f-n3e">Local example <small>(optional)</small></label><input type="text" id="f-n3e" data-k="notice.items.2.example" placeholder=""></div>
+        <label class="f" for="f-n4">What it means, if they said yes to one or more</label>
+        <textarea id="f-n4" data-k="notice.after" placeholder="These signs often point to how sound travels in the room, not to the people in it."></textarea>
+        <p class="hint">If the customer says "Not here" to everything, the app says honestly that this may not be a problem in their space. That's a valid result.</p>
+      </section>
+
+      <section class="card">
+        <h2>Optional · Clap echo test</h2>
+        <p class="lede">The customer claps once and the phone shows how long the room "rings." They can try two or three spots and compare. Use it only if your pain point is about echo or speech being hard to follow.</p>
+        <label class="check"><input type="checkbox" id="f-clap" data-k="clap.on"> <span>Add the clap echo test after screen 2</span></label>
+        <label class="f" for="f-c1">Line above the test <small>(optional)</small></label>
+        <input type="text" id="f-c1" data-k="clap.intro" placeholder="Hear it for yourself: how long does your room ring?">
+        <p class="hint">Phones are rough measuring tools. The test shows only a comparison between tries on the same phone: no "good" or "bad" levels and no official numbers. Nothing is recorded or sent. Test it on an iPhone and an Android phone before the field test.</p>
+      </section>
+
+      <section class="card">
+        <h2>Screen 3 · One trust line <small style="font-weight:400;color:var(--muted)">(GLIM box 3)</small></h2>
+        <p class="lede">One sentence that answers the barrier in section 6 of your Brief. Show honesty; don't claim it.</p>
+        <label class="f" for="f-t1">Trust line</label>
+        <input type="text" id="f-t1" data-k="trust.line" placeholder="We recommend what fits your space, not one brand.">
+        <label class="f" for="f-t2">Why we say this <small>(optional, one or two sentences)</small></label>
+        <textarea id="f-t2" data-k="trust.why" placeholder="Many fixes start with understanding the room, before anyone buys anything."></textarea>
+      </section>
+
+      <section class="card">
+        <h2>Screen 4 · One next step <small style="font-weight:400;color:var(--muted)">(GLIM box 4)</small></h2>
+        <p class="lede">One button. When the customer taps it, the app shows your thank-you message. Nothing is collected or sent.</p>
+        <label class="f" for="f-x0">Line above the button <small>(optional)</small></label>
+        <input type="text" id="f-x0" data-k="next.line" placeholder="Want an expert to look at your space?">
+        <label class="f" for="f-x1">Button text</label>
+        <input type="text" id="f-x1" data-k="next.button" placeholder="Send an enquiry about my space">
+        <label class="f" for="f-x2">Thank-you message <small>(what would happen next)</small></label>
+        <textarea id="f-x2" data-k="next.thanks" placeholder="Thank you. In a real service, an expert would reply to talk about your space."></textarea>
+      </section>
+
+      <section class="card" id="share">
+        <h2>Check and share</h2>
+        <p class="lede">The copy check looks for words that often mean a price, a service promise, or a claim that needs a row in your claims table. It can't catch everything; your team still reads every sentence.</p>
+        <button class="btn ghost" type="button" id="b-check">Run the copy check</button>
+        <ul class="flags" id="flags"></ul>
+
+        <h2 style="margin-top:22px">Route A · Make our link</h2>
+        <button class="btn" type="button" id="b-link">Make our link</button>
+        <div id="linkOut" hidden>
+          <div class="linkbox" id="linkText"></div>
+          <button class="btn" type="button" id="b-copy">Copy link</button>
+          <a class="btn ghost" id="b-open" target="_blank" rel="noopener">Open it</a>
+          <p class="hint">Paste the link in section 3 of your team's Week 2 page, then open it on a phone. <b>The link holds all your words</b>: if you change anything, make a new link and post the new one.</p>
+        </div>
+        <div class="msg" id="linkMsg"></div>
+
+        <h2 style="margin-top:22px">Route B · Download our app file</h2>
+        <button class="btn ghost" type="button" id="b-file">Download our app file</button>
+        <div class="hint">
+          <b>Then:</b> open your AI tool (for example, Claude), attach the file, and ask for <b>one change at a time</b>. Start with:<br>
+          <i>"This is our team's app. Keep every sentence exactly as written. Change only [one thing]. Do not add statistics, prices, service promises, or marketing claims, and keep the 'Student-built app' line at the top."</i><br>
+          Use the tool's publish or share option to get a public link. Before you post it, open the link on a phone that isn't signed in to anything and run your claims table against every sentence.
+        </div>
+
+        <h2 style="margin-top:22px">Continue from a link</h2>
+        <p class="lede">Paste a link your team made with this builder to keep editing it here.</p>
+        <input type="text" id="f-load" placeholder="Paste the link here">
+        <button class="btn ghost" type="button" id="b-load">Load it</button>
+        <div class="msg" id="loadMsg"></div>
+
+        <h2 style="margin-top:22px">Start over</h2>
+        <button class="btn danger" type="button" id="b-reset">Start over</button>
+        <div class="msg" id="resetMsg"></div>
+      </section>
+    </div>
+
+    <aside class="previewCol">
+      <h2>Phone preview</h2>
+      <div class="phone"><div id="preview"></div></div>
+      <p class="pnote">Gray italic text = an empty box. Empty boxes are left out of the real app.</p>
+    </aside>
+  </div>
+</div>
+
+<script id="app-js">
+/* ===== The customer app (this part is copied into the downloaded app file) ===== */
+var SA_COLORS = {teal:['#0f766e','#e6f2f0'], indigo:['#3d5a80','#e8eef6'], maroon:['#9f1239','#fdecef'], green:['#15803d','#e9f7ee'], saffron:['#c2410c','#fff1e6']};
+var SA_LABEL = {
+  none:'Student-built app · research prototype · not an offer from any company.',
+  a2v:'Student-built app for A2V Consulting Group · research prototype · not an offer or a quote.',
+  plum:'Student-built app for Plum AV · research prototype · not an offer or a quote.',
+  both:'Student-built app for A2V Consulting Group and Plum AV · research prototype · not an offer or a quote.'
+};
+
+function renderApp(root, c, opts) {
+  opts = opts || {};
+  var preview = !!opts.preview;
+  var col = SA_COLORS[c.color] || SA_COLORS.teal;
+  var answers = {};
+  var screen = 0;
+  var clapTries = [];
+  var stopClap = null;
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function val(path) { var o = c; path.split('.').forEach(function (k) { o = (o == null) ? null : o[k]; }); return (o == null) ? '' : String(o).trim(); }
+  // Text from a box: real text, or (in the preview only) a gray placeholder. Returns null when it should be left out.
+  function txt(tag, cls, path, placeholder) {
+    var v = val(path);
+    if (v) return el(tag, cls, v);
+    if (preview && placeholder) { var e = el(tag, (cls ? cls + ' ' : '') + 'sa-empty', placeholder); return e; }
+    return null;
+  }
+  function add(parent, child) { if (child) parent.appendChild(child); return child; }
+  function items() {
+    var list = (c.notice && c.notice.items) || [];
+    var out = [];
+    list.forEach(function (it, i) { if (it && String(it.text || '').trim()) out.push({i: i, text: String(it.text).trim(), example: String(it.example || '').trim()}); });
+    if (!out.length && preview) out = [{i: 0, text: '[Sign 1]', example: '', empty: true}, {i: 1, text: '[Sign 2]', example: '', empty: true}];
+    return out;
+  }
+  function screens() {
+    var s = ['hook', 'notice', 'result'];
+    if (c.clap && c.clap.on) s.push('clap');
+    s.push('trust', 'next', 'thanks');
+    return s;
+  }
+  function go(n) { if (stopClap) { stopClap(); stopClap = null; } screen = n; draw(); if (!preview) window.scrollTo(0, 0); else root.scrollTop = 0; }
+
+  function draw() {
+    var list = screens();
+    if (screen >= list.length) screen = list.length - 1;
+    var name = list[screen];
+    root.innerHTML = '';
+    var app = el('div', 'sa');
+    app.style.setProperty('--a', col[0]); app.style.setProperty('--a-soft', col[1]);
+    app.appendChild(el('div', 'sa-label', SA_LABEL[c.company] || SA_LABEL.none));
+    var dots = el('div', 'sa-dots');
+    for (var d = 0; d < list.length - 1; d++) { var i = el('i'); if (d <= screen) i.className = 'on'; dots.appendChild(i); }
+    app.appendChild(dots);
+    var b = el('div', 'sa-body');
+    app.appendChild(b);
+    SCREENS[name](b, list);
+    var team = val('team');
+    app.appendChild(el('div', 'sa-foot', team ? team + ' · IBM 4801 × GLIM sprint' : 'IBM 4801 × GLIM sprint'));
+    root.appendChild(app);
+  }
+
+  function btn(parent, label, onClick, cls) {
+    var x = el('button', 'sa-btn' + (cls ? ' ' + cls : ''), label);
+    x.type = 'button'; x.addEventListener('click', onClick); parent.appendChild(x); return x;
+  }
+
+  var SCREENS = {
+    hook: function (b) {
+      add(b, txt('h1', '', 'hook.headline', '[Headline: meet them at their moment]'));
+      add(b, txt('p', 'sa-muted', 'hook.line', '[One supporting line]'));
+      b.appendChild(el('div', 'sa-spacer'));
+      btn(b, val('hook.button') || 'Start', function () { go(screen + 1); });
+    },
+    notice: function (b) {
+      add(b, txt('h2', '', 'notice.intro', '[Line above the cards]') || el('h2', '', 'Do any of these happen in your space?'));
+      var its = items();
+      var nextBtn;
+      its.forEach(function (it) {
+        var card = el('div', 'sa-card');
+        card.appendChild(el('div', it.empty ? 'sa-empty' : '', it.text));
+        if (it.example) card.appendChild(el('div', 'sa-ex', it.example)); else card.appendChild(el('div', 'sa-ex', ''));
+        var two = el('div', 'sa-two');
+        [['yes', 'Yes, this happens here'], ['no', 'Not here']].forEach(function (p) {
+          var k = el('button', 'sa-pick' + (answers[it.i] === p[0] ? ' sel' : ''), p[1]);
+          k.type = 'button';
+          k.setAttribute('aria-pressed', answers[it.i] === p[0] ? 'true' : 'false');
+          k.addEventListener('click', function () {
+            answers[it.i] = p[0];
+            Array.prototype.forEach.call(two.children, function (sib) { sib.classList.remove('sel'); sib.setAttribute('aria-pressed', 'false'); });
+            k.classList.add('sel'); k.setAttribute('aria-pressed', 'true');
+            nextBtn.disabled = !its.every(function (x) { return answers[x.i]; });
+          });
+          two.appendChild(k);
+        });
+        card.appendChild(two);
+        b.appendChild(card);
+      });
+      b.appendChild(el('div', 'sa-spacer'));
+      nextBtn = btn(b, 'See what this means', function () { go(screen + 1); });
+      nextBtn.disabled = !its.every(function (x) { return answers[x.i]; });
+    },
+    result: function (b) {
+      var its = items();
+      var yes = its.filter(function (x) { return answers[x.i] === 'yes'; }).length;
+      b.appendChild(el('div', 'sa-kicker', 'Your space'));
+      b.appendChild(el('div', 'sa-big', yes + ' of ' + its.length));
+      if (yes > 0) {
+        b.appendChild(el('h2', '', yes === 1 ? 'You recognized one of these signs.' : 'You recognized ' + yes + ' of these signs.'));
+        add(b, txt('p', '', 'notice.after', '[What it means, if they said yes]'));
+      } else {
+        b.appendChild(el('h2', '', "None of these happen in your space."));
+        b.appendChild(el('p', '', "That's good news: this may not be a problem for you right now. You can still read on."));
+      }
+      b.appendChild(el('div', 'sa-spacer'));
+      btn(b, 'Next', function () { go(screen + 1); });
+    },
+    clap: function (b) {
+      b.appendChild(el('div', 'sa-kicker', 'Try it'));
+      add(b, txt('h2', '', 'clap.intro', null) || el('h2', '', 'How long does your room ring?'));
+      var ol = el('ol', 'sa-steps');
+      ['Stand where people usually sit or speak.', 'Press Start, wait a second, then clap once, sharply.', 'Move to another spot and try again. Compare.'].forEach(function (s) { ol.appendChild(el('li', '', s)); });
+      b.appendChild(ol);
+      var meter = el('div', 'sa-meter'); var fill = el('span'); meter.appendChild(fill); b.appendChild(meter);
+      var status = el('div', 'sa-status', ''); status.setAttribute('aria-live', 'polite'); b.appendChild(status);
+      var triesBox = el('div'); b.appendChild(triesBox);
+      function showTries() {
+        triesBox.innerHTML = '';
+        if (!clapTries.length) return;
+        var max = Math.max.apply(null, clapTries.map(function (t) { return t.secs; }).concat([0.5]));
+        clapTries.forEach(function (t, i) {
+          var row = el('div', 'sa-try');
+          row.appendChild(el('b', '', 'Try ' + (i + 1)));
+          var bar = el('div', 'sa-bar'); var s = el('span'); s.style.width = Math.round(100 * t.secs / max) + '%'; bar.appendChild(s); row.appendChild(bar);
+          row.appendChild(el('em', '', (t.over ? 'over ' : '') + t.secs.toFixed(2) + ' s'));
+          triesBox.appendChild(row);
+        });
+        if (clapTries.length >= 2) triesBox.appendChild(el('p', 'sa-muted', 'A longer ring means more echo, which can make speech harder to follow.'));
+      }
+      showTries();
+      var start = btn(b, clapTries.length ? 'Clap again' : 'Start', function () {
+        start.disabled = true;
+        status.textContent = 'Listening… stay quiet for a moment.';
+        stopClap = clapTest(function (lvl) { fill.style.width = Math.max(0, Math.min(100, (lvl + 70) * 1.6)) + '%'; },
+          function (phase) { if (phase === 'ready') status.textContent = 'Clap once now.'; if (phase === 'heard') status.textContent = 'Heard it… listening to the ring.'; },
+          function (res) {
+            stopClap = null; start.disabled = false; fill.style.width = '0%';
+            if (res.error) { status.textContent = res.error; return; }
+            if (clapTries.length >= 3) clapTries.shift();
+            clapTries.push(res);
+            status.textContent = 'Ring time: ' + (res.over ? 'over ' : '') + res.secs.toFixed(2) + ' seconds.';
+            start.textContent = 'Clap again';
+            onward.textContent = 'Next';
+            showTries();
+          });
+      });
+      b.appendChild(el('p', 'sa-note', 'Phones are rough measuring tools: compare tries on this phone only, not with other phones or official numbers. Nothing is recorded or sent.'));
+      b.appendChild(el('div', 'sa-spacer'));
+      var onward = btn(b, clapTries.length ? 'Next' : 'Skip this step', function () { go(screen + 1); }, 'ghost');
+    },
+    trust: function (b) {
+      b.appendChild(el('div', 'sa-kicker', 'How we work'));
+      add(b, txt('div', 'sa-trust', 'trust.line', '[One trust line]'));
+      add(b, txt('p', 'sa-muted', 'trust.why', '[Why we say this]'));
+      b.appendChild(el('div', 'sa-spacer'));
+      btn(b, 'Next', function () { go(screen + 1); });
+    },
+    next: function (b) {
+      add(b, txt('h2', '', 'next.line', '[Line above the button]'));
+      b.appendChild(el('div', 'sa-spacer'));
+      btn(b, val('next.button') || (preview ? '[Button text]' : 'Continue'), function () { go(screen + 1); });
+    },
+    thanks: function (b) {
+      b.appendChild(el('div', 'sa-kicker', 'Thank you'));
+      add(b, txt('h2', '', 'next.thanks', '[Thank-you message]') || el('h2', '', 'Thank you.'));
+      b.appendChild(el('p', 'sa-muted', 'Nothing was sent. This student-built app does not collect any information.'));
+      b.appendChild(el('div', 'sa-spacer'));
+      btn(b, 'Start again', function () { answers = {}; clapTries = []; go(0); }, 'ghost');
+    }
+  };
+
+  draw();
+  return {
+    goTo: function (n) { screen = n || 0; draw(); },
+    getScreen: function () { return screen; },
+    stop: function () { if (stopClap) { stopClap(); stopClap = null; } }
+  };
+}
+
+/* Clap echo test. Listens on the phone microphone, finds one clap, and times how long the
+   sound takes to fall 20 dB (or extrapolates when the room is too noisy for a full 20 dB). */
+function clapTest(onLevel, onPhase, onDone) {
+  var stopped = false, ctx = null, stream = null, raf = 0, timer = 0;
+  function finish(res) {
+    if (stopped) return; stopped = true;
+    cancelAnimationFrame(raf); clearTimeout(timer);
+    if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+    if (ctx) ctx.close().catch(function () {});
+    if (res) onDone(res);
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !(window.AudioContext || window.webkitAudioContext)) {
+    setTimeout(function () { finish({error: "This browser can't use the microphone here. Open the link in Chrome or Safari, or skip this step."}); }, 0);
+    return function () { finish(null); };
+  }
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  navigator.mediaDevices.getUserMedia({audio: {echoCancellation: false, noiseSuppression: false, autoGainControl: false}})
+    .then(function (s) {
+      if (stopped) { s.getTracks().forEach(function (t) { t.stop(); }); return; }
+      stream = s;
+      return ctx.resume().then(function () {
+        var src = ctx.createMediaStreamSource(s);
+        var an = ctx.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0;
+        src.connect(an);
+        var buf = new Float32Array(an.fftSize);
+        var t0 = ctx.currentTime, floorVals = [], floor = null, phase = 'calibrate', peak = -200, peakT = 0, trace = [];
+        timer = setTimeout(function () { finish({error: "Didn't hear a clear clap. Try one sharp clap, a little closer to the phone."}); }, 10000);
+        function loop() {
+          if (stopped) return;
+          an.getFloatTimeDomainData(buf);
+          var sum = 0; for (var i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+          var db = 20 * Math.log(Math.sqrt(sum / buf.length) + 1e-9) / Math.LN10;
+          var t = ctx.currentTime;
+          onLevel(db);
+          if (phase === 'calibrate') {
+            floorVals.push(db);
+            if (t - t0 > 0.8) { floorVals.sort(function (a, b) { return a - b; }); floor = floorVals[Math.floor(floorVals.length / 2)]; phase = 'wait'; onPhase('ready'); }
+          } else if (phase === 'wait') {
+            if (db > floor + 18 && db > -50) { phase = 'decay'; peak = db; peakT = t; trace = [[t, db]]; onPhase('heard'); }
+          } else if (phase === 'decay') {
+            trace.push([t, db]);
+            if (db > peak && t - peakT < 0.08) { peak = db; peakT = t; trace = [[t, db]]; }
+            if (t - peakT > 1.6) { finish(analyse(trace, peak, peakT, floor)); return; }
+          }
+          raf = requestAnimationFrame(loop);
+        }
+        loop();
+      });
+    })
+    .catch(function () { finish({error: 'The microphone is blocked, so this step can\'t run. You can skip it.'}); });
+  return function () { finish(null); };
+}
+
+function analyse(trace, peak, peakT, floor) {
+  var room = peak - floor;
+  if (room < 15) return {error: "It's too noisy here to hear the echo clearly. Try in a quieter moment, or skip this step."};
+  var drop = Math.min(20, room - 4);
+  var target = peak - drop;
+  for (var i = 1; i < trace.length; i++) {
+    if (trace[i][1] <= target) {
+      var a = trace[i - 1], z = trace[i];
+      var frac = (a[1] - target) / ((a[1] - z[1]) || 1);
+      var tCross = a[0] + frac * (z[0] - a[0]) - peakT;
+      return {secs: Math.max(0.01, tCross * 20 / drop), over: false};
+    }
+  }
+  return {secs: 1.5, over: true};
+}
+</script>
+
+<script>
+/* ===== The builder page ===== */
+(function () {
+  var KEY = 'ibm4801_starter_app_v1';
+  var BLANK = {v: 1, team: '', title: '', company: 'none', color: 'teal',
+    hook: {headline: '', line: '', button: ''},
+    notice: {intro: '', items: [{text: '', example: ''}, {text: '', example: ''}, {text: '', example: ''}], after: ''},
+    clap: {on: false, intro: ''},
+    trust: {line: '', why: ''},
+    next: {line: '', button: '', thanks: ''}};
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function merge(base, extra) {
+    if (!extra || typeof extra !== 'object') return base;
+    Object.keys(base).forEach(function (k) {
+      if (!(k in extra)) return;
+      if (Array.isArray(base[k])) { base[k] = base[k].map(function (b, i) { return merge(b, (extra[k] || [])[i]); }); }
+      else if (base[k] && typeof base[k] === 'object') base[k] = merge(base[k], extra[k]);
+      else if (typeof base[k] === 'boolean') base[k] = !!extra[k];
+      else base[k] = String(extra[k] == null ? '' : extra[k]).slice(0, 600);
+    });
+    return base;
+  }
+
+  // ---- Link encoding: JSON -> (compressed when the browser can) -> URL-safe text
+  function b64u(bytes) { var s = ''; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64u(str) { str = str.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; var s = atob(str), out = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) out[i] = s.charCodeAt(i); return out; }
+  function pipe(bytes, stream) { return new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer().then(function (b) { return new Uint8Array(b); }); }
+  function encode(obj) {
+    var bytes = new TextEncoder().encode(JSON.stringify(obj));
+    if (window.CompressionStream) {
+      return pipe(bytes, new CompressionStream('deflate-raw')).then(function (z) { return 'z' + b64u(z); }).catch(function () { return 'j' + b64u(bytes); });
+    }
+    return Promise.resolve('j' + b64u(bytes));
+  }
+  function decode(code) {
+    try {
+      var kind = code.charAt(0), bytes = unb64u(code.slice(1));
+      if (kind === 'j') return Promise.resolve(JSON.parse(new TextDecoder().decode(bytes)));
+      if (kind === 'z') {
+        if (!window.DecompressionStream) return Promise.reject(new Error('old'));
+        return pipe(bytes, new DecompressionStream('deflate-raw')).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); });
+      }
+    } catch (e) { return Promise.reject(e); }
+    return Promise.reject(new Error('bad'));
+  }
+  function codeFrom(text) { var m = String(text || '').match(/#app=([A-Za-z0-9_\-]+)/); return m ? m[1] : null; }
+  function baseUrl() { return location.href.split('#')[0].split('?')[0]; }
+
+  // ---- Viewer mode: someone opened a team's link
+  var code = codeFrom(location.hash);
+  if (code) {
+    document.body.classList.add('viewing');
+    var v = document.getElementById('viewer');
+    v.hidden = false;
+    decode(code).then(function (obj) {
+      var content = merge(clone(BLANK), obj);
+      if (content.title) document.title = content.title;
+      renderApp(v, content, {preview: false});
+    }).catch(function () {
+      v.innerHTML = '<div style="padding:28px;font-family:inherit"><h2>This link is incomplete</h2><p>Part of the link may have been cut off when it was copied. Ask the team to send the full link again. If it still fails, open it in an up-to-date Chrome or Safari.</p></div>';
+    });
+    return;
+  }
+
+  // ---- Builder mode
+  document.getElementById('builder').hidden = false;
+  var state = clone(BLANK);
+  try { var saved = localStorage.getItem(KEY); if (saved) state = merge(clone(BLANK), JSON.parse(saved)); } catch (e) {}
+
+  var fields = Array.prototype.slice.call(document.querySelectorAll('[data-k]'));
+  function getPath(path) { var o = state; path.split('.').forEach(function (k) { o = o[k]; }); return o; }
+  function setPath(path, value) { var ks = path.split('.'), o = state; for (var i = 0; i < ks.length - 1; i++) o = o[ks[i]]; o[ks[ks.length - 1]] = value; }
+  function fill() { fields.forEach(function (f) { var v = getPath(f.dataset.k); if (f.type === 'checkbox') f.checked = !!v; else f.value = v; }); counters(); }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function counters() {
+    Array.prototype.forEach.call(document.querySelectorAll('.counter'), function (c) {
+      var f = document.getElementById(c.dataset.for), n = f.value.length, max = +c.dataset.max;
+      c.textContent = n + ' / ' + max; c.classList.toggle('over', n > max);
+    });
+  }
+
+  var app = null, pv = document.getElementById('preview'), tmr = 0;
+  function refresh() {
+    var at = app ? app.getScreen() : 0;
+    if (app) app.stop();
+    app = renderApp(pv, state, {preview: true});
+    // Keep the preview on the screen being edited, if it still exists
+    if (at) app.goTo(at);
+  }
+  // Jump the preview to the screen whose box is being edited
+  var SCREEN_OF = {hook: 0, notice: 1, clap: 3, trust: 3, next: 4};
+  function screenFor(path) {
+    var top = path.split('.')[0];
+    if (!(top in SCREEN_OF)) return null;
+    var n = SCREEN_OF[top];
+    if (top === 'notice' && /after/.test(path)) n = 2;
+    if (top === 'trust' || top === 'next') n += state.clap.on ? 1 : 0;
+    return n;
+  }
+
+  fields.forEach(function (f) {
+    var ev = (f.tagName === 'SELECT' || f.type === 'checkbox') ? 'change' : 'input';
+    f.addEventListener(ev, function () {
+      setPath(f.dataset.k, f.type === 'checkbox' ? f.checked : f.value);
+      save(); counters();
+      clearTimeout(tmr);
+      tmr = setTimeout(function () { refresh(); var n = screenFor(f.dataset.k); if (n != null) app.goTo(n); }, 150);
+    });
+    f.addEventListener('focus', function () { var n = screenFor(f.dataset.k); if (n != null && app && app.getScreen() !== n) app.goTo(n); });
+  });
+
+  // ---- Copy check
+  var RULES = [
+    [/₹|\bRs\.?\s?\d|\bINR\b|\$\s?\d|\bprice|\bpricing|\bcosts? only|\bdiscount|\bcheap|\baffordable|\bfree of cost/i, 'Possible price. The app must not show prices.'],
+    [/install|\bwithin \d+|same[- ]day|\b24\s?(hours|hrs|\/7)|\bguarantee|\bwarranty|\bvisit your|\bon-?site/i, 'Possible service or installation promise. Take it out or rewrite it.'],
+    [/\d+\s?%|\d+\s?\+|studies show|research shows|\bproven|trusted by|\bscientifically|\bexperts agree|\bstatistics?/i, 'Number or claim: it needs a row in your claims table, or rewrite it as a guess ("may," "often").'],
+    [/\bbest\b|#\s?1|number one|\bleading\b|world[- ]class|\bguaranteed|\bperfect\b|\bmust[- ]have/i, 'Marketing word. Show it instead of claiming it.']
+  ];
+  function allText() {
+    var out = [];
+    fields.forEach(function (f) { if (f.type === 'checkbox' || f.tagName === 'SELECT') return; var v = String(getPath(f.dataset.k) || '').trim(); if (v && f.dataset.k !== 'team') out.push(v); });
+    return out;
+  }
+  document.getElementById('b-check').addEventListener('click', function () {
+    var ul = document.getElementById('flags'); ul.innerHTML = '';
+    var found = 0;
+    allText().forEach(function (t) {
+      RULES.forEach(function (r) {
+        if (r[0].test(t)) { found++; var li = document.createElement('li'); var q = document.createElement('b'); q.textContent = '"' + t + '"'; li.appendChild(q); li.appendChild(document.createTextNode(' — ' + r[1])); ul.appendChild(li); }
+      });
+    });
+    var empty = [];
+    if (!state.hook.headline.trim()) empty.push('headline');
+    if (!state.notice.items.some(function (x) { return x.text.trim(); })) empty.push('signs on screen 2');
+    if (!state.trust.line.trim()) empty.push('trust line');
+    if (!state.next.button.trim()) empty.push('button text');
+    if (empty.length) { var li = document.createElement('li'); li.textContent = 'Still empty: ' + empty.join(', ') + '.'; ul.appendChild(li); }
+    if (!found && !empty.length) { var ok = document.createElement('li'); ok.className = 'ok'; ok.textContent = 'Nothing flagged. Now read every sentence against your claims table — the check can\'t catch everything.'; ul.appendChild(ok); }
+  });
+
+  // ---- Route A: make the link
+  var lastLink = '';
+  document.getElementById('b-link').addEventListener('click', function () {
+    var msg = document.getElementById('linkMsg');
+    encode(state).then(function (c) {
+      lastLink = baseUrl() + '#app=' + c;
+      document.getElementById('linkText').textContent = lastLink;
+      document.getElementById('b-open').href = lastLink;
+      document.getElementById('linkOut').hidden = false;
+      msg.className = 'msg'; msg.textContent = '';
+    }).catch(function () { msg.className = 'msg bad'; msg.textContent = "Couldn't make the link in this browser. Try an up-to-date Chrome or Safari."; });
+  });
+  document.getElementById('b-copy').addEventListener('click', function () {
+    var msg = document.getElementById('linkMsg');
+    function done() { msg.className = 'msg good'; msg.textContent = 'Copied. Paste it in section 3 of your Week 2 page.'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastLink).then(done, fallback); else fallback();
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById('linkText'));
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      msg.className = 'msg'; msg.textContent = 'The link is selected. Copy it with Ctrl+C (or Cmd+C on a Mac).';
+    }
+  });
+
+  // ---- Route B: download a standalone app file
+  document.getElementById('b-file').addEventListener('click', function () {
+    var css = document.getElementById('app-css').textContent;
+    var js = document.getElementById('app-js').textContent;
+    var title = (state.title || 'Our app').replace(/[<>&"]/g, '');
+    var data = JSON.stringify(state, null, 2).replace(/</g, '\\u003c');
+    var html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>' + title + '</title>\n<style>\nhtml,body{margin:0;background:#fff;}\n#app{max-width:520px;margin:0 auto;}\n#app > .sa{min-height:100vh;}\n' + css + '\n</style>\n</head>\n<body>\n<div id="app"></div>\n<script>\n/* ===== YOUR APP CONTENT =====\n   Every sentence below must trace to your claims table, or read honestly as a guess ("may," "often").\n   No prices. No service or installation promises. Keep the "Student-built app" line at the top of the app. */\nvar CONTENT = ' + data + ';\n<\/script>\n<script>\n' + js + '\nrenderApp(document.getElementById("app"), CONTENT, {preview: false});\n<\/script>\n</body>\n</html>\n';
+    var name = ((state.team || 'our-team') + '-app').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.html';
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], {type: 'text/html'}));
+    a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  });
+
+  // ---- Continue from a link
+  document.getElementById('b-load').addEventListener('click', function () {
+    var msg = document.getElementById('loadMsg');
+    var c = codeFrom(document.getElementById('f-load').value);
+    if (!c) { msg.className = 'msg bad'; msg.textContent = "That doesn't look like a link made with this builder."; return; }
+    decode(c).then(function (obj) {
+      state = merge(clone(BLANK), obj); save(); fill(); if (app) app.goTo(0); refresh();
+      msg.className = 'msg good'; msg.textContent = 'Loaded. You can keep editing.';
+    }).catch(function () { msg.className = 'msg bad'; msg.textContent = 'The link seems cut off. Copy the full link and try again.'; });
+  });
+
+  // ---- Start over (press twice to confirm)
+  var armed = 0;
+  document.getElementById('b-reset').addEventListener('click', function () {
+    var b = this, msg = document.getElementById('resetMsg');
+    if (!armed) {
+      armed = setTimeout(function () { armed = 0; b.textContent = 'Start over'; msg.textContent = ''; }, 5000);
+      b.textContent = 'Press again to clear everything'; msg.className = 'msg bad'; msg.textContent = 'This clears every box in this browser. Links you already made keep working.';
+      return;
+    }
+    clearTimeout(armed); armed = 0;
+    state = clone(BLANK); save(); fill(); if (app) app.goTo(0); refresh();
+    b.textContent = 'Start over'; msg.className = 'msg good'; msg.textContent = 'Cleared.';
+  });
+
+  fill();
+  refresh();
+})();
+</script>
+</body>
+</html>
