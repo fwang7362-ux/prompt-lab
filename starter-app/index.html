@@ -65,7 +65,7 @@ body.viewing .sa{min-height:100vh;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;}
 .card h2{font-size:1.05rem;margin:0 0 4px;}
 .card .lede{color:var(--muted);font-size:.9rem;margin:0 0 6px;}
-.routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px;}
+.routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:10px;}
 .route{border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:.9rem;background:#fbfaf7;}
 .route b{display:block;margin-bottom:2px;}
 label.f{display:block;font-weight:600;font-size:.9rem;margin:14px 0 4px;}
@@ -110,11 +110,13 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--accent-soft);bor
     <div>
       <section class="card">
         <h2>How this works</h2>
-        <p class="lede">Your app has four screens, matching GLIM's four boxes on your Week 2 page: <b>hook → help them see the problem → one trust line → one next step</b>. Type GLIM's content into the boxes below and watch the phone preview. Then pick a route.</p>
+        <p class="lede">Your app has four screens, matching GLIM's four boxes on your Week 2 page: <b>hook → help them see the problem → one trust line → one next step</b>. Pick one of three routes.</p>
         <div class="routes">
-          <div class="route"><b>Route A · Make our link</b>Fill in the boxes, press <i>Make our link</i>, and share it. Nothing to install. Best if you want a working app fast.</div>
+          <div class="route"><b>Route A · Make our link</b>Fill in the boxes below, press <i>Make our link</i>, and share it. Nothing to install. <b>The highest app score on Route A is 60%</b> (30 of the 50 app points).</div>
           <div class="route"><b>Route B · Change it with an AI tool</b>Fill in the boxes, press <i>Download our app file</i>, then change the design or add features with an AI tool and publish your own link. More freedom, more to check.</div>
+          <div class="route"><b>Route C · Build your own</b>Skip this builder. Choose your own tool, write your own prompts, and build your own app from GLIM's content. Same rules as every route (see below).</div>
         </div>
+        <p class="hint"><b>Every route, the same rules:</b> every claim traces to your claims table or reads as a guess; no prices; no service or installation promises; the app says it is a student-built research prototype; it works on a phone from a shareable link; and it ends with one small next step that collects nothing.</p>
         <p class="hint"><b>Your work stays in this browser</b> until you press <i>Start over</i>. One person types; to move to another computer, make the link and use <i>Continue from a link</i> there.</p>
       </section>
 
@@ -203,7 +205,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--accent-soft);bor
         <button class="btn ghost" type="button" id="b-check">Run the copy check</button>
         <ul class="flags" id="flags"></ul>
 
-        <h2 style="margin-top:22px">Route A · Make our link</h2>
+        <h2 style="margin-top:22px">Route A · Make our link <small style="font-weight:400;color:var(--muted)">(highest app score: 60%)</small></h2>
         <button class="btn" type="button" id="b-link">Make our link</button>
         <div id="linkOut" hidden>
           <div class="linkbox" id="linkText"></div>
