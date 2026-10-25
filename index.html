@@ -193,10 +193,10 @@ var CONFIG = {
     { name:"Gemini",  url:"https://gemini.google.com/app" }
   ],
   /* Column names for the AI's candidate-source table (shown in Step 7 as a list of leads to check) */
-  evidenceColumns: ["Source title","Organization / publisher","Publication date","Direct link","Source type","Pain / Purchase","Claim it may support","What it cannot establish","Independence","Status","Notes"],
+  evidenceColumns: ["Source title","Organization / publisher","Publication date","Direct link","Source type","Evidence type","Claim it may support","What it cannot establish","Independence","Status","Notes"],
   evidenceOptions: {
     "Source type": ["Official / institutional","Tender / procurement","Review page","News / media","Report / data","Community / forum","Video / social","Supplier / vendor","Other"],
-    "Pain / Purchase": ["Customer pain","Purchase workflow","Both","Unclear"],
+    "Evidence type": ["The pain is real","Who decides or pays","What they do now","Unclear"],
     "Independence": ["Independent evidence","Supplier promotion","Self-report","Unclear"]
   },
   model: { provider:"anthropic", anthropicModel:"claude-sonnet-4-5", openaiModel:"gpt-4o", temperature:0.3, maxTokens:4000 },
@@ -256,6 +256,19 @@ var CONFIG = {
         "Exact YouTube or Instagram demonstrations and substantive comments.",
         "Installer, retailer, warranty, return, trial, and service-policy sources.",
         "Competitor and substitute scan through Justdial, IndiaMART, TradeIndia, local providers, and relevant company pages."
+      ]
+    },
+    other: {
+      label: "Other Setting from GLIM's Shortlist",
+      short: "Other",
+      contexts: "Any setting your GLIM teammates proposed that is not listed above, for example co-working spaces, banquet or event halls, clinics, or places of worship.",
+      assumption: "A specific group of customers in India, in a setting our GLIM teammates identified, may experience a sound, noise, acoustic, or shared-experience problem that affects what they are trying to do. This problem may create an opportunity for A2V / Plum AV to help them recognize and address it.",
+      searchOrder: [
+        "Exact Google Reviews or other review pages for places in this setting, and owners' or managers' public responses.",
+        "Official pages, announcements, renovation or fit-out news, tenders, and project documents for places in this setting.",
+        "India-focused news, trade articles, and community discussions about this setting and the problem.",
+        "Providers, installers, consultants, and competitors serving this setting (Justdial, IndiaMART, TradeIndia, company sites, LinkedIn).",
+        "Exact YouTube or Instagram content and substantive comments; Reddit or public Facebook only as exploratory leads."
       ]
     }
   }
@@ -643,7 +656,7 @@ function renderTest(){
   '<h3><span class="stepNum">1</span>Copy Prompt 1 and open a new chat</h3>'+
   aiButtons("assemblePrompt(state.fields)")+
   '<div class="metaline">The button copies Prompt 1 and opens a new chat. Just paste (Ctrl/Cmd + V) and send. Using another AI tool? <button class="btn ghost small" style="margin:0 0 0 4px" onclick="copyText(assemblePrompt(state.fields), this)">Copy only</button></div>'+
-  '<div class="notice info"><b>Keep that chat open.</b> You will paste the diagnosis prompt and later Prompt 2 into the <b>same</b> chat.</div>'+
+  '<div class="notice info"><b>Next:</b> paste the reply below. The diagnosis in Step 4 goes in a <b>new</b> chat, and your final run in Step 6 gets its own new chat too.</div>'+
 
   '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
   '<label class="f" for="pasteOut" style="margin-top:4px">The model&rsquo;s full search plan <span class="tag">&mdash; use the AI&rsquo;s own copy button under its reply; no special format needed</span></label>'+
@@ -811,8 +824,8 @@ function renderDiagnose(){
 
   if(!v.diag){
     h+='<h3><span class="stepNum">1</span>Copy the diagnosis prompt</h3>'+
-    '<button class="btn" onclick="copyText(buildEvalPrompt(curVersion()), this)">Copy diagnosis prompt</button>'+
-    '<div class="metaline">Paste it into the <b>same chat</b> where you ran Prompt 1 and send it.</div>'+
+    aiButtons("buildEvalPrompt(curVersion())","Copy the diagnosis prompt &amp; open a new chat in:")+
+    '<div class="metaline">Use a <b>new</b> chat: the diagnosis prompt already contains your prompt and its search plan, and an AI should not grade its own work. Just paste (Ctrl/Cmd + V) and send. Using another AI tool? <button class="btn ghost small" style="margin:0 0 0 4px" onclick="copyText(buildEvalPrompt(curVersion()), this)">Copy only</button></div>'+
     '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
     '<label class="f" for="diagPaste" style="margin-top:4px">The diagnosis reply <span class="tag">&mdash; paste the whole reply; no cleanup needed. If it isn&rsquo;t in the table format, the lab keeps it as text.</span></label>'+
     '<textarea id="diagPaste" class="mono" style="min-height:110px" oninput="state.diagDraft=this.value;save()" placeholder="Paste the diagnosis reply here...">'+esc(state.diagDraft||"")+'</textarea>'+
@@ -824,8 +837,9 @@ function renderDiagnose(){
     h+='<div id="diagStatus"></div>';
   } else {
     h+=renderDiagResult(v.diag);
-    h+='<div class="decisionBox"><label for="decision">Our decision &amp; reasoning <span class="tag" style="font-weight:400;color:var(--muted);font-size:.8rem">&mdash; what do you accept, change, or reject from this feedback, and why? (goes into your Notion record and AI Use Log)</span></label>'+
+    h+='<div class="decisionBox"><label for="decision">Our decision &amp; reasoning <span class="tag" style="font-weight:400;color:var(--muted);font-size:.8rem">&mdash; what do you accept, change, or reject from this feedback, and why? (goes into your Notion record)</span></label>'+
        '<textarea id="decision" style="min-height:70px" oninput="curVersion().decision=this.value;save()" placeholder="We will change… because… / We will keep… because… / We reject… because…">'+esc(v.decision||"")+'</textarea></div>';
+    h+=sessionSaveBox();
     h+='<div class="navRow" style="margin-top:16px">'+
     '<button class="btn secondary" onclick="reviseFromDiag()">Revise the prompt &rarr;</button>'+
     '<button class="btn" onclick="go(4)">Review &amp; compare versions &rarr;</button></div>';
@@ -901,6 +915,7 @@ function renderRefine(){
       h+='<tr><td>V'+v.id+(state.finalId===v.id?" &#9733;":"")+'</td><td>'+overallBadge(v.diag?v.diag.overall:null)+'</td><td>'+esc(topWeakness(v))+'</td><td>'+esc(v.decision||"—")+'</td><td>'+v.words+' words</td></tr>';
     });
     h+='</table><div class="metaline">Length is informational only. &#9733; = selected as final.</div>';
+    h+=sessionSaveBox();
   }
   state.versions.forEach(function(v){
     var isFinal = state.finalId===v.id;
@@ -959,22 +974,26 @@ function buildPrompt2(){
   return [
 "Continue working as the market-intelligence advisor from the previous response.",
 "",
-"Using the market-intelligence search plan you just produced, help our team begin the evidence search for this provisional opportunity assumption:",
+"Using the market-intelligence search plan you just produced, help our team begin the evidence search.",
 "",
 "SEGMENT: "+s.label,
-"PROVISIONAL ASSUMPTION: "+s.assumption,
+"GENERAL STARTING ASSUMPTION: "+s.assumption,
+(frameCount()
+  ? "OUR TEAM'S WORKING STATEMENT (this is the focus of the search; it is narrower than the general assumption):\n"+stmtText()
+  : "OUR TEAM'S FOCUS: the refined assumption in the Problem and Context part of Prompt 1. Search for that, not only the general assumption."),
 "",
 "Work through the priority research questions in a practical sequence.",
 "",
-"Separate:",
-"1. evidence about whether customers or users experience a meaningful problem; and",
-"2. evidence about whether relevant stakeholders may recognize, prioritize, approve, or pay to address that problem.",
+"Look for three types of evidence, and keep them separate:",
+"1. The pain is real: do these customers or users experience a meaningful problem, and how common and how serious is it?",
+"2. Who decides or pays: would the relevant stakeholders recognize, prioritize, approve, or pay to address it?",
+"3. What they do now: how do these customers handle the problem today (a workaround, a current supplier, or doing nothing), and why would they or would they not trust a new vendor?",
 "",
 "For each priority research question:",
 "- suggest precise search queries;",
 "- identify the most appropriate public source types and places to search;",
 "- explain what evidence would support, weaken, complicate, narrow, or redirect the assumption;",
-"- identify whether the question concerns customer pain, purchase workflow, or both;",
+"- identify which of the three evidence types the question concerns;",
 "- identify what public evidence is unlikely to establish.",
 "",
 "Recommended places to search for this segment, in rough order of reliability:",
@@ -1004,7 +1023,8 @@ order,
 "End with:",
 "1. the three highest-priority searches to conduct first;",
 "2. the most important missing stakeholder perspective;",
-"3. the questions that will probably require direct stakeholder validation.",
+"3. the questions that will probably require direct stakeholder validation;",
+"4. the strongest signal found so far of how common and how serious the problem is, or a plain statement that none was found.",
 "",
 "Do not decide whether the opportunity is attractive. Our team will open, verify, compare, and interpret the original sources before drawing a conclusion.",
 "",
@@ -1015,7 +1035,7 @@ csvHeaderForPrompt(),
 "- Wrap every value in double quotes. Leave a value empty (\"\") when you do not know it. Never guess a link or a date.",
 "- Publication date: YYYY-MM-DD, or empty.",
 "- Source type: one of "+CONFIG.evidenceOptions["Source type"].join(" | ")+".",
-"- Pain / Purchase: one of "+CONFIG.evidenceOptions["Pain / Purchase"].join(" | ")+".",
+"- Evidence type: one of "+CONFIG.evidenceOptions["Evidence type"].join(" | ")+".",
 "- Independence: one of "+CONFIG.evidenceOptions["Independence"].join(" | ")+".",
 "- Notes: any credibility, independence, or relevance concern.",
 "- If you could not actually browse and open sources, output the header row only."
@@ -1065,16 +1085,23 @@ function notionRecord(){
     L.push("```"); L.push(fv.prompt); L.push("```");
     L.push("");
   }
-  L.push("### Prompt 2 (standard)");
-  L.push("```"); L.push(buildPrompt2()); L.push("```");
-  L.push("");
-  L.push("### AI Use Log entry (copy into the log)");
-  L.push("| Date | Tool | What we asked | What we kept or changed | How we checked it |");
-  L.push("|---|---|---|---|---|");
-  L.push("| "+new Date().toLocaleDateString()+" | [ChatGPT / Claude / Gemini] | Designed and diagnosed Prompt 1 (market-intelligence search plan), "+state.versions.length+" version(s) | "+mdCell(fv&&fv.decision?fv.decision:"[summarize]")+" | Diagnosis treated as coaching only; search plan treated as unverified AI text |");
-  L.push("");
+  if(fv){
+    L.push("### Prompt 2");
+    L.push("```"); L.push(buildPrompt2()); L.push("```");
+    L.push("");
+  } else {
+    L.push("_Work in progress: no final version chosen yet. The lab keeps your work on the driver's computer; continue there next session._");
+    L.push("");
+  }
   L.push("> AI output, search-result snippets, and summaries are not verified market evidence.");
   return L.join("\n");
+}
+/* Save-progress box: lets a team paste its record into Notion at the end of any session, not only at Step 6 */
+function sessionSaveBox(){
+  return '<div class="bigNotion" style="margin-top:14px"><b style="flex-basis:100%">End of the session? Save your progress to Notion.</b>'+
+    '<button class="btn secondary small" onclick="copyText(notionRecord(), this)">Copy for Notion</button>'+
+    '<button class="btn ghost small" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
+    '<span class="metaline" style="flex-basis:100%">Paste it under <b>Team notes and decisions log</b> at the bottom of your Week 1 Brief. Your work also stays saved on this computer, so you can continue here next session.</span></div>';
 }
 /* Full history (every prompt and diagnosis) kept as a downloadable file */
 function sessionRecord(){
@@ -1150,7 +1177,7 @@ function renderExport(){
   '<div class="notice warn">The search plan made inside this lab was a <b>test output</b>. Your official search plan is the one produced when your team runs Final Prompt 1 in its own AI tool.</div>'+
   '<details class="help"><summary>Read Final Prompt 1 and Prompt 2</summary>'+
   '<h3>Final Prompt 1</h3><pre class="prompt">'+esc(fv.prompt)+'</pre>'+
-  '<h3>Prompt 2 &middot; standard for the whole class (do not edit)</h3><pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
+  '<h3>Prompt 2 &middot; built from your working statement (do not edit)</h3><pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
   '<p class="metaline">Prompt 2 ends by asking the AI for a table of candidate sources. You will paste that reply on the next step, and the lab shows the sources as a list of leads to check.</p></details>'+
 
   '<details class="more"><summary>More options (team details, full history file, start over)</summary>'+
@@ -1263,7 +1290,7 @@ function renderEvPreview(){
   var ev=evidenceFromReply(reply);
   if(!ev.found) return '<div class="notice warn">No evidence table found in this reply. Ask the AI in the same chat: <i>&ldquo;Please give the candidate source table now, as one csv code block with the exact header row I asked for.&rdquo;</i> Then paste the new reply here.</div>';
   if(!ev.rows.length) return '<div class="notice warn">The table is empty. The AI may not have been able to browse. That is an honest result: use its search queries to find sources yourself, check them, and copy the ones that pass into your Brief.</div>';
-  var cols=["Source title","Organization / publisher","Source type","Pain / Purchase","Direct link","Notes"];
+  var cols=["Source title","Organization / publisher","Source type","Evidence type","Direct link","Notes"];
   var h='<div class="notice info"><b>'+ev.rows.length+' candidate source'+(ev.rows.length>1?"s":"")+'</b> to check'+(ev.flags?' &middot; '+ev.flags+' need'+(ev.flags>1?"":"s")+' extra checking (shown in orange)':'')+'. None of them is evidence until a teammate opens it.</div>'+
   '<div class="evTableWrap"><table class="ev"><tr>'+cols.map(function(c){return '<th>'+esc(c)+'</th>';}).join("")+'</tr>';
   ev.rows.forEach(function(r){
