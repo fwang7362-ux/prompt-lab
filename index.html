@@ -483,7 +483,7 @@ function renderSavebar(){
   var msg = storageOK
     ? team+"Saved automatically in this browser"+(state.savedAt? " &middot; "+esc(state.savedAt):"")
     : "This browser is not saving your work &mdash; use &ldquo;Save backup file&rdquo; before closing.";
-  el.innerHTML='<span>'+msg+'</span><span><button class="lnk" onclick="downloadBackup()">Save backup file</button><button class="lnk" onclick="document.getElementById(\'restoreFile\').click()">Open backup file</button></span>';
+  el.innerHTML='<span>'+msg+'</span><span><button class="lnk" onclick="downloadBackup()">Save backup file</button><button class="lnk" onclick="document.getElementById(\'restoreFile\').click()">Open backup file</button><button class="lnk" onclick="resetAll()">Start over</button></span>';
 }
 function downloadBackup(){
   var copy=JSON.parse(JSON.stringify(state)); copy.settings.apiKey="";
@@ -1789,12 +1789,15 @@ function renderValidate(){
 function tickStep(i,v){ state.handoffTicks[i]=v; save(); }
 /* Start over: asks on the page instead of a pop-up (pop-ups are blocked in some in-app browsers) */
 function resetAll(){
-  openModal('<h2>Start a new session?</h2>'+
-    '<p>This erases your segment, prompt versions, diagnoses and answers from this browser. Your Settings (Notion link) are kept.</p>'+
+  var n=state.versions.length;
+  openModal('<h2>&#9888;&#65039; Are you sure you want to start over?</h2>'+
+    (n? '<div class="demandWarn"><b>You have '+n+' saved version'+(n>1?'s':'')+'.</b> Starting over erases '+(n>1?'all of them':'it')+', so you can no longer compare versions or see what you changed between them.</div>' : '')+
+    '<p>This erases your segment, prompt versions, AI opinions and your answers from this browser. Your Settings (Notion link) are kept.</p>'+
+    '<p><b>Just want to try a new idea?</b> You don&rsquo;t need to start over. Edit your prompt and test again: every version is kept, so you can compare them in Step 5.</p>'+
     '<p class="metaline">Want to keep a copy first? Save your record to Notion, or download the full history.</p>'+
     '<div class="navRow"><button class="btn secondary small" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download full history first</button></div>'+
     '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button>'+
-    '<button class="btn" id="confirmReset" onclick="doReset()">Yes, erase and start over</button></div>');
+    '<button class="btn" id="confirmReset" onclick="doReset()">Yes, erase everything and start over</button></div>');
 }
 function doReset(){
   var keep=state.settings;
