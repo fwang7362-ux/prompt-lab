@@ -56,7 +56,7 @@
   textarea.mono, pre.prompt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;}
   pre.prompt{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto;margin:8px 0;}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px;}
-  .chip{border:1px solid var(--line);background:#fff;color:#57534e;border-radius:999px;padding:4px 11px;font-size:.78rem;cursor:pointer;font-family:inherit;}
+  .chip{border:1px solid var(--line);background:#fff;color:#57534e;border-radius:14px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-family:inherit;text-align:left;line-height:1.4;}
   .chip:hover{border-color:var(--accent);color:var(--accent);}
   .chip.used{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
   .starterBtn{border:1px dashed var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:4px 12px;font-size:.78rem;cursor:pointer;font-family:inherit;margin:4px 0 0;}
@@ -134,6 +134,79 @@
   .frameGrid input{padding:8px 10px;font-size:.88rem;}
   details.sharpen{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;background:#fcfdfc;}
   details.sharpen summary{cursor:pointer;font-weight:600;font-size:.88rem;color:var(--accent);}
+  .frameHint{background:#f1f7f6;border-left:3px solid var(--accent);border-radius:6px;padding:8px 12px;margin:10px 0 2px;font-size:.86rem;line-height:1.5;}
+  .frameGroup{grid-column:1/-1;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 0;border-top:1px solid var(--line);padding-top:8px;}
+  .kindAsk{border:1px solid #cdd8e6;background:#f7f9fc;border-radius:8px;padding:12px 14px;margin:12px 0 4px;}
+  .kindAsk .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .kindAsk .btn.sel{outline:3px solid var(--accent);outline-offset:1px;}
+  /* iPad / iPhone: text boxes at 16px or larger stop Safari from zooming in on every tap */
+  @media (pointer:coarse){ input, textarea, select{ font-size:16px !important; } }
+  /* stop-and-think boxes */
+  .think{border:1px solid #e6dcb4;background:#fffcf0;border-radius:8px;padding:12px 14px;margin:12px 0;}
+  .think label{font-weight:600;font-size:.93rem;display:block;margin-bottom:6px;line-height:1.45;}
+  .think label b{color:var(--accent);}
+  .think textarea{min-height:58px;}
+  .think .note{font-size:.78rem;color:var(--muted);margin-top:4px;}
+  .think .need{color:var(--warn);font-weight:600;}
+  .think .minTag{font-weight:400;color:var(--muted);font-size:.82rem;}
+  .prev{background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.84rem;margin:0 0 8px;line-height:1.5;}
+  .locked{opacity:.4;pointer-events:none;user-select:none;}
+  .lockMsg{font-size:.82rem;color:var(--warn);margin:6px 0 0;}
+  /* Do / Done when */
+  .dodone{background:var(--accent-soft);border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:.92rem;line-height:1.55;}
+  .dodone b{color:var(--accent);}
+  .client{background:#fff;border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:.92rem;line-height:1.55;}
+  .client h2{font-size:1rem;margin:0 0 8px;}
+  .client p{margin:0 0 6px;}
+  .client b{color:var(--accent);}
+  .stepLine{margin:8px 0 2px;font-size:.88rem;}
+  .insertRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 2px;}
+  .insertRow .hand{font-size:1.5rem;line-height:1;display:inline-block;animation:nudge 1.2s ease-in-out infinite;}
+  .insertRow .handTxt{font-weight:600;color:var(--accent);font-size:.9rem;}
+  .insertRow .btn{margin:0;}
+  @keyframes nudge{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+  @media (prefers-reduced-motion: reduce){ .insertRow .hand{animation:none;} }
+  .insertOk{color:var(--good);font-weight:600;font-size:.86rem;min-height:1.2em;margin-top:4px;}
+  .doList{margin:4px 0 4px;padding-left:22px;}
+  .doList li{margin-bottom:2px;}
+  /* Five parts of Search Plan Prompt: one color each, used in the builder and in the prompt preview */
+  .pc-person{--pc:#0f766e;--pbg:#f0fdfa;}
+  .pc-problem{--pc:#1d4ed8;--pbg:#eff6ff;}
+  .pc-process{--pc:#7c3aed;--pbg:#f5f3ff;}
+  .pc-product{--pc:#b45309;--pbg:#fffbeb;}
+  .pc-parameters{--pc:#be185d;--pbg:#fdf2f8;}
+  .pchunk{background:var(--pbg);border:1px solid color-mix(in srgb, var(--pc) 22%, #fff);border-left:6px solid var(--pc);border-radius:10px;padding:4px 16px 14px;margin:18px 0;}
+  .pchunk label.f{color:var(--pc);font-size:1rem;margin-top:12px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .pchunk label.f span.tag{color:#4b5563;}
+  .pchunk textarea{background:#fff;}
+  .pbadge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--pc);color:#fff;font-size:.8rem;font-weight:700;flex:none;}
+  .pchunk details.help summary{color:var(--pc);}
+  pre.prompt.colored{padding:8px;}
+  pre.prompt.colored .pp{display:block;border-left:4px solid var(--pc);background:var(--pbg);border-radius:4px;padding:6px 10px;margin:4px 0;white-space:pre-wrap;}
+  pre.prompt.colored .pp b{color:var(--pc);}
+  /* numbered sub-steps (1, 2 ...) inside a step stand out as their own band */
+  .card h3:has(> .stepNum){background:#f1f5f9;border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;margin:22px 0 10px;}
+  .ideaHead{font-size:.84rem;color:#4b5563;margin:10px 0 2px;font-weight:600;}
+  .card h3.withBtn{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .card h3.withBtn .copyOnly{margin:0 0 0 auto;background:#fff;color:var(--accent);border:2px solid var(--accent);font-weight:700;}
+  .opSlot{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 14px;margin:10px 0;}
+  .opSlot .opHead{font-weight:700;color:var(--accent);}
+  .opSlot select{max-width:260px;}
+  .opDone{background:var(--accent-soft);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.9rem;color:var(--accent);font-weight:600;}
+  details.planBox summary{cursor:pointer;font-size:.86rem;color:var(--accent);font-weight:600;}
+  pre.planText{max-height:420px;overflow:auto;}
+  pre.planText.full{max-height:none;}
+  .subStep{font-size:.9rem;margin:12px 0 4px;}
+  .subStep b{color:var(--accent);}
+  .partRow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;width:100%;}
+  .partRow + .partRow{margin-top:6px;}
+  .partLbl{min-width:212px;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;align-self:center;margin:0 2px 0 6px;}
+  .demandWarn{background:#fff7ed;border:2px solid #f59e0b;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.9rem;line-height:1.5;color:#7c2d12;}
+  .whyLine{margin-top:4px;color:#3f5f5a;font-size:.88rem;}
+  details.why summary{font-size:.8rem;color:var(--accent);cursor:pointer;margin-top:4px;}
+  details.why > div{color:var(--muted);font-size:.86rem;margin-top:4px;}
+  .segCard p.tags{font-size:.8rem;}
+  footer.priv summary{cursor:pointer;}
   .aiRow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;}
   .aiRow .lbl{font-size:.82rem;color:var(--muted);margin-right:2px;}
   .bigNotion{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0;}
@@ -155,7 +228,7 @@
   <header class="top">
     <div>
       <h1 id="appTitle">India Market Intelligence Prompt Lab</h1>
-      <p class="subtitle" id="appSub">A2V / Plum AV Customer-Education Challenge &middot; Build and test your Prompt&nbsp;1</p>
+      <p class="subtitle" id="appSub">A2V / Plum AV Customer-Education Challenge &middot; Build and test your Market Intelligence Search Plan Prompt</p>
     </div>
     <button class="gear" onclick="openSettings()">&#9881; Settings</button>
   </header>
@@ -163,9 +236,9 @@
   <div id="stepper" class="stepper" role="navigation" aria-label="Progress"></div>
   <div id="app"></div>
   <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)">
-  <footer class="priv">
-    <b>Privacy &amp; storage.</b> Everything you type stays in this browser on this device (saved automatically so you can close and return; use &ldquo;Save backup file&rdquo; to move your work to another device or teammate, and &ldquo;Start over&rdquo; to erase it). Nothing is sent anywhere by default. Copy &amp; Paste mode &mdash; the standard way to use this lab &mdash; works with the free version of ChatGPT, Claude, or Gemini and requires no API key. Only if you choose to add your <i>own personal</i> API key in Settings will &ldquo;Run in-app&rdquo; send your prompt directly to that provider. Never enter an instructor&rsquo;s or employer&rsquo;s key, and do not enter confidential company or personal information anywhere in this lab.
-  </footer>
+  <footer class="priv"><details><summary><b>Privacy &amp; saving</b> &middot; your work stays in this browser</summary>
+    Everything you type stays in this browser on this device (saved automatically so you can close and return; use &ldquo;Save backup file&rdquo; to move your work to another device or teammate, and &ldquo;Start over&rdquo; to erase it). Nothing is sent anywhere by default. Copy &amp; Paste mode &mdash; the standard way to use this lab &mdash; works with the free version of ChatGPT, Claude, or Gemini and requires no API key. Only if you choose to add your <i>own personal</i> API key in Settings will &ldquo;Run in-app&rdquo; send your prompt directly to that provider. Never enter an instructor&rsquo;s or employer&rsquo;s key, and do not enter confidential company or personal information anywhere in this lab.
+  </details></footer>
 </div>
 
 <div id="modalHost"></div>
@@ -175,7 +248,7 @@
 /* ================================================================
    INSTRUCTOR CONFIGURATION
    Edit the values in CONFIG below for ordinary course updates
-   (titles, segments, assumptions, guidance, chips, Prompt 2 core,
+   (titles, segments, assumptions, guidance, chips, Actual Search Prompt core,
    Notion link, model defaults). No other code changes are needed.
    You may instead host a file named prompt-lab-config.json next to
    this page with the same structure; it overrides CONFIG on load.
@@ -184,8 +257,14 @@
 var CONFIG = {
   projectTitle: "India Market Intelligence Prompt Lab",
   companyName: "A2V / Plum AV",
-  subtitle: "A2V / Plum AV Customer-Education Challenge · Build and test your Prompt 1",
+  subtitle: "A2V / Plum AV Customer-Education Challenge · Build and test your Market Intelligence Search Plan Prompt",
   notionUrl: "",
+  /* Shown at the top of the first page. Plain text; edit freely. Facts come from the Know the Client page. */
+  clientIntro: {
+    who: "A2V Consulting Group, based in Chino, California, designs sound, video and acoustic solutions for rooms and buildings. Its sister company, Plum AV, makes simple AV products for homes and businesses. A2V has started bringing on engineers in Surat, India, and wants to become known in India as a trusted expert.",
+    ask: "Find where in India people have a real sound or noise problem that A2V or Plum AV could help with, and who would decide and pay to fix it. Over the three-week sprint, your team builds a simple app that helps those people notice and understand the problem.",
+    today: "Write a prompt that gets an AI to plan that search. You check everything the AI says."
+  },
   /* Buttons that copy a prompt and open a fresh chat in the team's AI tool */
   aiTools: [
     { name:"ChatGPT", url:"https://chatgpt.com/" },
@@ -196,7 +275,7 @@ var CONFIG = {
   evidenceColumns: ["Source title","Organization / publisher","Publication date","Direct link","Source type","Evidence type","Claim it may support","What it cannot establish","Independence","Status","Notes"],
   evidenceOptions: {
     "Source type": ["Official / institutional","Tender / procurement","Review page","News / media","Report / data","Community / forum","Video / social","Supplier / vendor","Other"],
-    "Evidence type": ["The pain is real","Who decides or pays","What they do now","Unclear"],
+    "Evidence type": ["The pain is real","How big is the demand","Who decides or pays","What they do now","Unclear"],
     "Independence": ["Independent evidence","Supplier promotion","Self-report","Unclear"]
   },
   model: { provider:"anthropic", anthropicModel:"claude-sonnet-4-5", openaiModel:"gpt-4o", temperature:0.3, maxTokens:4000 },
@@ -217,11 +296,26 @@ var CONFIG = {
     "Avoid producing a complete market-entry strategy.",
     "Focus on research planning rather than final answers."
   ],
+  /* Idea buttons under Product & Output: several options, none of them the whole answer */
+  productChips: [
+    "A short list of the most important research questions, in priority order.",
+    "Search terms we can type into Google and Indian websites for each question.",
+    "For each research question, name the specific places in India to look (websites, review platforms, forums, government or tender portals) and say what each can and cannot tell us.",
+    "How we could estimate how many places or people have this problem, using named sources and ranges rather than invented numbers.",
+    "Who decides the problem is worth fixing, and who signs off and pays.",
+    "What evidence would support our assumption, and what evidence would weaken it."
+  ],
+  /* Guardrail that starts in the Guardrails box (students may delete it) */
+  defaultGuardrails: ["Separate customer pain from purchase-workflow logic."],
+  /* Extra guardrail shown only for household (B2C) teams; also starts in the box */
+  householdGuardrail: "Do not assume household income, spending, or who decides — label these as guesses.",
 
   segments: {
     uni: {
       label: "Universities and Educational Institutions",
+      kind: "b2b",
       short: "Universities",
+      tags: ["classrooms","libraries","auditoriums","event spaces"],
       contexts: "Classrooms, libraries, auditoriums, event spaces, media facilities, and other shared learning environments.",
       assumption: "Indian universities and educational institutions may experience sound, acoustic, or immersive-experience problems in classrooms, libraries, auditoriums, event spaces, media facilities, or other shared learning environments. These problems may create an opportunity for A2V / Plum AV to help relevant stakeholders recognize and address a meaningful problem.",
       searchOrder: [
@@ -234,7 +328,9 @@ var CONFIG = {
     },
     hotel: {
       label: "Hotels and Hospitality Venues",
+      kind: "b2b",
       short: "Hospitality",
+      tags: ["guest rooms","banquet halls","conference rooms","restaurants"],
       contexts: "Guest rooms, shared spaces, restaurants, banquet halls, conference rooms, and event venues.",
       assumption: "Indian hotels and hospitality venues may experience sound, noise, acoustic, or ambience problems affecting guest comfort, event quality, shared spaces, or hotel operations. These problems may create an opportunity for A2V / Plum AV to help relevant stakeholders recognize and address a meaningful problem.",
       searchOrder: [
@@ -247,7 +343,9 @@ var CONFIG = {
     },
     home: {
       label: "Middle-Income Households",
+      kind: "b2c",
       short: "Households",
+      tags: ["home entertainment","study & work from home","family gatherings","music & meditation"],
       contexts: "Home entertainment, family gatherings, music, meditation, reading, celebrations, and other shared in-home activities.",
       assumption: "Some Indian middle-income households may value improved shared experiences involving entertainment, family gatherings, music, meditation, reading, celebrations, or other activities. These activities may create an opportunity for A2V / Plum AV to help customers recognize the value of an improved sound or immersive experience.",
       searchOrder: [
@@ -260,7 +358,9 @@ var CONFIG = {
     },
     other: {
       label: "Other Setting from GLIM's Shortlist",
+      kind: null,   /* the team answers "business or household?" in Step 1 */
       short: "Other",
+      tags: ["co-working spaces","event halls","clinics","places of worship"],
       contexts: "Any setting your GLIM teammates proposed that is not listed above, for example co-working spaces, banquet or event halls, clinics, or places of worship.",
       assumption: "A specific group of customers in India, in a setting our GLIM teammates identified, may experience a sound, noise, acoustic, or shared-experience problem that affects what they are trying to do. This problem may create an opportunity for A2V / Plum AV to help them recognize and address it.",
       searchOrder: [
@@ -275,19 +375,40 @@ var CONFIG = {
 };
 /* ============================ END INSTRUCTOR CONFIGURATION ============================ */
 
-var STAGES = ["Segment","5P Builder","Test","Diagnose","Refine","Finalize","Check sources"];
+var STAGES = ["Segment","5P Builder","Test","Diagnose","Session 1 wrap-up","Run the search plan","Run the search","Human in the loop"];
 
-/* Short framing fields that sharpen the provisional assumption (borrowed sentence-builder) */
-var FRAME = [
-  { key:"customer",    label:"Who might experience the problem?", tip:"a role or group, not all of India" },
-  { key:"setting",     label:"Where, in what setting?",           tip:"city, institution or venue type, home context" },
-  { key:"activity",    label:"What are they trying to do?",       tip:"an activity you can picture" },
-  { key:"problem",     label:"What might get in their way?",      tip:"a possibility, not a fact" },
-  { key:"consequence", label:"Why could it matter?",              tip:"a possible consequence" },
-  { key:"trigger",     label:"When might they pay attention?",    tip:"an event or decision moment; “not known yet” is fine" },
-  { key:"alternative", label:"What else could explain it?",       tip:"one alternative explanation" },
+/* Short framing fields that sharpen the provisional assumption.
+   Two sets: business/institution customers (B2B) and households (B2C).
+   Shared keys keep their text if a team switches between sets. "group" starts a new labeled row. */
+var FRAME_B2B = [
+  { key:"customer",    group:"The people who feel the problem", label:"Who feels the problem?", tip:"the people in the space, e.g., guests, students, members" },
+  { key:"setting",     label:"Where and when does it happen?",  tip:"venue or institution type, city, time of day or event" },
+  { key:"problem",     label:"What goes wrong for them?",       tip:"a possibility, not a fact" },
+  { key:"business",    group:"The business that has to deal with it", label:"Which business or institution has to deal with it?", tip:"the organization, e.g., the hotel, the university" },
+  { key:"shows",       label:"How might it show up for that business?", tip:"e.g., complaints, reviews, lost bookings, poor event feedback" },
+  { key:"decider",     label:"Who there might decide to fix it and pay?", tip:"a role, not a name; “not known yet” is fine" },
+  { key:"trigger",     label:"When might the business pay attention?", tip:"e.g., after bad reviews, a renovation, a new hall; “not known yet” is fine" },
+  { key:"alternative", group:"Keep yourselves honest", label:"What else could explain it?", tip:"one alternative explanation" },
   { key:"firstq",      label:"What should we investigate first?", tip:"the most important unanswered question" }
 ];
+var FRAME_B2C = [
+  { key:"customer",    group:"The person who feels the problem", label:"Who in the home feels the problem?", tip:"e.g., a student studying, someone working from home" },
+  { key:"setting",     label:"Where and when does it happen?",  tip:"which room, what time, what kind of home, which city" },
+  { key:"problem",     label:"What goes wrong for them?",       tip:"a possibility, not a fact" },
+  { key:"decider",     group:"The family's decision", label:"Who in the family would decide, and who would pay?", tip:"“same person” or “not known yet” are fine" },
+  { key:"workaround",  label:"What do they do about it now?",   tip:"the current workaround; if it’s good enough, there may be no real problem" },
+  { key:"trigger",     label:"When might the family pay attention?", tip:"e.g., moving house, renovating, a big purchase season, exam year" },
+  { key:"trust",       label:"Who would they trust for advice?", tip:"e.g., relatives, a local shop, online videos (a guess to check)" },
+  { key:"alternative", group:"Keep yourselves honest", label:"What else could explain it?", tip:"one alternative explanation" },
+  { key:"firstq",      label:"What should we investigate first?", tip:"the most important unanswered question" }
+];
+var FRAME_HINT = {
+  b2b: "The people who feel the problem are usually <b>not</b> the people who pay to fix it. The first three boxes are about the first group; the next four are about the business that would have to act.",
+  b2c: "Even at home, the person who suffers may not be the person who decides. And if their current workaround is good enough, there may be no real problem to solve."
+};
+/* Which box set applies: the segment's own type, or the team's answer for "Other". */
+function custKind(){ var s=seg(); if(!s) return null; return s.kind || state.custKind || null; }
+function frameSet(){ return custKind()==="b2c" ? FRAME_B2C : FRAME_B2B; }
 
 var FIELDS = [
   { key:"person", label:"Person", tag:"Who should the AI act as, and what expertise or perspective should it bring?",
@@ -295,24 +416,29 @@ var FIELDS = [
   { key:"problem", label:"Problem & Context", tag:"What does the AI need to know about the company, project, segment, and assumption?",
     hint:"Insert the project context, then make it yours: refine the provisional assumption, clarify the segment, set boundaries, add relevant questions, and note what your team does not yet know. You are NOT expected to state a final customer insight before research begins — but a vague assumption here is the most common cause of a weak search plan." },
   { key:"process", label:"Process & Task", tag:"What should the AI help your team investigate or plan?",
-    hint:"Prompt 1 should ask the AI to design a market-intelligence SEARCH PLAN — not decide whether the opportunity is attractive, conduct the whole research project, produce a recommendation, or design the prototype. Consider whether the plan should cover: customer pain, affected activities, stakeholders, buyer/purchase-workflow logic, evidence sources, search queries, contradictory evidence, uncertainty, and questions needing stakeholder validation." },
+    hint:"Your Search Plan Prompt should ask the AI to design a market-intelligence SEARCH PLAN — not decide whether the opportunity is attractive, conduct the whole research project, produce a recommendation, or design the prototype. Consider whether the plan should cover: customer pain, affected activities, stakeholders, buyer/purchase-workflow logic, evidence sources, search queries, contradictory evidence, uncertainty, and questions needing stakeholder validation." },
   { key:"product", label:"Product & Output", tag:"What should the AI produce so your team can begin the evidence search?",
     hint:"You might request: prioritized research questions, a structured search sequence, search terms, source categories, pain-point questions, purchase-workflow questions, stakeholder mapping, evidence that would support or weaken the assumption, unresolved questions, and validation priorities. Aim for a usable output, not a long essay." },
   { key:"parameters", label:"Parameters & Guardrails", tag:"What should the AI avoid, distinguish, disclose, or leave unresolved?",
-    hint:"Use the optional reminder chips below — click to add one, then revise or delete it in the box. Choose deliberately; do not just add all of them. Guardrails are what make AI output checkable instead of persuasive." }
+    hint:"Use the optional suggestion buttons below. Click one to add it, then edit or delete it in the box. Choose deliberately; do not just add all of them. Guardrails are what make AI output checkable instead of persuasive." }
 ];
 
 var PROMPT_DIMS = ["Task alignment","Context sufficiency","Instruction clarity","Output usability","Evidence discipline","Instruction efficiency"];
-var OUTPUT_DIMS = ["Provisional-assumption clarity","Pain-point logic","Purchase-workflow logic","Stakeholder coverage","Source strategy","Search usability","Falsifiability","Uncertainty","Prompt 2 readiness"];
+var OUTPUT_DIMS = ["Provisional-assumption clarity","Pain-point logic","Demand volume","Purchase-workflow logic","Stakeholder coverage","Source strategy","Search usability","Falsifiability","Uncertainty","Actual Search Prompt readiness"];
 
-var HANDOFF_STEPS = [
-  "Run Final Prompt 1 in your selected AI tool.",
-  "Run Prompt 2 in the same conversation.",
-  "Paste the Prompt 2 reply on this page to see the AI’s candidate sources. Each one is a lead to check, not a finding.",
+var HANDOFF_STEPS_OLD = [
+  "Run your Final Search Plan Prompt in your selected AI tool.",
+  "Run the Actual Search Prompt in a new chat.",
+  "Paste the Actual Search Prompt reply on this page to see the AI’s candidate sources. Each one is a lead to check, not a finding.",
   "Open every original source the team may use.",
   "Run the four checks below on each source.",
   "Copy your checked sources into Week 1 — Customer Insights Brief → Verified evidence signals — 3 to 5 (1–2 sentences per cell).",
   "Paste the lab record at the bottom of your Week 1 Brief, under Team notes and decisions log.",
+  "Complete the rest of the Customer Insights Brief only after the checks."
+];
+var HANDOFF_STEPS = [
+  "Copy each source that passed all four checks into Week 1 — Customer Insights Brief → Verified evidence signals — 3 to 5 (1–2 sentences per cell).",
+  "Click Copy for Notion (above) and paste your lab record at the bottom of your Week 1 Brief, under Team notes and decisions log.",
   "Complete the rest of the Customer Insights Brief only after the checks."
 ];
 var SOURCE_QUESTIONS = [
@@ -326,8 +452,10 @@ var SOURCE_QUESTIONS = [
 var DEFAULTS = {
   stage:0, segment:null,
   fields:{person:"",problem:"",process:"",product:"",parameters:""},
-  frame:{customer:"",setting:"",activity:"",problem:"",consequence:"",trigger:"",alternative:"",firstq:""},
-  pasteDraft:"", diagDraft:"", prompt2Reply:"", savedAt:"",
+  frame:{customer:"",setting:"",problem:"",business:"",shows:"",decider:"",workaround:"",trust:"",trigger:"",alternative:"",firstq:""},
+  custKind:null, guardSeeded:false,
+  think:{segment:"",predict:"",change:"",drop:""}, switchNote:null,
+  pasteDraft:"", diagDraft:"", prompt2Reply:"", finalPlan:"", savedAt:"",
   versions:[], curVid:null, finalId:null, finalizedAt:null,
   handoffTicks:[false,false,false,false,false,false,false,false,false],
   team:{name:"",section:"",id:""},
@@ -408,11 +536,11 @@ function needsSetup(){ return !(state.settings.notionUrl||"").trim() && !CONFIG.
 function renderSetup(){
   if(!needsSetup()) return "";
   return '<div class="setup"><h2>One-time setup &middot; where should your work go?</h2>'+
-  '<p class="lede" style="margin:0">Paste the link to <b>your team&rsquo;s Week 1 &mdash; Customer Insights Brief page in Notion</b> (open it in Notion &rarr; <i>Share</i> &rarr; <i>Copy link</i>). Every &ldquo;Open our Week 1 Brief&rdquo; button in this lab will then take you straight there. If you opened the lab from your team page, this is already done.</p>'+
+  '<p class="lede" style="margin:0">Paste your team&rsquo;s <b>Week 1 Brief</b> link from Notion (<i>Share &rarr; Copy link</i>) so the &ldquo;Open our Week 1 Brief&rdquo; buttons work.</p>'+
   '<div class="row"><input type="text" id="setupTeam" aria-label="Team name" placeholder="Team name, e.g. Team 3" value="'+esc(state.team.name)+'" style="flex:0 1 200px">'+
   '<input type="text" id="setupNotion" aria-label="Week 1 Brief page link" placeholder="https://www.notion.so/... (your Week 1 Brief page)">'+
   '<button class="btn small" onclick="saveSetup()">Save</button></div>'+
-  '<div class="metaline">You can change this later in Settings. Skip it for now if you don&rsquo;t have the link yet.</div></div>';
+  '<div class="metaline">No link yet? Skip it; you can add it later in Settings.</div></div>';
 }
 function saveSetup(){
   var u=($("setupNotion").value||"").trim(), t=($("setupTeam").value||"").trim();
@@ -423,7 +551,7 @@ function saveSetup(){
 }
 function openNotion(){
   var url=notionLink();
-  if(!url){ alert("Add the link to your team's Week 1 Brief page first (Settings, top right)."); openSettings(); return; }
+  if(!url){ openSettings(); return; }
   window.open(url,"_blank","noopener");
 }
 function aiButtons(getText, label){
@@ -442,10 +570,62 @@ function copyAndOpen(txt,i,btn){
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function $(id){ return document.getElementById(id); }
 function seg(){ return CONFIG.segments[state.segment] || null; }
+/* ---- Stop-and-think boxes: short answers in the team's own words ---- */
+/* Minimum words per question: the prediction needs a full sentence; the others need at least a short phrase */
+var THINK_MIN={segment:3, predict:5, change:3, aiwrong:3, both:3, decision:3, drop:3};
+function thinkOK(t,k){ return wordCount(t)>=(THINK_MIN[k]||3); }
+function needText(t,k){
+  var left=(THINK_MIN[k]||3)-wordCount(t);
+  return left>0? " &middot; "+left+" more word"+(left===1?"":"s")+" to continue." : "";
+}
+function thinkBox(id, question, value, handler, placeholder, top){
+  var k=id.replace("think_",""), min=THINK_MIN[k]||3;
+  return '<div class="think">'+(top||"")+'<label for="'+id+'"><b>In your own words:</b> '+question+' <span class="minTag">(minimum '+min+' words)</span></label>'+
+    '<textarea id="'+id+'" oninput="'+handler+'" placeholder="'+(placeholder||"One or two sentences&hellip;")+'">'+esc(value||"")+'</textarea>'+
+    '<div class="note">Don&rsquo;t paste from the AI.<span class="need" id="'+id+'_need">'+needText(value,k)+'</span></div></div>';
+}
+function setNeed(id, t){ var n=$(id+"_need"); if(n) n.innerHTML=needText(t, id.replace("think_","")); }
+function onThink(k){ state.think[k]=$("think_"+k).value; save(); setNeed("think_"+k, state.think[k]); refreshGates(); }
+function onAiWrong(){ var v=curVersion(); if(!v) return; v.aiWrong=$("think_aiwrong").value; save(); setNeed("think_aiwrong", v.aiWrong); refreshGates(); }
+function segReady(){ return !!custKind() && thinkOK(state.think.segment,"segment"); }
+function testReady(){ return thinkOK(state.think.predict,"predict") && (!state.versions.length || thinkOK(state.think.change,"change")); }
+function diagReady(){ var v=curVersion(); return !!v && thinkOK(v.aiWrong,"aiwrong"); }
+function exportReady(){ return thinkOK(state.think.drop,"drop"); }
+function gateEl(id, ok){ var e=$(id); if(e) e.classList.toggle("locked", !ok); var m=$(id+"Msg"); if(m) m.style.display= ok? "none" : ""; }
+function refreshGates(){
+  var b=$("toBuilderBtn"); if(b) b.disabled=!segReady();
+  gateEl("testGate", testReady()); gateEl("diagGate", diagReady()); gateEl("exportGate", exportReady());
+  var dc=$("diagCopy"); if(dc) dc.classList.toggle("locked", !diagReady());
+  var cv=curVersion(); gateEl("decideGate", !!cv && thinkOK(cv.both,"both")); gateEl("nextGate", nextReady());
+}
+function lockMsg(id, ok, text){ return '<div class="lockMsg" id="'+id+'Msg"'+(ok?' style="display:none"':'')+'>&#128274; '+text+'</div>'; }
+/* Every step opens with the same two lines; the longer reason sits behind "Why?" */
+function doDone(d, done, why){
+  return '<div class="dodone"><div><b>Do:</b> '+d+'</div><div><b>Done when:</b> '+done+'</div>'+
+    (why? '<div class="whyLine"><b>Why you do this:</b> '+why+'</div>' : '')+'</div>';
+}
+function firstSentence(t){ var m=String(t||"").match(/^[\s\S]*?\.(\s|$)/); return m? m[0].trim() : String(t||""); }
+/* Own-words answers, for the Notion record and the full history file */
+function ownWordsLines(head){
+  var L=[];
+  L.push(head+" In our own words");
+  L.push("- Why we picked this segment: "+mdCell(state.think.segment));
+  state.versions.forEach(function(v){
+    L.push("- Version "+v.id+" · we predicted: "+mdCell(v.predict)+" · what the AI got wrong or left out: "+mdCell(v.aiWrong)+" · top priority both AIs point to: "+mdCell(v.both)+(v.id>1? " · what we changed and why: "+mdCell(v.change) : ""));
+  });
+  L.push("- What would make us drop this segment: "+mdCell(state.think.drop));
+  return L;
+}
 function go(n){ if(n<=state.maxUnlocked){ state.stage=n; save(); render(); window.scrollTo(0,0); } }
 function unlock(n){ if(n>state.maxUnlocked) state.maxUnlocked=n; }
 function fieldsComplete(){ return FIELDS.every(function(f){ return (state.fields[f.key]||"").trim().length>0; }); }
 function wordCount(t){ t=String(t||"").trim(); return t? t.split(/\s+/).length : 0; }
+function promptHTML(f){
+  var parts=[["person","PERSON"],["problem","PROBLEM AND CONTEXT"],["process","PROCESS AND TASK"],["product","PRODUCT AND OUTPUT"],["parameters","PARAMETERS AND GUARDRAILS"]];
+  return parts.map(function(x){
+    return '<span class="pp pc-'+x[0]+'"><b>'+x[1]+'</b>\n'+esc((f[x[0]]||"").trim()||"(empty)")+'</span>';
+  }).join("");
+}
 function assemblePrompt(f){
   return "PERSON\n"+(f.person||"").trim()+
     "\n\nPROBLEM AND CONTEXT\n"+(f.problem||"").trim()+
@@ -478,7 +658,9 @@ function nowStr(){ return new Date().toLocaleString(); }
 function downloadFile(name, content, mime){
   var blob=new Blob([content],{type:mime||"text/plain"});
   var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+  a.download=name; document.body.appendChild(a); a.click();
+  /* wait before cleaning up: Safari on iPad/iPhone can fail the download if the link is cancelled immediately */
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 }
 function versionById(id){ return state.versions.filter(function(v){return v.id===id;})[0]; }
 function curVersion(){ return state.curVid? versionById(state.curVid) : null; }
@@ -491,103 +673,175 @@ function topWeakness(v){
 function render(){
   renderSavebar();
   renderStepper();
-  var r=[renderSegment,renderBuilder,renderTest,renderDiagnose,renderRefine,renderExport,renderValidate][state.stage];
+  var r=[renderSegment,renderBuilder,renderTest,renderDiagnose,renderRefine,renderRunPlan,renderRunSearch,renderValidate][state.stage];
   $("app").innerHTML = r();
 }
 function renderStepper(){
   var h="";
   for(var i=0;i<STAGES.length;i++){
+    if(i===0) h+='<div class="partRow"><span class="partLbl">Session 1 &middot; Build the prompt</span>';
+    if(i===5) h+='</div><div class="partRow"><span class="partLbl">Session 2 &middot; Search and verify</span>';
     var cls="step"+(i===state.stage?" current":(i<state.stage?" done":""))+(i<=state.maxUnlocked?" unlocked":"");
-    h+='<button type="button" class="'+cls+'" '+(i<=state.maxUnlocked?'onclick="go('+i+')"':'disabled aria-disabled="true" style="opacity:.6"')+' aria-current="'+(i===state.stage?"step":"false")+'"><span class="dot" aria-hidden="true"></span>'+STAGES[i]+'</button>';
+    h+='<button type="button" class="'+cls+'" '+(i<=state.maxUnlocked?'onclick="go('+i+')"':'disabled aria-disabled="true" style="opacity:.6"')+' aria-current="'+(i===state.stage?"step":"false")+'"><span class="dot" aria-hidden="true"></span>'+(i+1)+' '+STAGES[i]+'</button>';
   }
-  $("stepper").innerHTML=h;
+  $("stepper").innerHTML=h+'</div>';
 }
 
 /* ---------- Stage 0: Segment ---------- */
+function renderClient(){
+  var c=CONFIG.clientIntro; if(!c) return "";
+  return '<div class="client"><h2>Your client and their ask</h2>'+
+    '<p><b>Who they are:</b> '+esc(c.who)+'</p>'+
+    '<p><b>Their ask:</b> '+esc(c.ask)+'</p>'+
+    '<p style="margin:0"><b>Today in this lab:</b> '+esc(c.today)+'</p></div>';
+}
 function renderSegment(){
-  var h=renderSetup()+'<div class="card"><h2>Step 1 &middot; Choose your provisional segment</h2>'+
-  '<p class="lede"><b>Why this matters:</b> '+esc(CONFIG.companyName)+' is a smaller immersive and acoustic-experience company exploring how customer education could build demand in India. Your team picks one broad starting segment to investigate &mdash; nothing more is decided here.</p>'+
+  var h=renderClient()+renderSetup()+'<div class="card"><h2>Step 1 &middot; Choose your provisional segment</h2>'+
+  doDone("Pick one starting segment, then say why in your own words.","a segment is picked and your reason is written.","A clear starting point keeps your search focused, and explaining your choice makes sure it is a real decision, not a random pick.")+
   '<div class="segGrid">';
   Object.keys(CONFIG.segments).forEach(function(k){
     var s=CONFIG.segments[k];
-    h+='<button type="button" class="segCard'+(state.segment===k?" sel":"")+'" onclick="pickSegment(\''+k+'\')"><h3>'+esc(s.label)+'</h3><p>'+esc(s.contexts)+'</p></button>';
+    h+='<button type="button" class="segCard'+(state.segment===k?" sel":"")+'" onclick="pickSegment(\''+k+'\')"><h3>'+esc(s.label)+'</h3><p class="tags">'+esc((s.tags||[]).join(" \u00b7 "))+'</p></button>';
   });
   h+='</div>';
   if(seg()){
-    h+='<div class="assump"><span class="tagline">Starting assumption &mdash; provisional</span>'+esc(seg().assumption)+'</div>';
+    if(state.switchNote){
+      h+='<div class="notice info">You switched from '+esc(state.switchNote.from)+' to '+esc(state.switchNote.to)+'. Nothing was deleted, but your Search Plan Prompt parts and versions were written for '+esc(state.switchNote.from)+', so check them before you test, and update your reason below. <button type="button" class="btn ghost small" onclick="state.switchNote=null;save();render()">Got it</button></div>';
+    }
+    var full=seg().assumption, first=firstSentence(full), rest=full.slice(first.length).trim();
+    h+='<div class="assump"><span class="tagline">Starting assumption &mdash; provisional</span>'+esc(first)+
+      (rest? '<details class="why"><summary>Read the full assumption</summary><div>'+esc(rest)+'</div></details>' : '')+'</div>';
+    if(!seg().kind){
+      h+='<div class="kindAsk"><b>One question first: is your customer a business or institution, or a household?</b>'+
+      '<div class="metaline" style="margin-top:4px">A business or institution: a co-working space, a banquet hall, a clinic, a place of worship. A household: a family at home. Your answer decides which questions you see in the next step.</div>'+
+      '<div class="row"><button type="button" class="btn ghost small'+(state.custKind==="b2b"?" sel":"")+'" onclick="pickKind(\'b2b\')">A business or institution</button>'+
+      '<button type="button" class="btn ghost small'+(state.custKind==="b2c"?" sel":"")+'" onclick="pickKind(\'b2c\')">A household</button></div></div>';
+    }
+    if(custKind()){
+      h+=thinkBox("think_segment","briefly explain why you picked this segment over the others.", state.think.segment, "onThink(\'segment\')",
+        "e.g., We think this group feels the problem most often because&hellip;");
+    }
   }
-  h+='<div class="notice info" style="margin-top:12px">Your segment is a starting point, not a validated opportunity. Your research may support, narrow, complicate, redirect, or weaken the initial assumption. You are <b>not</b> choosing a final customer, pain point, insight, prototype idea, or recommendation here.</div>'+
-  '<div class="navRow"><span class="gate">Ready to continue when: one segment is selected.</span><button class="btn" '+(state.segment?"":"disabled")+' onclick="toBuilder()">Continue to the 5P Builder &rarr;</button></div></div>';
+  h+='<div class="metaline" style="margin-top:12px">This is a starting point, not a decision. Your research may change it.</div>'+
+  '<div class="navRow"><span class="gate">Ready to continue when: a segment is picked'+(seg()&&!seg().kind?', the business-or-household question is answered,':'')+' and your reason is written.</span><button class="btn" id="toBuilderBtn" '+(segReady()?"":"disabled")+' onclick="toBuilder()">Continue to the 5P Builder &rarr;</button></div></div>';
   return h;
 }
+/* No pop-up here: some in-app browsers (Notion, WhatsApp, file previews) block pop-ups and silently answer "no".
+   Nothing is deleted on a switch, so an on-page note is enough. */
 function pickSegment(k){
-  if(state.segment && state.segment!==k && (fieldsAnyText() || state.versions.length)){
-    if(!confirm("Switching segments keeps your 5P text and versions, but they were written for another segment. Switch anyway?")) return;
+  var from=state.segment;
+  if(from && from!==k && (fieldsAnyText() || state.versions.length)){
+    state.switchNote={from:CONFIG.segments[from].short, to:CONFIG.segments[k].short};
   }
-  state.segment=k; unlock(1); save(); render();
+  state.segment=k; save(); render();
 }
-function fieldsAnyText(){ return FIELDS.some(function(f){return (state.fields[f.key]||"").trim();}); }
-function toBuilder(){ if(state.segment){ unlock(1); state.stage=1; save(); render(); window.scrollTo(0,0);} }
+function pickKind(k){ state.custKind=k; save(); render(); }
+/* Pre-filled guardrail lines don't count as typed text */
+function fieldsAnyText(){
+  var pre=CONFIG.defaultGuardrails.concat([CONFIG.householdGuardrail]);
+  return FIELDS.some(function(f){
+    var t=state.fields[f.key]||"";
+    if(f.key==="parameters") pre.forEach(function(c){ t=t.split("- "+c).join("").split(c).join(""); });
+    return t.trim();
+  });
+}
+function toBuilder(){ if(segReady()){ unlock(1); state.stage=1; save(); render(); window.scrollTo(0,0);} }
 
 /* ---------- Stage 1: 5P Builder ---------- */
+/* Guardrail list: the standard chips, plus one extra for household teams */
+function guardChips(){ var a=CONFIG.guardrailChips.slice(); if(custKind()==="b2c") a.push(CONFIG.householdGuardrail); return a; }
+/* Put the default guardrail(s) in the Guardrails box once; students may delete them afterwards */
+function seedGuardrails(){
+  var g=(state.guardSeeded && typeof state.guardSeeded==="object")? state.guardSeeded : {};
+  var want=[];
+  if(!g.base){ want=want.concat(CONFIG.defaultGuardrails); g.base=true; }
+  if(custKind()==="b2c" && !g.b2c){ want.push(CONFIG.householdGuardrail); g.b2c=true; }
+  var p=state.fields.parameters||"";
+  var lines=want.filter(function(c){ return p.indexOf(c)<0; }).map(function(c){ return "- "+c; });
+  if(lines.length) state.fields.parameters=(p.trim()? p.trim()+"\n" : "")+lines.join("\n");
+  state.guardSeeded=g; save();
+}
 function renderBuilder(){
+  seedGuardrails();
   var s=seg()||{};
-  var h='<div class="card"><h2>Step 2 &middot; Build Prompt 1 with the 5P frame</h2>'+
-  '<p class="lede"><b>Why this matters:</b> Prompt 1 makes an AI design your team&rsquo;s market-intelligence <b>search plan</b> for the '+esc(s.label||"")+' segment. Write each part in your own words &mdash; the starters and chips are raw material, never the answer. Longer is not better; clearer is better.</p>';
+  var h='<div class="card"><h2>Step 2 &middot; Build your Search Plan Prompt with the 5P frame</h2>'+
+  doDone("Write the five parts of your Search Plan Prompt in your own words. The example text and suggestion buttons are only a starting point: edit them to fit your team.","all five parts have content, and the prompt makes sense.","The AI can only search well for what you clearly tell it. Vague parts give you a vague search plan.");
   FIELDS.forEach(function(f){
-    h+='<label class="f" for="fld_'+f.key+'">'+f.label+' <span class="tag">&mdash; '+esc(f.tag)+'</span></label>';
+    h+='<section class="pchunk pc-'+f.key+'"><label class="f" for="fld_'+f.key+'"><span class="pbadge">'+(FIELDS.indexOf(f)+1)+'</span>'+f.label+' <span class="tag">&mdash; '+esc(f.tag)+'</span></label>';
     if(f.key==="person"){
-      h+='<button type="button" class="starterBtn" onclick="insertStarter(\'person\')">Insert editable example</button>';
+      h+='<div class="insertRow"><span class="hand" aria-hidden="true">&#128073;</span><span class="handTxt">Press here to insert</span>'+
+        '<button type="button" class="btn small" onclick="insertStarter(\'person\')">Insert an example to edit</button></div>'+
+        '<div class="insertOk" id="insertOk_person"></div>';
     }
     if(f.key==="problem"){
       h+=renderSharpen();
-      h+='<button type="button" class="starterBtn" onclick="insertStarter(\'problem\')">Insert project context + starting assumption + our statement</button>';
     }
     h+='<textarea id="fld_'+f.key+'" oninput="onField(\''+f.key+'\')" placeholder="Write your '+f.label+' here...">'+esc(state.fields[f.key])+'</textarea>';
+    if(f.key==="product"){
+      h+='<div class="ideaHead">Ideas to add: pick the ones your team needs, then add your own. These are examples, not the full answer.</div>'+
+        '<div class="chips" id="productRow">'+CONFIG.productChips.map(function(c,i){
+          return '<button type="button" class="chip'+((state.fields.product||"").indexOf(c)>=0?" used":"")+'" onclick="addProductChip('+i+')">'+esc(c)+'</button>';
+        }).join("")+'</div>';
+    }
     if(f.key==="parameters"){
-      h+='<div class="chips" id="chipRow">'+CONFIG.guardrailChips.map(function(c,i){
+      h+='<div class="ideaHead">Ideas to add: pick the ones that matter for your search. Don&rsquo;t just add all of them.</div>'+
+        '<div class="chips" id="chipRow">'+guardChips().map(function(c,i){
         return '<button type="button" class="chip'+(state.fields.parameters.indexOf(c)>=0?" used":"")+'" onclick="addChip('+i+')">'+esc(c)+'</button>';
       }).join("")+'</div>';
     }
-    h+='<details class="help"><summary>What makes this field strong?</summary><div class="hintbox">'+esc(f.hint)+'</div></details>';
+    h+='<details class="help"><summary>What makes this part strong?</summary><div class="hintbox">'+esc(f.hint)+'</div></details></section>';
   });
-  h+='<h3>Live Prompt 1 preview</h3><pre class="prompt" id="preview">'+esc(assemblePrompt(state.fields))+'</pre>'+
+  h+='<h3>Live Search Plan Prompt preview</h3><pre class="prompt colored" id="preview">'+promptHTML(state.fields)+'</pre>'+
   '<div class="metaline" id="pmeta"></div>'+
   '<div id="mechCheck"></div>'+
-  '<div class="navRow"><button class="btn ghost" onclick="go(0)">&larr; Segment</button>'+
+  '<div class="navRow"><button class="btn ghost" onclick="go(0)">&larr; Go to previous step</button>'+
   '<span class="gate">Ready to continue when: all five fields have content.</span>'+
   '<button class="btn" id="toTestBtn" '+(fieldsComplete()?"":"disabled")+' onclick="toTest()">Continue to Test &rarr;</button></div></div>';
   setTimeout(updateMeta,0);
   return h;
 }
 /* ---- Sharpen-the-assumption mini builder ---- */
-function frameCount(){ var f=state.frame||{}; return FRAME.filter(function(x){return (f[x.key]||"").trim();}).length; }
+function frameCount(){ var f=state.frame||{}; return frameSet().filter(function(x){return (f[x.key]||"").trim();}).length; }
 function fv(k,ph){ var v=((state.frame||{})[k]||"").trim(); return v? esc(v) : '<span class="blank">['+ph+']</span>'; }
-function stmtHTML(){
-  return 'We are investigating whether '+fv("customer","customer")+' in '+fv("setting","setting")+', while '+fv("activity","activity")+
-    ', may experience '+fv("problem","possible problem")+'. This could lead to '+fv("consequence","possible consequence")+
-    '. They may pay attention when '+fv("trigger","decision moment")+'.';
+/* One sentence template per customer type; mark(k,ph) fills a box or shows a placeholder. */
+function stmtParts(mark){
+  if(custKind()==="b2c"){
+    return 'We are investigating whether '+mark("customer","who feels it")+' in '+mark("setting","where and when")+
+      ' may face this problem: '+mark("problem","what goes wrong")+'. Their current workaround: '+mark("workaround","what they do now")+
+      '. The decision to fix it may sit with '+mark("decider","who decides / pays")+', possibly when '+mark("trigger","family moment")+
+      '. They would likely trust '+mark("trust","advice source")+' for advice first.';
+  }
+  return 'We are investigating whether '+mark("customer","who feels it")+' in '+mark("setting","where and when")+
+    ' may face this problem: '+mark("problem","what goes wrong")+'. For '+mark("business","the business")+
+    ', this may show up as '+mark("shows","how it shows up")+'. The decision to fix it may sit with '+mark("decider","who decides and pays")+
+    ', possibly when '+mark("trigger","business moment")+'.';
 }
+function stmtHTML(){ return stmtParts(fv); }
 function stmtText(){
   var f=state.frame||{}; function v(k,ph){ return (f[k]||"").trim() || "["+ph+"]"; }
-  var s="We are investigating whether "+v("customer","customer")+" in "+v("setting","setting")+", while "+v("activity","activity")+
-    ", may experience "+v("problem","possible problem")+". This could lead to "+v("consequence","possible consequence")+
-    ". They may pay attention when "+v("trigger","decision moment")+".";
+  var s=stmtParts(v);
   if((f.alternative||"").trim()) s+="\nAn alternative explanation we will test: "+f.alternative.trim();
   if((f.firstq||"").trim()) s+="\nWhat we most need to find out first: "+f.firstq.trim();
   return s;
 }
 function renderSharpen(){
-  var n=frameCount();
-  var h='<details class="sharpen"'+(n||!(state.fields.problem||"").trim()?" open":"")+'><summary>Sharpen your starting assumption first (recommended, ~5 minutes) &middot; <span id="frameN">'+n+'</span> of '+FRAME.length+' filled</summary>'+
+  var n=frameCount(), set=frameSet(), k=custKind()||"b2b";
+  var h='<details class="sharpen"'+(n||!(state.fields.problem||"").trim()?" open":"")+'><summary>Sharpen your starting assumption first (recommended, ~5 minutes) &middot; <span id="frameN">'+n+'</span> of '+set.length+' filled</summary>'+
   '<p class="metaline" style="margin:6px 0 0">Short answers. &ldquo;Not known yet&rdquo; is a good answer. Don&rsquo;t invent prices, buying rules, or technical causes.</p>'+
+  '<div class="frameHint"><b>'+(k==="b2c"?"Household customer":"Business or institution customer")+'.</b> '+FRAME_HINT[k]+'</div>'+
+  '<p class="stepLine">Your answers become your working statement. Add it to <b>Problem &amp; Context</b> so the AI uses it.</p>'+
   '<div class="frameGrid">';
-  FRAME.forEach(function(x){
+  set.forEach(function(x){
+    if(x.group) h+='<div class="frameGroup">'+esc(x.group)+'</div>';
     h+='<div><label for="fr_'+x.key+'">'+esc(x.label)+' <span>&mdash; '+esc(x.tip)+'</span></label>'+
        '<input type="text" id="fr_'+x.key+'" value="'+esc((state.frame||{})[x.key])+'" oninput="onFrame(\''+x.key+'\')"></div>';
   });
   h+='</div><div class="stmt" id="stmt"><span class="tagline">Our working statement &middot; provisional</span>'+stmtHTML()+'</div>'+
-  '<div class="metaline">Filled boxes are not evidence &mdash; they only make your search plan sharper. The button below adds this statement to Problem &amp; Context.</div></details>';
+  '<div class="metaline">Filled boxes are not evidence &mdash; they only make your search plan sharper. </div>'+
+  '<div class="insertRow"><span class="hand" aria-hidden="true">&#128073;</span><span class="handTxt">Press here to insert</span>'+
+  '<button type="button" class="btn small" onclick="insertStarter(\'problem\')">Add this statement to Problem &amp; Context</button></div>'+
+  '<div class="metaline" style="margin-top:2px">This also adds the client background and the starting assumption.</div>'+
+  '<div class="insertOk" id="insertOk"></div></details>';
   return h;
 }
 function onFrame(k){
@@ -599,7 +853,15 @@ function onFrame(k){
 function insertStarter(which){
   var el=$("fld_"+which); if(!el) return;
   var add="";
-  if(which==="person") add=CONFIG.personExample;
+  if(which==="person"){
+    var okp=$("insertOk_person");
+    if(el.value.indexOf(CONFIG.personExample)>=0){ if(okp) okp.textContent="Already added. Now edit it in the box below to fit your team."; return; }
+    add=CONFIG.personExample;
+  }
+  if(which==="problem" && frameCount() && el.value.indexOf(stmtText())>=0){
+    var ok0=$("insertOk"); if(ok0) ok0.textContent="Already added. You can still edit it in Problem & Context below.";
+    return;
+  }
   if(which==="problem"){
     add=CONFIG.fixedContext+
     "\n\nStarting assumption (provisional): "+(seg()?seg().assumption:"")+
@@ -612,9 +874,18 @@ function insertStarter(which){
   }
   el.value = (el.value.trim()? el.value.trim()+"\n\n" : "") + add;
   onField(which);
+  if(which==="person"){ var okp2=$("insertOk_person"); if(okp2) okp2.textContent="Added. Now edit it in the box below to fit your team."; }
+  if(which==="problem"){ var ok=$("insertOk"); if(ok) ok.textContent="Added. You can still edit it in Problem & Context below."; }
+}
+function addProductChip(i){
+  var c=CONFIG.productChips[i], el=$("fld_product");
+  if((state.fields.product||"").indexOf(c)>=0) return;
+  el.value=(el.value.trim()? el.value.trim()+"\n":"")+"- "+c;
+  onField("product");
+  var row=$("productRow"); if(row && row.children[i]) row.children[i].classList.add("used");
 }
 function addChip(i){
-  var c=CONFIG.guardrailChips[i], el=$("fld_parameters");
+  var c=guardChips()[i], el=$("fld_parameters");
   if(state.fields.parameters.indexOf(c)>=0) return;
   el.value=(el.value.trim()? el.value.trim()+"\n":"")+"- "+c;
   onField("parameters");
@@ -622,7 +893,7 @@ function addChip(i){
 }
 function onField(k){
   state.fields[k]=$("fld_"+k).value;
-  $("preview").textContent=assemblePrompt(state.fields);
+  $("preview").innerHTML=promptHTML(state.fields);
   $("toTestBtn").disabled=!fieldsComplete();
   updateMeta(); mechCheck(); save();
 }
@@ -649,13 +920,18 @@ function toTest(){ if(fieldsComplete()){ unlock(2); state.stage=2; save(); rende
 function renderTest(){
   var hasKey = !!(state.settings.apiKey||"").trim();
   var cv=curVersion();
-  var h='<div class="card"><h2>Step 3 &middot; Test Prompt 1</h2>'+
-  '<p class="lede"><b>Why this matters:</b> you find out what your prompt actually produces. A version of your prompt is saved automatically each time you test, so nothing is lost when you revise.</p>'+
-  '<pre class="prompt">'+esc(assemblePrompt(state.fields))+'</pre>'+
+  var h='<div class="card"><h2>Step 3 &middot; Test your Search Plan Prompt</h2>'+
+  doDone("<ol class=\"doList\"><li>Read your Search Plan Prompt together, and ask your GLIM teammates whether it is complete and accurate for India, and which Indian sources or channels it is missing.</li><li>Predict what the AI will say.</li><li>Run your Search Plan Prompt in a new chat in your AI tool, then paste the reply back here.</li></ol>","the reply is saved as a version.","Comparing your prediction with the AI&rsquo;s reply shows you what the AI added, missed, or made up.")+
+  '<pre class="prompt colored">'+promptHTML(state.fields)+'</pre>'+
   '<div class="metaline">About '+wordCount(assemblePrompt(state.fields))+' words (informational only) &middot; will be saved as Version '+(state.versions.length+1)+'</div>'+
-  '<h3><span class="stepNum">1</span>Copy Prompt 1 and open a new chat</h3>'+
+  '<div class="insertRow"><button type="button" class="btn secondary small" onclick="go(1);window.scrollTo(0,0)">&#9998; Edit Search Plan Prompt</button>'+
+  '<span class="metaline" style="margin:0">Changes? Go back and edit. Your answers on this page are kept.</span></div>'+
+  testThink()+
+  '<div id="testGate" class="'+(testReady()?"":"locked")+'">'+
+  '<h3 class="withBtn"><span class="stepNum">1</span>Copy your Search Plan Prompt and open a new chat'+
+  '<button type="button" class="btn small copyOnly" onclick="copyText(assemblePrompt(state.fields), this)">&#128203; Copy only</button></h3>'+
   aiButtons("assemblePrompt(state.fields)")+
-  '<div class="metaline">The button copies Prompt 1 and opens a new chat. Just paste (Ctrl/Cmd + V) and send. Using another AI tool? <button class="btn ghost small" style="margin:0 0 0 4px" onclick="copyText(assemblePrompt(state.fields), this)">Copy only</button></div>'+
+  '<div class="metaline">Each tool button copies your Search Plan Prompt and opens a new chat there. Just paste (Ctrl/Cmd + V) and send. Using a different AI tool? Use <b>Copy only</b> above.</div>'+
   '<div class="notice info"><b>Next:</b> paste the reply below. The diagnosis in Step 4 goes in a <b>new</b> chat, and your final run in Step 6 gets its own new chat too.</div>'+
 
   '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
@@ -663,17 +939,32 @@ function renderTest(){
   '<textarea id="pasteOut" class="mono" style="min-height:140px" oninput="state.pasteDraft=this.value;save()" placeholder="Paste the full search-plan reply from your AI tool...">'+esc(state.pasteDraft||"")+'</textarea>'+
   '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+' &amp; continue to Diagnose &rarr;</button>'+
 
-  '<h3>Optional route &middot; Run in-app with your own key</h3>'+
+  '<details class="more"><summary>Optional: run in-app with your own API key</summary>'+
   '<div class="notice info">Only for students who have their <b>own personal</b> API key ('+(hasKey?"configured &#10003;":"none configured")+' &mdash; see Settings). The key stays in this browser and is sent only to the provider you chose. Never use an instructor&rsquo;s or employer&rsquo;s key. Without a key, the copy &amp; paste route above does everything this does.</div>'+
-  '<button class="btn secondary" onclick="runInApp()" '+(hasKey?"":"disabled")+'>Run Prompt 1 in-app</button>'+
-  '<div id="runStatus"></div>'+
+  '<button class="btn secondary" onclick="runInApp()" '+(hasKey?"":"disabled")+'>Run your Search Plan Prompt in-app</button>'+
+  '<div id="runStatus"></div></details>'+
 
+  '</div>'+lockMsg("testGate", testReady(), "Answer the question"+(state.versions.length?"s":"")+" above in your own words to unlock the copy buttons.")+
   (cv? '<h3>Latest test &middot; Version '+cv.id+' ('+esc(cv.outputSource)+')</h3><pre class="prompt">'+esc(cv.output)+'</pre>'+
        '<button class="btn secondary small" onclick="copyText(versionById('+cv.id+').output, this)">Copy search plan</button>':"")+
 
-  '<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Return to editing</button>'+
+  '<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Go to previous step</button>'+
   '<span class="gate">Ready to continue when: a search plan has been saved.</span>'+
   '<button class="btn" '+(cv?"":"disabled")+' onclick="toDiagnose()">Continue to Diagnose &rarr;</button></div></div>';
+  return h;
+}
+function testThink(){
+  var h="", prev=state.versions.length? state.versions[state.versions.length-1] : null;
+  if(prev){
+    var top='<div class="prev"><b>Before you test Version '+(prev.id+1)+', here is what happened with Version '+prev.id+':</b>'+
+      (prev.change? '<br>What you changed: '+esc(prev.change) : '')+
+      '<br>The AI&rsquo;s top suggestion: '+esc(prev.diag? (prev.diag.plain? "(text reply, see Version "+prev.id+" in Step 5)" : topWeakness(prev)) : "not diagnosed")+
+      '<br>Your decision: '+esc(prev.decision||"not recorded")+'</div>';
+    h+=thinkBox("think_change","briefly explain what you changed in your prompt and why.", state.think.change, "onThink(\'change\')",
+      "e.g., We added&hellip; because the last plan&hellip;", top);
+  }
+  h+=thinkBox("think_predict","briefly predict what you expect the AI to say.", state.think.predict, "onThink(\'predict\')",
+    "e.g., We expect it to focus on&hellip; and probably miss&hellip;");
   return h;
 }
 function pushVersion(output, source){
@@ -686,13 +977,18 @@ function pushVersion(output, source){
     words: wordCount(assemblePrompt(state.fields)),
     output: output,
     outputSource: source,
-    diag: null
+    diag: null,
+    predict: state.think.predict||"",
+    change: state.versions.length? (state.think.change||"") : "",
+    aiWrong: ""
   };
   state.versions.push(v); state.curVid=v.id;
+  state.think.predict=""; state.think.change="";
   unlock(3); save();
   return v;
 }
 function acceptPaste(){
+  if(!testReady()){ alert("First answer the question at the top of this step in your own words."); return; }
   var v=$("pasteOut").value.trim();
   if(!v){ alert("Paste the model's reply first."); return; }
   pushVersion(v,"pasted from your AI tool");
@@ -700,15 +996,16 @@ function acceptPaste(){
   state.stage=3; save(); render(); window.scrollTo(0,0);
 }
 function runInApp(){
+  if(!testReady()){ alert("First answer the question at the top of this step in your own words."); return; }
   var el=$("runStatus");
-  el.innerHTML='<div class="notice info"><span class="spin"></span>Sending Prompt 1 to the model&hellip; this can take up to a minute.</div>';
+  el.innerHTML='<div class="notice info"><span class="spin"></span>Sending your Search Plan Prompt to the model&hellip; this can take up to a minute.</div>';
   callModel(assemblePrompt(state.fields)).then(function(txt){
     pushVersion(txt,"generated in-app");
     state.stage=3; save(); render(); window.scrollTo(0,0);
   }).catch(function(err){
-    el.innerHTML='<div class="notice err"><b>The AI model could not be reached.</b> Your 5P entries and Prompt 1 are still available. You may copy Prompt 1 and test it in your preferred AI tool.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
+    el.innerHTML='<div class="notice err"><b>The AI model could not be reached.</b> Your 5P entries and Search Plan Prompt are still available. You may copy your Search Plan Prompt and test it in your preferred AI tool.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
     '<button class="btn secondary small" onclick="runInApp()">Retry</button>'+
-    '<button class="btn secondary small" onclick="copyText(assemblePrompt(state.fields), this)">Copy Prompt 1</button>'+
+    '<button class="btn secondary small" onclick="copyText(assemblePrompt(state.fields), this)">Copy Search Plan Prompt</button>'+
     '<button class="btn ghost small" onclick="go(1)">Return to editing</button>';
   });
 }
@@ -750,35 +1047,35 @@ function callModel(prompt){
 function buildEvalPrompt(v){
   var s=seg()||{label:"",assumption:""};
   return [
-"Act as a careful instructional evaluator for an undergraduate international business market-intelligence exercise. The students are non-technical. Their team wrote 'Prompt 1' to make an AI design a market-intelligence SEARCH PLAN for this provisional segment in India: "+s.label+".",
+"Act as a careful instructional evaluator for an undergraduate international business market-intelligence exercise. The students are non-technical. Their team wrote 'Search Plan Prompt' to make an AI design a market-intelligence SEARCH PLAN for this provisional segment in India: "+s.label+".",
 "The provisional starting assumption for this segment is: "+s.assumption,
 "The company context is a smaller immersive/acoustic-experience firm ("+CONFIG.companyName+") exploring customer education in India.",
 "",
-"Below are (A) the student's Prompt 1 and (B) the search-plan output a model produced from it.",
+"Below are the team's prompt and the search plan an AI produced from it.",
 "",
-"=== A. STUDENT PROMPT 1 START ===",
+"=== THE TEAM'S PROMPT: START ===",
 v.prompt,
-"=== A. STUDENT PROMPT 1 END ===",
+"=== THE TEAM'S PROMPT: END ===",
 "",
-"=== B. MODEL OUTPUT START ===",
+"=== THE SEARCH PLAN: START ===",
 v.output,
-"=== B. MODEL OUTPUT END ===",
+"=== THE SEARCH PLAN: END ===",
 "",
-"Evaluate BOTH, using this rubric. Rate every dimension exactly one of: \"Meets\", \"Partially meets\", \"Does not meet\", each with a brief one-sentence explanation based on the ACTUAL prompt and output (never keyword matching alone).",
+"Evaluate BOTH, using this rubric. Write every explanation for the students: call them \"your prompt\" and \"the search plan\". Never use letters such as A or B to refer to them. Rate every dimension exactly one of: \"Meets\", \"Partially meets\", \"Does not meet\", each with a brief one-sentence explanation based on the ACTUAL prompt and output (never keyword matching alone).",
 "",
-"Prompt-quality dimensions (evaluate A): Task alignment (asks for a market-intelligence search plan rather than a final conclusion); Context sufficiency (provides the important context the AI cannot safely infer, including a student-refined provisional assumption); Instruction clarity (the central task is clear and distinguishable from secondary instructions); Output usability (requests a practical, usable output); Evidence discipline (prevents unsupported claims and premature conclusions); Instruction efficiency (focused instructions; flag ONLY clear cases of duplication, contradiction, unnecessary restrictions, buried priority, or excessive detail that does not improve the task).",
+"Prompt-quality dimensions (evaluate the team's prompt): Task alignment (asks for a market-intelligence search plan rather than a final conclusion); Context sufficiency (provides the important context the AI cannot safely infer, including a student-refined provisional assumption); Instruction clarity (the central task is clear and distinguishable from secondary instructions); Output usability (requests a practical, usable output); Evidence discipline (prevents unsupported claims and premature conclusions); Instruction efficiency (focused instructions; flag ONLY clear cases of duplication, contradiction, unnecessary restrictions, buried priority, or excessive detail that does not improve the task).",
 "",
-"Output-quality dimensions (evaluate B): Provisional-assumption clarity (treats the assumption as provisional rather than established); Pain-point logic (investigates who experiences what problem and what activity is affected); Purchase-workflow logic (examines when a concern could lead to recognition, prioritization, approval, or purchase); Stakeholder coverage (distinguishes users, influencers, decision-makers, approvers, and buyers); Source strategy (credible and varied source categories); Search usability (practical search terms and a manageable sequence); Falsifiability (explains what could weaken, complicate, narrow, or redirect the assumption); Uncertainty (identifies what public evidence may not establish); Prompt 2 readiness (clear enough to support the next evidence-search step).",
+"Output-quality dimensions (evaluate the search plan): Provisional-assumption clarity (treats the assumption as provisional rather than established); Pain-point logic (investigates who experiences what problem and what activity is affected); Demand volume (plans how to estimate how many places or people in India have this problem, from named sources such as official counts, as a range with stated assumptions, and says that public data cannot show how many would actually pay); Purchase-workflow logic (examines when a concern could lead to recognition, prioritization, approval, or purchase); Stakeholder coverage (distinguishes users, influencers, decision-makers, approvers, and buyers); Source strategy (credible and varied source categories); Search usability (practical search terms and a manageable sequence); Falsifiability (explains what could weaken, complicate, narrow, or redirect the assumption); Uncertainty (identifies what public evidence may not establish); Actual Search Prompt readiness (clear enough to support the next evidence-search step).",
 "",
 "Strict rules for your evaluation:",
 "- Do NOT rewrite the student's prompt, provide a replacement prompt, or solve the assignment.",
 "- Do NOT choose or change the customer problem for the students; if the assumption is vague, say so and explain why it matters, but the fix is theirs to write.",
 "- Do NOT conclude whether the India market opportunity is attractive.",
-"- Treat every factual claim in output B as UNVERIFIED model text, not evidence.",
+"- Treat every factual claim in the search plan as UNVERIFIED model text, not evidence.",
 "- Do NOT reward prompt length. Do NOT penalize a long prompt unless repetition, contradiction, or buried priorities reduce its effectiveness. Do NOT recommend revision merely to make the prompt shorter.",
-"- Identify AT MOST 2 strengths and AT MOST 3 consequential weaknesses (the ones that would most damage the team's research), across A and B combined. Never provide ten or more suggestions.",
+"- Identify AT MOST 2 strengths and AT MOST 3 consequential weaknesses (the ones that would most damage the team's research), across the prompt and the search plan combined. Never provide ten or more suggestions.",
 "- For EACH weakness state: what is weak or missing (issue), why it matters (why_it_matters), and whether the likely cause is \"prompt design\", \"model execution\", or \"both\" (cause). If a good prompt produced an incomplete output, attribute that weakness to model execution, not to the prompt.",
-"- Identify EXACTLY 1 highest-priority revision: a concrete revision OBJECTIVE for Prompt 1 (e.g., 'Clarify that the output must separately investigate customer pain and purchase-workflow logic'). Describe what to change and why in 2-3 sentences. You may quote a short phrase as an illustration, but never write the revised prompt for them. If the top weakness is model execution, the objective may instead be to rerun or to add a safeguard instruction.",
+"- Identify EXACTLY 1 highest-priority revision: a concrete revision OBJECTIVE for the Search Plan Prompt (e.g., 'Clarify that the output must separately investigate customer pain and purchase-workflow logic'). Describe what to change and why in 2-3 sentences. You may quote a short phrase as an illustration, but never write the revised prompt for them. If the top weakness is model execution, the objective may instead be to rerun or to add a safeguard instruction.",
 "- Overall status must be exactly one of: \"Not ready yet\", \"Promising - refine and retest\", \"Ready to use\".",
 "",
 "Reply with ONLY a JSON object, no markdown fences, in exactly this shape:",
@@ -818,34 +1115,138 @@ function normalizeDiag(j){
 function renderDiagnose(){
   var v=curVersion();
   if(!v) return '<div class="card"><div class="notice warn">Run a test first.</div><button class="btn ghost" onclick="go(2)">&larr; Test</button></div>';
+  /* versions diagnosed before this change: show their one diagnosis as opinion 1 */
+  if(v.diag && !v.op1) v.op1={tool:"earlier diagnosis", d:v.diag};
   var hasKey = !!(state.settings.apiKey||"").trim();
+  var both = !!(v.op1 && v.op2);
   var h='<div class="card"><h2>Step 4 &middot; Diagnose Version '+v.id+'</h2>'+
-  '<p class="lede"><b>Why this matters:</b> two separate diagnoses &mdash; one of your <b>prompt</b>, one of the <b>search plan it produced</b> &mdash; so you can tell whether a weakness comes from your prompt design or from the model&rsquo;s execution. The diagnosis coaches you; it will not rewrite your prompt, pick your problem, or judge the market.</p>';
+  doDone('<ol class="doList"><li>Read the search plan and check it yourselves.</li><li>Get two opinions from two different AI tools.</li><li>Compare the two opinions and find the top priority both point to.</li><li>Decide what you will change in your Search Plan Prompt.</li><li>Edit your prompt and test again, or wrap up your final Search Plan Prompt.</li></ol>',
+    "you&rsquo;ve named the top priority both AIs point to and recorded your decision.",
+    "AI sounds confident even when it is wrong, and different AIs catch different problems. A problem that two AIs both point out is the one most worth fixing first.");
 
-  if(!v.diag){
-    h+='<h3><span class="stepNum">1</span>Copy the diagnosis prompt</h3>'+
-    aiButtons("buildEvalPrompt(curVersion())","Copy the diagnosis prompt &amp; open a new chat in:")+
-    '<div class="metaline">Use a <b>new</b> chat: the diagnosis prompt already contains your prompt and its search plan, and an AI should not grade its own work. Just paste (Ctrl/Cmd + V) and send. Using another AI tool? <button class="btn ghost small" style="margin:0 0 0 4px" onclick="copyText(buildEvalPrompt(curVersion()), this)">Copy only</button></div>'+
-    '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
-    '<label class="f" for="diagPaste" style="margin-top:4px">The diagnosis reply <span class="tag">&mdash; paste the whole reply; no cleanup needed. If it isn&rsquo;t in the table format, the lab keeps it as text.</span></label>'+
-    '<textarea id="diagPaste" class="mono" style="min-height:110px" oninput="state.diagDraft=this.value;save()" placeholder="Paste the diagnosis reply here...">'+esc(state.diagDraft||"")+'</textarea>'+
-    '<button class="btn" onclick="acceptDiagPaste()">Use this diagnosis</button>';
-    if(hasKey){
-      h+='<h3>Optional route &middot; Diagnose in-app with your own key</h3>'+
-      '<button class="btn secondary" onclick="diagInApp()">Diagnose in-app</button>';
-    }
-    h+='<div id="diagStatus"></div>';
+  /* 1. Check it yourselves */
+  h+='<h3><span class="stepNum">1</span>Read the search plan and check it yourselves</h3>'+
+    '<p class="metaline" style="margin-top:0">This is the whole reply you pasted in Step 3. Scroll inside the box, or open it full length.</p>'+
+    '<pre class="prompt planText" id="planText">'+esc(v.output||"")+'</pre>'+
+    '<button type="button" class="btn ghost small" onclick="var e=$(\'planText\');var full=e.classList.toggle(\'full\');this.textContent=full?\'Show less\':\'Show the full search plan\';">Show the full search plan</button>';
+  if(both){
+    if(v.aiWrong) h+='<div class="prev"><b>Your own check:</b> '+esc(v.aiWrong)+'</div>';
   } else {
-    h+=renderDiagResult(v.diag);
-    h+='<div class="decisionBox"><label for="decision">Our decision &amp; reasoning <span class="tag" style="font-weight:400;color:var(--muted);font-size:.8rem">&mdash; what do you accept, change, or reject from this feedback, and why? (goes into your Notion record)</span></label>'+
-       '<textarea id="decision" style="min-height:70px" oninput="curVersion().decision=this.value;save()" placeholder="We will change… because… / We will keep… because… / We reject… because…">'+esc(v.decision||"")+'</textarea></div>';
-    h+=sessionSaveBox();
-    h+='<div class="navRow" style="margin-top:16px">'+
-    '<button class="btn secondary" onclick="reviseFromDiag()">Revise the prompt &rarr;</button>'+
-    '<button class="btn" onclick="go(4)">Review &amp; compare versions &rarr;</button></div>';
+    h+=thinkBox("think_aiwrong","name one thing the AI got wrong, couldn&rsquo;t back up, or left out. Add a source link, or write &ldquo;no source.&rdquo;",
+      v.aiWrong, "onAiWrong()", "e.g., It says&hellip; but gives no source. / It never mentions who pays.",
+      v.predict? '<div class="prev"><b>You predicted:</b> '+esc(v.predict)+'<br>Did it match? Read the search plan above, then answer below.</div>' : '');
   }
-  h+='<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(2)">&larr; Test</button><span class="gate">Ready to continue when: this version has a diagnosis.</span></div></div>';
+
+  /* 2. Two opinions */
+  h+='<h3 class="withBtn"><span class="stepNum">2</span>Get two opinions from two different AI tools'+
+    (both? '' : '<button type="button" id="diagCopy" class="btn small copyOnly'+(diagReady()?'':' locked')+'" onclick="copyText(buildEvalPrompt(curVersion()), this)">&#128203; Copy only</button>')+'</h3>';
+  if(both){
+    h+='<div class="opDone">&#10003; Opinion 1 saved ('+esc(v.op1.tool)+') &nbsp; &#10003; Opinion 2 saved ('+esc(v.op2.tool)+')'+
+       ' <button type="button" class="btn ghost small" onclick="clearOp(2)">Replace opinion 2</button></div>';
+  } else {
+    h+='<div id="diagGate" class="'+(diagReady()?"":"locked")+'">'+
+    aiButtons("buildEvalPrompt(curVersion())","Copy the diagnosis prompt &amp; open a new chat in:")+
+    '<div class="metaline">Paste the same diagnosis prompt into a <b>new</b> chat in <b>two different</b> AI tools (for example ChatGPT and Claude), then paste each reply below. Using a different AI tool? Use <b>Copy only</b> above.</div>'+
+    opSlot(v,1)+opSlot(v,2);
+    if(hasKey) h+='<details class="more"><summary>Optional: get one opinion in-app with your own API key</summary><button class="btn secondary small" onclick="diagInApp()">Diagnose in-app</button></details>';
+    h+='<div id="diagStatus"></div></div>'+lockMsg("diagGate", diagReady(), "Answer the question in step 1 in your own words before you ask the AIs.");
+  }
+
+  /* 3. Compare */
+  h+='<h3><span class="stepNum">3</span>Compare the two opinions</h3>';
+  if(!both){
+    h+='<div class="lockMsg">&#128274; Unlocks when both opinions are saved.</div>';
+  } else {
+    h+='<p class="metaline" style="margin-top:0">Look for the problem <b>both</b> AIs point to. That is your top priority.</p>'+
+       '<div class="cmpGrid">'+opCol(v.op1,1)+opCol(v.op2,2)+'</div>'+
+       thinkBox("think_both","briefly explain the top priority both AIs point to. If they disagree, say which one you trust more and why.",
+         v.both, "onBoth()", "e.g., Both say our plan never asks who pays, so we will&hellip;");
+  }
+
+  /* 4. Decide */
+  h+='<h3><span class="stepNum">4</span>Decide what you will change in your Search Plan Prompt</h3>'+
+    '<p class="metaline" style="margin-top:0">You edit <b>your prompt</b>, not the AI&rsquo;s search plan. A better prompt gives a better plan on the next test.</p>';
+  if(!both){
+    h+='<div class="lockMsg">&#128274; Unlocks after you compare the two opinions.</div>';
+  } else {
+    h+='<div id="decideGate" class="'+(thinkOK(v.both,"both")?"":"locked")+'">'+
+       thinkBox("think_decision","briefly explain what you will change in your Search Plan Prompt because of this feedback, and why. If you disagree with a suggestion, say so and why. (This goes into your Notion record.)",
+         v.decision, "onDecision()", "e.g., We will add a line asking who pays, because both AIs said our plan skipped it. We will not shorten the Person part, because&hellip;")+
+       '</div>'+lockMsg("decideGate", thinkOK(v.both,"both"), "Answer the comparison question above first.");
+  }
+
+  /* 5. Next */
+  h+='<h3><span class="stepNum">5</span>Choose what&rsquo;s next</h3>';
+  if(!both){
+    h+='<div class="lockMsg">&#128274; Unlocks after you record your decision.</div>';
+  } else {
+    h+='<div id="nextGate" class="'+(nextReady()?"":"locked")+'"><div class="navRow" style="margin-top:4px">'+
+       '<button class="btn secondary" onclick="reviseFromDiag()">Edit our prompt and test again &rarr;</button>'+
+       '<button class="btn" onclick="go(4)">We&rsquo;re happy: wrap up our final Search Plan Prompt &rarr;</button></div>'+
+       sessionSaveBox()+'</div>'+lockMsg("nextGate", nextReady(), "Record your decision in step 4 first.");
+  }
+  h+='<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(2)">&larr; Test</button></div></div>';
   return h;
+}
+var OP_TOOLS=["ChatGPT","Claude","Gemini","Other"];
+function opSlot(v,n){
+  var op=v["op"+n];
+  if(op) return '<div class="opDone" id="op'+n+'">&#10003; Opinion '+n+' saved ('+esc(op.tool)+') <button type="button" class="btn ghost small" onclick="clearOp('+n+')">Replace</button></div>';
+  var sel=state["opTool"+n]||"";
+  return '<div class="opSlot" id="op'+n+'"><div class="opHead">Opinion '+n+(n===2?' &mdash; from a different AI tool':'')+'</div>'+
+    '<label class="f" for="opTool'+n+'" style="margin-top:4px">Which AI tool gave this reply?</label>'+
+    '<select id="opTool'+n+'" onchange="state.opTool'+n+'=this.value;save()"><option value="">Choose&hellip;</option>'+
+    OP_TOOLS.map(function(t){ return '<option'+(sel===t?" selected":"")+'>'+t+'</option>'; }).join("")+'</select>'+
+    '<textarea id="opPaste'+n+'" class="mono" style="min-height:100px;margin-top:8px" oninput="state.opDraft'+n+'=this.value;save()" placeholder="Paste the whole reply from that tool. No cleanup needed.">'+esc(state["opDraft"+n]||"")+'</textarea>'+
+    '<button class="btn small" onclick="saveOp('+n+')">Save opinion '+n+'</button><div class="lockMsg" id="opMsg'+n+'" style="display:none"></div></div>';
+}
+function parseDiag(raw){
+  var d=null;
+  try{ d=normalizeDiag(extractJSON(raw)); if(!d.prompt_diagnosis.length) d=null; }catch(e){ d=null; }
+  if(!d) d={plain:true, raw:raw, prompt_diagnosis:[], output_diagnosis:[], strengths:[], weaknesses:[], priority_revision:"", overall:"Diagnosed (text reply)"};
+  return d;
+}
+/* On-page message instead of a pop-up (pop-ups are blocked in some in-app browsers) */
+function opMsg(n, text){ var m=$("opMsg"+n); if(m){ m.innerHTML="&#9888; "+esc(text); m.style.display=""; } else alert(text); }
+function saveOp(n, tool, d){
+  var v=curVersion(); if(!v) return;
+  if(!diagReady()){ opMsg(n,"First answer the question in step 1 in your own words."); return; }
+  if(!d){
+    tool=($("opTool"+n)||{}).value||"";
+    var raw=(($("opPaste"+n)||{}).value||"").trim();
+    if(!tool){ opMsg(n,"Choose which AI tool gave this reply."); return; }
+    if(!raw){ opMsg(n,"Paste the reply first."); return; }
+    d=parseDiag(raw);
+  }
+  var other=v["op"+(n===1?2:1)];
+  if(other && tool!=="Other" && other.tool===tool){ opMsg(n,"Opinion "+(n===1?2:1)+" already came from "+tool+". Use a different AI tool here, so you get two independent views."); return; }
+  v["op"+n]={tool:tool, d:d};
+  state["opDraft"+n]=""; state["opTool"+n]="";
+  if(v.op1 && v.op2){ v.diag=v.op1.d; unlock(4); unlock(5); }
+  save(); render();
+  var next=$(v.op1&&v.op2? "think_both" : (n===1? "op2" : "op1"));
+  if(next && next.scrollIntoView) next.scrollIntoView({block:"center"});
+}
+function clearOp(n){ var v=curVersion(); if(!v) return; v["op"+n]=null; save(); render(); var e=$("op"+n); if(e&&e.scrollIntoView) e.scrollIntoView({block:"center"}); }
+function opCol(op,n){
+  var d=op.d, h='<div class="cmpCol"><h4>Opinion '+n+' &middot; '+esc(op.tool)+' '+overallBadge(d.overall)+'</h4>';
+  if(d.plain){
+    h+='<div class="fld"><b>Not in table format</b><div>Read the full reply below and pick out its top problem yourselves.</div></div>';
+  } else {
+    h+='<div class="fld"><b>Highest-priority revision</b><div>'+esc(tidyNote(d.priority_revision)||"—")+'</div></div>';
+    if(d.weaknesses.length) h+='<div class="fld"><b>Top problems</b><div>'+d.weaknesses.map(function(w){ return "&bull; "+esc(tidyNote(w.issue)); }).join("<br>")+'</div></div>';
+  }
+  h+='<details class="help"><summary>See the full opinion</summary>'+renderDiagResult(d)+'</details></div>';
+  return h;
+}
+function onBoth(){ var v=curVersion(); if(!v) return; v.both=$("think_both").value; save(); setNeed("think_both", v.both); refreshGates(); }
+function onDecision(){ var v=curVersion(); if(!v) return; v.decision=$("think_decision").value; save(); setNeed("think_decision", v.decision); refreshGates(); }
+function nextReady(){ var v=curVersion(); return !!(v && v.op1 && v.op2 && thinkOK(v.both,"both") && thinkOK(v.decision,"decision")); }
+function tidyNote(t){
+  return String(t||"").replace(/^A (?=(explicitly|supplies|requests|clearly|includes|asks|does|lacks|gives|provides|states|uses|has|is|repeats|omits|contains|frames|separates|treats|duplicates|specifies|names|focuses|mentions|never|only|also|however|but)\b)/i,"Your prompt ")
+    .replace(/^B (?=\w)/,"The search plan ")
+    .replace(/\b(prompt|output) A\b/gi,"your prompt").replace(/\b(output|plan) B\b/gi,"the search plan")
+    .replace(/^./,function(c){ return c.toUpperCase(); });
 }
 function renderDiagResult(d){
   if(d.plain){
@@ -854,10 +1255,10 @@ function renderDiagResult(d){
       '<div class="notice warn">Reminder: the search plan is unverified AI text, and this in-lab test output is <b>not</b> your official working output.</div>';
   }
   var h='<div class="notice info">Overall status: '+overallBadge(d.overall)+'</div>';
-  h+='<h3>Prompt-quality diagnosis</h3><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
-  d.prompt_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(r.note)+'</td></tr>'; });
-  h+='</table><h3>Search-plan output diagnosis</h3><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
-  d.output_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(r.note)+'</td></tr>'; });
+  h+='<h3>How good is your prompt?</h3><p class="metaline" style="margin-top:-4px">Judges the Search Plan Prompt your team wrote.</p><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
+  d.prompt_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(tidyNote(r.note))+'</td></tr>'; });
+  h+='</table><h3>How good is the search plan the AI produced?</h3><p class="metaline" style="margin-top:-4px">Judges the AI&rsquo;s reply that you pasted in Step 3.</p><table class="diag"><tr><th scope="col">Dimension</th><th scope="col">Rating</th><th scope="col">Explanation</th></tr>';
+  d.output_diagnosis.forEach(function(r){ h+='<tr><td>'+esc(r.dimension)+'</td><td>'+ratingBadge(r.rating)+'</td><td>'+esc(tidyNote(r.note))+'</td></tr>'; });
   h+='</table>';
   if(d.strengths.length){ h+='<h3>What works (max 2)</h3><ul class="feedback">'+d.strengths.map(function(s){return '<li>'+esc(s)+'</li>';}).join("")+'</ul>'; }
   if(d.weaknesses.length){
@@ -866,14 +1267,15 @@ function renderDiagResult(d){
     }).join("")+'</ul>';
   }
   h+='<h3>Highest-priority revision</h3><div class="revBox">'+esc(d.priority_revision)+'</div>'+
-  '<div class="notice warn">Reminder: the search plan above is unverified AI text, and this in-lab test output is <b>not</b> your official working output. Your official search plan is the one your team produces by running Final Prompt 1 in its own AI tool.</div>';
+  '<div class="notice warn">Reminder: the search plan above is unverified AI text, and this in-lab test output is <b>not</b> your official working output. Your official search plan is the one your team produces by running its Final Search Plan Prompt in its own AI tool.</div>';
   return h;
 }
 function diagInApp(){
+  if(!diagReady()){ alert("First answer the question at the top of this step in your own words."); return; }
   var el=$("diagStatus");
   el.innerHTML='<div class="notice info"><span class="spin"></span>Evaluating your prompt and its output&hellip;</div>';
   callModel(buildEvalPrompt(curVersion())).then(function(txt){
-    attachDiag(normalizeDiag(extractJSON(txt)));
+    var v=curVersion(); saveOp(v.op1?2:1, "In-app ("+(state.settings.provider||"your key")+")", normalizeDiag(extractJSON(txt)));
   }).catch(function(err){
     el.innerHTML='<div class="notice err"><b>The search plan was produced, but the diagnostic evaluation could not be completed.</b> Your work has not been lost.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
     '<button class="btn secondary small" onclick="diagInApp()">Retry diagnosis</button>'+
@@ -882,6 +1284,7 @@ function diagInApp(){
   });
 }
 function acceptDiagPaste(){
+  if(!diagReady()){ alert("First answer the question at the top of this step in your own words."); return; }
   var raw=($("diagPaste").value||"").trim();
   if(!raw){ alert("Paste the diagnosis reply first."); return; }
   var d=null;
@@ -906,34 +1309,40 @@ function reviseFromDiag(){ state.stage=1; save(); render(); window.scrollTo(0,0)
 
 /* ---------- Stage 4: Refine (versions & compare) ---------- */
 function renderRefine(){
-  var h='<div class="card"><h2>Step 5 &middot; Revise &amp; compare versions</h2>'+
-  '<p class="lede"><b>Why this matters:</b> prompt quality improves through testing, not guessing. Revise and retest as often as you like &mdash; there is no required number of revisions, and you are not obliged to accept every diagnostic suggestion. Your team decides which version goes forward.</p>';
-  if(!state.versions.length){ h+='<div class="notice info">No versions yet. Run a test first.</div>'; }
-  else{
-    h+='<h3>Version summary</h3><table class="diag"><tr><th scope="col">Version</th><th scope="col">Overall status</th><th scope="col">Most important weakness</th><th scope="col">Our decision</th><th scope="col">Length</th></tr>';
-    state.versions.forEach(function(v){
-      h+='<tr><td>V'+v.id+(state.finalId===v.id?" &#9733;":"")+'</td><td>'+overallBadge(v.diag?v.diag.overall:null)+'</td><td>'+esc(topWeakness(v))+'</td><td>'+esc(v.decision||"—")+'</td><td>'+v.words+' words</td></tr>';
-    });
-    h+='</table><div class="metaline">Length is informational only. &#9733; = selected as final.</div>';
-    h+=sessionSaveBox();
+  var h='<div class="card"><h2>Step 5 &middot; Session 1 wrap-up</h2>'+
+  doDone('<ol class="doList"><li>Look at your versions and what you changed each time.</li><li>Want to improve it more? Edit your prompt and test again.</li><li>Choose the version your team will use as its Final Search Plan Prompt.</li></ol>',
+    "a final version is selected.",
+    "Prompts get better through testing, and writing down what you changed shows whether each change helped.");
+  if(!state.versions.length){
+    return h+'<div class="notice info">No versions yet. Test your prompt first.</div><button class="btn ghost" onclick="go(2)">&larr; Go to previous step</button></div>';
   }
+  h+='<h3><span class="stepNum">1</span>Look at your versions</h3>'+
+    '<div class="evTableWrap"><table class="diag"><tr><th scope="col">Version</th><th scope="col">Both AIs&rsquo; top priority</th><th scope="col">What we changed</th><th scope="col">Our decision</th></tr>';
   state.versions.forEach(function(v){
-    var isFinal = state.finalId===v.id;
-    h+='<div class="verRow'+(isFinal?" final":"")+'"><div><b>Version '+v.id+'</b> '+overallBadge(v.diag?v.diag.overall:null)+
-    '<div class="meta">'+esc(v.ts)+' &middot; output '+esc(v.outputSource||"")+'</div></div><div>'+
-    '<button class="btn ghost small" onclick="viewVersion('+v.id+')">View</button> '+
-    '<button class="btn secondary small" onclick="loadVersion('+v.id+')">Reopen in builder</button> '+
-    '<button class="btn small" onclick="chooseFinal('+v.id+')">'+(isFinal?"&#10003; Final":"Use as Final Prompt 1")+'</button></div></div>';
+    h+='<tr><td>V'+v.id+(state.finalId===v.id?" &#9733;":"")+'</td><td>'+esc(v.both||topWeakness(v))+'</td><td>'+esc(v.id>1? (v.change||"—") : "first version")+'</td><td>'+esc(v.decision||"—")+'</td></tr>';
   });
+  h+='</table></div><div class="metaline">&#9733; = your final version.</div>';
   if(state.versions.length>=2){
-    h+='<h3>Compare two versions side by side</h3><div style="display:flex;gap:10px;flex-wrap:wrap">'+
+    h+='<details class="help"><summary>Compare two versions side by side</summary><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">'+
     '<select id="cmpA" aria-label="First version">'+state.versions.map(function(v){return '<option value="'+v.id+'">Version '+v.id+'</option>';}).join("")+'</select>'+
     '<select id="cmpB" aria-label="Second version">'+state.versions.map(function(v){return '<option value="'+v.id+'"'+(v.id===state.versions.length?" selected":"")+'>Version '+v.id+'</option>';}).join("")+'</select>'+
-    '<button class="btn secondary small" onclick="doCompare()">Compare</button></div><div id="cmpOut"></div>';
+    '<button class="btn secondary small" onclick="doCompare()">Compare</button></div><div id="cmpOut"></div></details>';
   }
-  h+='<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Revise in builder</button>'+
+  h+='<h3><span class="stepNum">2</span>Want to improve it more?</h3>'+
+    '<div class="insertRow"><button class="btn secondary small" onclick="go(1);window.scrollTo(0,0)">&#9998; Edit our prompt and test again</button>'+
+    '<span class="metaline" style="margin:0">Each new test is saved as a new version. Nothing is lost.</span></div>';
+  h+='<h3><span class="stepNum">3</span>Choose your final version</h3>';
+  state.versions.slice().reverse().forEach(function(v){
+    var isFinal = state.finalId===v.id;
+    h+='<div class="verRow'+(isFinal?" final":"")+'"><div><b>Version '+v.id+'</b>'+(v.id===state.versions.length?' <span class="metaline">(latest)</span>':'')+
+    '<div class="meta">'+esc(v.ts)+'</div></div><div>'+
+    '<button class="btn ghost small" onclick="viewVersion('+v.id+')">View</button> '+
+    '<button class="btn small" onclick="chooseFinal('+v.id+')">'+(isFinal?"&#10003; Our final version":"Use as Final Search Plan Prompt")+'</button></div></div>';
+  });
+  h+='<div class="navRow"><button class="btn ghost" onclick="go(3)">&larr; Go to previous step</button>'+
   '<span class="gate">Ready to continue when: a final version is selected.</span>'+
-  '<button class="btn" '+(state.finalId?"":"disabled")+' onclick="toExport()">Continue to Export &rarr;</button></div></div>';
+  '<button class="btn" '+(state.finalId?"":"disabled")+' onclick="toExport()">Continue to Run the search plan &rarr;</button></div>'+
+  sessionSaveBox()+'</div>';
   return h;
 }
 function viewVersion(id){
@@ -950,7 +1359,6 @@ function loadVersion(id){
   state.stage=1; save(); render(); window.scrollTo(0,0);
 }
 function chooseFinal(id){
-  if(!confirm("Your team is selecting Version "+id+" as its final Prompt 1. You may still return and revise it before exporting. Confirm?")) return;
   state.finalId=id; state.finalizedAt=nowStr(); unlock(5); save(); render();
 }
 function doCompare(){
@@ -972,28 +1380,31 @@ function buildPrompt2(){
   var s=seg()||{label:"",assumption:"",searchOrder:[]};
   var order=s.searchOrder.map(function(x,i){return (i+1)+". "+x;}).join("\n");
   return [
-"Continue working as the market-intelligence advisor from the previous response.",
+"Act as a careful India market-intelligence advisor helping a non-technical international business student team. Search the web and open sources; do not answer from memory.",
 "",
-"Using the market-intelligence search plan you just produced, help our team begin the evidence search.",
+((state.finalPlan||"").trim()
+  ? "Below is the market-intelligence SEARCH PLAN our team made with our Final Search Plan Prompt. Carry out this plan and help our team begin the evidence search.\n\n=== OUR SEARCH PLAN: START ===\n"+state.finalPlan.trim()+"\n=== OUR SEARCH PLAN: END ==="
+  : "Carry out the market-intelligence search plan from the previous response and help our team begin the evidence search."),
 "",
 "SEGMENT: "+s.label,
 "GENERAL STARTING ASSUMPTION: "+s.assumption,
 (frameCount()
   ? "OUR TEAM'S WORKING STATEMENT (this is the focus of the search; it is narrower than the general assumption):\n"+stmtText()
-  : "OUR TEAM'S FOCUS: the refined assumption in the Problem and Context part of Prompt 1. Search for that, not only the general assumption."),
+  : "OUR TEAM'S FOCUS: the refined assumption in the Problem and Context part of the Search Plan Prompt. Search for that, not only the general assumption."),
 "",
 "Work through the priority research questions in a practical sequence.",
 "",
-"Look for three types of evidence, and keep them separate:",
+"Look for four types of evidence, and keep them separate:",
 "1. The pain is real: do these customers or users experience a meaningful problem, and how common and how serious is it?",
-"2. Who decides or pays: would the relevant stakeholders recognize, prioritize, approve, or pay to address it?",
-"3. What they do now: how do these customers handle the problem today (a workaround, a current supplier, or doing nothing), and why would they or would they not trust a new vendor?",
+"2. How big is the demand: how many places or people in India could have this problem? Use official or published counts (for example, number of universities from AISHE, registered hotels in a city, census household data). Give a RANGE, show the calculation step by step, and label every assumption. Never invent a number; if no source exists, say so. State plainly that these counts show possible customers only, not how many would actually pay.",
+"3. Who decides or pays: would the relevant stakeholders recognize, prioritize, approve, or pay to address it?",
+"4. What they do now: how do these customers handle the problem today (a workaround, a current supplier, or doing nothing), and why would they or would they not trust a new vendor?",
 "",
 "For each priority research question:",
 "- suggest precise search queries;",
 "- identify the most appropriate public source types and places to search;",
 "- explain what evidence would support, weaken, complicate, narrow, or redirect the assumption;",
-"- identify which of the three evidence types the question concerns;",
+"- identify which of the four evidence types the question concerns;",
 "- identify what public evidence is unlikely to establish.",
 "",
 "Recommended places to search for this segment, in rough order of reliability:",
@@ -1024,7 +1435,8 @@ order,
 "1. the three highest-priority searches to conduct first;",
 "2. the most important missing stakeholder perspective;",
 "3. the questions that will probably require direct stakeholder validation;",
-"4. the strongest signal found so far of how common and how serious the problem is, or a plain statement that none was found.",
+"4. the strongest signal found so far of how common and how serious the problem is, or a plain statement that none was found;",
+"5. a demand-size estimate as a range (for example, about X to Y hotels in one city), with the sources and the calculation, or a plain statement that no reliable count was found.",
 "",
 "Do not decide whether the opportunity is attractive. Our team will open, verify, compare, and interpret the original sources before drawing a conclusion.",
 "",
@@ -1046,17 +1458,18 @@ function csvHeaderForPrompt(){ return promptCols().map(function(c){return '"'+c+
 }
 function runInstructions(){
   return [
-"RUN PROMPT 1 AND PROMPT 2 IN THE SAME CONVERSATION",
+"RUN THE SEARCH PLAN PROMPT, THEN THE ACTUAL SEARCH PROMPT",
 "1. Open your team's preferred AI tool.",
 "2. Start a new conversation.",
-"3. Paste and run Final Prompt 1.",
-"4. Read the search plan it produces.",
-"5. Keep the same conversation open.",
-"6. Paste and run Prompt 2.",
+"3. Paste and run your Final Search Plan Prompt, and paste the search plan it produces back into the lab (Step 6).",
+"4. The lab puts that plan inside your Actual Search Prompt.",
+"5. Paste and run the Actual Search Prompt in a new chat in an AI tool that can search the web (Step 7).",
+"6. Paste the reply back into the lab.",
 "7. Do not assume the AI's candidate sources or claims are correct.",
 "8. Check each source, then copy the ones that pass into Week 1 — Customer Insights Brief → Verified evidence signals — 3 to 5 (1–2 sentences per cell).",
 "",
-"Why the same conversation? Prompt 2 refers to the search plan already produced by Prompt 1. Running both prompts in the same conversation allows the AI to build on the prior plan."
+"The Actual Search Prompt contains your search plan, so it works in any chat and any AI tool that can search the web.",
+"Remember: AI can estimate how many places or people might have the problem. It cannot tell you how many would actually pay. Your team must find that out."
   ].join("\n");
 }
 function mdCell(t){ return String(t==null?"":t).replace(/\r?\n+/g," ").replace(/\|/g,"/").trim() || "—"; }
@@ -1080,13 +1493,14 @@ function notionRecord(){
     L.push("| V"+v.id+(state.finalId===v.id?" (final)":"")+" | "+mdCell(v.diag?v.diag.overall:"Not diagnosed")+" | "+mdCell(v.diag&&v.diag.plain?"(text reply)":topWeakness(v))+" | "+mdCell(v.decision)+" |");
   });
   L.push("");
+  L=L.concat(ownWordsLines("###")); L.push("");
   if(fv){
-    L.push("### Final Prompt 1 (Version "+fv.id+")");
+    L.push("### Final Search Plan Prompt (Version "+fv.id+")");
     L.push("```"); L.push(fv.prompt); L.push("```");
     L.push("");
   }
   if(fv){
-    L.push("### Prompt 2");
+    L.push("### Actual Search Prompt");
     L.push("```"); L.push(buildPrompt2()); L.push("```");
     L.push("");
   } else {
@@ -1098,10 +1512,10 @@ function notionRecord(){
 }
 /* Save-progress box: lets a team paste its record into Notion at the end of any session, not only at Step 6 */
 function sessionSaveBox(){
-  return '<div class="bigNotion" style="margin-top:14px"><b style="flex-basis:100%">End of the session? Save your progress to Notion.</b>'+
+  return '<div class="bigNotion" style="margin-top:14px"><b style="flex-basis:100%">Save your progress to Notion for this step</b>'+
     '<button class="btn secondary small" onclick="copyText(notionRecord(), this)">Copy for Notion</button>'+
     '<button class="btn ghost small" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
-    '<span class="metaline" style="flex-basis:100%">Paste it under <b>Team notes and decisions log</b> at the bottom of your Week 1 Brief. Your work also stays saved on this computer, so you can continue here next session.</span></div>';
+    '<span class="metaline" style="flex-basis:100%">It becomes material for your <b>Week 1 market intelligence report</b>. Paste it under <b>Team notes and decisions log</b> at the bottom of your Week 1 Brief. Saving does not end anything: keep going with the next step.</span></div>';
 }
 /* Full history (every prompt and diagnosis) kept as a downloadable file */
 function sessionRecord(){
@@ -1119,30 +1533,36 @@ function sessionRecord(){
   L.push(s.assumption);
   if(frameCount()){ L.push(""); L.push("## Our working statement"); L.push(stmtText()); }
   L.push("");
+  L=L.concat(ownWordsLines("##")); L.push("");
   L.push("## Version history");
   state.versions.forEach(function(v){
     L.push("### Version "+v.id+" ("+v.ts+")"+(state.finalId===v.id?"  [FINAL]":"")+" - "+v.words+" words");
     L.push("");
     L.push("#### Prompt"); L.push("```"); L.push(v.prompt); L.push("```");
-    L.push("#### Diagnosis");
-    if(v.diag && v.diag.plain){ L.push(v.diag.raw); }
-    else if(v.diag){
-      L.push("Overall: "+v.diag.overall);
-      L.push("Prompt quality: "+v.diag.prompt_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
-      L.push("Output quality: "+v.diag.output_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
-      if(v.diag.strengths.length) L.push("Strengths: "+v.diag.strengths.join(" | "));
-      if(v.diag.weaknesses.length) L.push("Weaknesses: "+v.diag.weaknesses.map(function(w){return w.issue+(w.cause?" (cause: "+w.cause+")":"");}).join(" | "));
-      L.push("Priority revision: "+v.diag.priority_revision);
-    } else { L.push("Not diagnosed."); }
+    var ops=[v.op1,v.op2].filter(Boolean);
+    if(!ops.length && v.diag) ops=[{tool:"diagnosis", d:v.diag}];
+    if(!ops.length){ L.push("#### Diagnosis"); L.push("Not diagnosed."); }
+    ops.forEach(function(op,i){
+      var d=op.d;
+      L.push("#### Opinion "+(i+1)+" ("+op.tool+")");
+      if(d.plain){ L.push(d.raw); return; }
+      L.push("Overall: "+d.overall);
+      L.push("Prompt quality: "+d.prompt_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
+      L.push("Output quality: "+d.output_diagnosis.map(function(r){return r.dimension+" - "+r.rating;}).join("; "));
+      if(d.strengths.length) L.push("Strengths: "+d.strengths.join(" | "));
+      if(d.weaknesses.length) L.push("Weaknesses: "+d.weaknesses.map(function(w){return w.issue+(w.cause?" (cause: "+w.cause+")":"");}).join(" | "));
+      L.push("Priority revision: "+d.priority_revision);
+    });
+    if(v.both){ L.push("#### Top priority both AIs point to"); L.push(v.both); }
     L.push("#### Our decision"); L.push(v.decision||"(not recorded)");
     L.push("");
   });
   if(fv){
-    L.push("## Final Prompt 1 (Version "+fv.id+", finalized "+(state.finalizedAt||"")+")");
+    L.push("## Final Search Plan Prompt (Version "+fv.id+", finalized "+(state.finalizedAt||"")+")");
     L.push("```"); L.push(fv.prompt); L.push("```");
     L.push("");
   }
-  L.push("## Prompt 2 (standardized)"); L.push("```"); L.push(buildPrompt2()); L.push("```");
+  L.push("## Actual Search Prompt (standardized)"); L.push("```"); L.push(buildPrompt2()); L.push("```");
   L.push("## Run instructions"); L.push(runInstructions());
   L.push("");
   L.push("## Validation checklist (apply to each source or claim)");
@@ -1153,56 +1573,73 @@ function sessionRecord(){
 }
 function bothPrompts(){
   var fv=versionById(state.finalId);
-  return "=== FINAL PROMPT 1 ===\n\n"+fv.prompt+"\n\n\n=== PROMPT 2 (run in the SAME conversation, after Prompt 1) ===\n\n"+buildPrompt2();
+  return "=== FINAL SEARCH PLAN PROMPT ===\n\n"+fv.prompt+"\n\n\n=== ACTUAL SEARCH PROMPT (run after the Search Plan Prompt; it already contains your search plan) ===\n\n"+buildPrompt2();
 }
-function renderExport(){
+function renderRunPlan(){
   var fv=versionById(state.finalId);
-  if(!fv) return '<div class="card"><div class="notice warn">Choose a final version in the Refine step first.</div><button class="btn ghost" onclick="go(4)">&larr; Refine</button></div>';
+  if(!fv) return '<div class="card"><div class="notice warn">Choose your final version in Step 5 first.</div><button class="btn ghost" onclick="go(4)">&larr; Go to previous step</button></div>';
   var s=seg()||{label:""};
-  var h='<div class="card"><h2>Step 6 &middot; Finalize &amp; save to Notion</h2>'+
-  '<p class="lede"><b>Why this matters:</b> two quick moves. Save your lab record in your team&rsquo;s Week 1 Brief, then run your final prompts in your own AI tool.</p>'+
-  '<div class="metaline">Segment: '+esc(s.label)+' &middot; Final: Version '+fv.id+' &middot; Diagnostic status: '+(fv.diag?esc(fv.diag.overall):"Not diagnosed")+'</div>'+
+  var h='<div class="card"><h2>Step 6 &middot; Run the search plan</h2>'+
+  doDone('<ol class="doList"><li>Say what would make you drop this segment.</li><li>Copy your Final Search Plan Prompt into a new chat in your AI tool.</li><li>Paste the search plan it gives you back here.</li></ol>',
+    "the search plan from your final prompt is pasted here.",
+    "Good researchers decide in advance what evidence would prove them wrong. Then your final prompt produces the search plan that guides the actual search; the plans you made while testing were practice runs.")+
+  '<div class="metaline">Segment: '+esc(s.label)+' &middot; Your final version: Version '+fv.id+'</div>'+
 
-  '<h3><span class="stepNum">1</span>Save your lab record in Notion</h3>'+
-  '<div class="bigNotion"><button class="btn" onclick="copyText(notionRecord(), this)">Copy for Notion</button>'+
-  '<button class="btn secondary" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
-  '<span class="metaline" style="flex-basis:100%">Scroll to <b>Team notes and decisions log</b> at the bottom of your Week 1 Brief, click an empty line, and paste (Ctrl/Cmd + V). Notion turns it into headings, a decision table, the two prompts as code blocks, and a ready AI Use Log row.</span></div>'+
-  '<details class="help"><summary>Preview what will be pasted</summary><pre class="prompt">'+esc(notionRecord())+'</pre></details>'+
+  '<h3><span class="stepNum">1</span>Say what would make you drop this segment</h3>'+
+  thinkBox("think_drop","briefly explain what would make you drop this segment.", state.think.drop, "onThink(\'drop\')",
+    "e.g., If we find that&hellip;, we would drop it because&hellip;")+
+  '<div id="exportGate" class="'+(exportReady()?"":"locked")+'">'+
 
-  '<h3><span class="stepNum">2</span>Run Final Prompt 1, then Prompt 2, in one new chat</h3>'+
-  aiButtons("versionById(state.finalId).prompt","Copy Prompt 1 &amp; open a new chat in:")+
-  '<div class="metaline">When the search plan finishes, come back and copy Prompt 2 into the <b>same</b> chat:</div>'+
-  '<button class="btn secondary small" onclick="copyText(buildPrompt2(), this)">Copy Prompt 2</button>'+
-  '<button class="btn ghost small" onclick="copyText(bothPrompts(), this)">Copy both prompts</button>'+
-  '<div class="notice warn">The search plan made inside this lab was a <b>test output</b>. Your official search plan is the one produced when your team runs Final Prompt 1 in its own AI tool.</div>'+
-  '<details class="help"><summary>Read Final Prompt 1 and Prompt 2</summary>'+
-  '<h3>Final Prompt 1</h3><pre class="prompt">'+esc(fv.prompt)+'</pre>'+
-  '<h3>Prompt 2 &middot; built from your working statement (do not edit)</h3><pre class="prompt">'+esc(buildPrompt2())+'</pre>'+
-  '<p class="metaline">Prompt 2 ends by asking the AI for a table of candidate sources. You will paste that reply on the next step, and the lab shows the sources as a list of leads to check.</p></details>'+
+  '<h3 class="withBtn"><span class="stepNum">2</span>Copy your Final Search Plan Prompt and open a new chat'+
+  '<button type="button" class="btn small copyOnly" onclick="copyText(versionById(state.finalId).prompt, this)">&#128203; Copy only</button></h3>'+
+  aiButtons("versionById(state.finalId).prompt","Copy &amp; open a new chat in:")+
+  '<div class="metaline">In Step 3 you paste the plan here. The lab then puts it inside your Actual Search Prompt for Step 7.</div>'+
+  '<details class="help"><summary>Read your Final Search Plan Prompt</summary><pre class="prompt colored">'+promptHTML(fv.fields)+'</pre></details>'+
 
-  '<details class="more"><summary>More options (team details, full history file, start over)</summary>'+
-  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:10px">'+
-  '<input type="text" id="teamName" aria-label="Team name" placeholder="Team name (optional)" value="'+esc(state.team.name)+'" oninput="teamField()">'+
-  '<input type="text" id="teamSection" aria-label="Course section" placeholder="Course section (optional)" value="'+esc(state.team.section)+'" oninput="teamField()">'+
-  '<input type="text" id="teamId" aria-label="Team identifier" placeholder="Team identifier (optional)" value="'+esc(state.team.id)+'" oninput="teamField()">'+
-  '</div>'+
-  '<p class="metaline">The full history file keeps every version, every diagnosis, and every decision.</p>'+
-  '<button class="btn secondary small" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download full history (.md)</button>'+
-  '<button class="btn secondary small" onclick="copyText(sessionRecord(), this)">Copy full history</button>'+
-  '<button class="btn ghost small" onclick="resetAll()">Start over</button></details>'+
+  '<h3><span class="stepNum">3</span>Paste the search plan back here</h3>'+
+  '<textarea id="finalPlan" class="mono" style="min-height:140px" oninput="state.finalPlan=this.value;save();var b=$(\'toSearchBtn\');if(b)b.disabled=!this.value.trim();" placeholder="Paste the whole search plan the AI gave you (use its copy button)...">'+esc(state.finalPlan||"")+'</textarea>'+
+  '</div>'+lockMsg("exportGate", exportReady(), "Answer the question above in your own words to unlock the next part.")+
 
-  '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(4)">&larr; Refine</button>'+
-  '<button class="btn" onclick="toValidate()">I ran Prompt 2 &mdash; check my sources &rarr;</button></div></div>';
+  '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(4)">&larr; Go to previous step</button>'+
+  '<span class="gate">Ready to continue when: the search plan is pasted.</span>'+
+  '<button class="btn" id="toSearchBtn" '+((state.finalPlan||"").trim()&&exportReady()?"":"disabled")+' onclick="toRunSearch()">Continue to Run the search &rarr;</button></div>'+
+  sessionSaveBox()+'</div>';
+  return h;
+}
+function toRunSearch(){ if((state.finalPlan||"").trim() && exportReady()){ unlock(6); state.stage=6; save(); render(); window.scrollTo(0,0); } }
+
+/* ---------- Step 7: Run the search ---------- */
+function demandWarning(){
+  return '<div class="demandWarn">&#9888;&#65039; <b>AI can estimate how many places or people <i>might</i> have this problem. It cannot tell you how many would actually pay.</b> That is something your team must find out yourselves, for example by asking real people in India during your field tests with your GLIM teammates.</div>';
+}
+function renderRunSearch(){
+  var h='<div class="card"><h2>Step 7 &middot; Run the search</h2>'+
+  doDone('<ol class="doList"><li>Click the button below to copy your Actual Search Prompt. It already includes the search plan you pasted in Step 6.</li><li>Paste it into a new chat in an AI tool of your choice that can search the web.</li><li>Paste the AI&rsquo;s reply (its table of sources) back here.</li></ol>',
+    "the AI&rsquo;s table of candidate sources is pasted here.",
+    "The Actual Search Prompt asks the AI to carry out your search plan and list real sources you can open, including how big the demand might be.")+
+  '<h3 class="withBtn"><span class="stepNum">1</span>Copy the Actual Search Prompt'+
+  '<button type="button" class="btn small copyOnly" onclick="copyText(buildPrompt2(), this)">&#128203; Copy Actual Search Prompt</button></h3>'+
+  '<div class="metaline">The lab wrote this prompt for you from your segment, your working statement and your search plan from Step 6. Paste it into a new chat and send it.</div>'+
+  '<div class="notice info"><b>Tip:</b> the AI must be able to search the web. If its reply has no links, turn on web search in your AI tool and send the prompt again.</div>'+
+  '<details class="help"><summary>Read the Actual Search Prompt</summary><pre class="prompt">'+esc(buildPrompt2())+'</pre></details>'+
+  '<h3><span class="stepNum">2</span>Paste the whole reply here</h3>'+
+  demandWarning()+
+  '<textarea id="p2Reply" class="mono" style="min-height:130px" oninput="onPrompt2Reply()" placeholder="Paste the AI\'s full reply to the Actual Search Prompt here (use its copy button)...">'+esc(state.prompt2Reply||"")+'</textarea>'+
+  '<div id="evPreview">'+renderEvPreview()+'</div>'+
+  '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(5)">&larr; Go to previous step</button>'+
+  '<span class="gate">Ready to continue when: the reply is pasted.</span>'+
+  '<button class="btn" id="toCheckBtn" '+((state.prompt2Reply||"").trim()?"":"disabled")+' onclick="toValidate()">Continue to Human in the loop &rarr;</button></div>'+
+  sessionSaveBox()+'</div>';
   return h;
 }
 function copyBoth(btn){
   var fv=versionById(state.finalId);
-  copyText("=== FINAL PROMPT 1 ===\n\n"+fv.prompt+"\n\n\n=== PROMPT 2 (run in the SAME conversation, after Prompt 1) ===\n\n"+buildPrompt2(), btn);
+  copyText("=== FINAL SEARCH PLAN PROMPT ===\n\n"+fv.prompt+"\n\n\n=== ACTUAL SEARCH PROMPT (run after the Search Plan Prompt; it already contains your search plan) ===\n\n"+buildPrompt2(), btn);
 }
 function teamField(){
   state.team.name=$("teamName").value; state.team.section=$("teamSection").value; state.team.id=$("teamId").value; save();
 }
-function toValidate(){ unlock(6); state.stage=6; save(); render(); window.scrollTo(0,0); }
+function toValidate(){ if((state.prompt2Reply||"").trim()){ unlock(7); state.stage=7; save(); render(); window.scrollTo(0,0); } }
 
 /* ---------- Stage 6: Validate ---------- */
 /* ---------- Evidence table → Notion CSV ---------- */
@@ -1301,48 +1738,67 @@ function renderEvPreview(){
 }
 function onPrompt2Reply(){
   state.prompt2Reply=$("p2Reply").value; save();
+  var b=$("toCheckBtn"); if(b) b.disabled=!state.prompt2Reply.trim();
   var p=$("evPreview"); if(p) p.innerHTML=renderEvPreview();
 }
 function downloadEvidence(){
   var ev=evidenceFromReply(state.prompt2Reply||"");
-  if(!ev.rows.length){ alert("Paste the Prompt 2 reply first. The lab needs its evidence table."); return; }
+  if(!ev.rows.length){ alert("Paste the Actual Search Prompt reply first. The lab needs its evidence table."); return; }
   var nm=(state.team.name||"team").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
   downloadFile("evidence-board-"+nm+".csv", evidenceCSV(ev.rows), "text/csv");
 }
 
 /* ---------- Stage 6: Evidence → Notion ---------- */
 function renderValidate(){
-  var h='<div class="card"><h2>Step 7 &middot; Check your candidate sources</h2>'+
-  '<p class="lede"><b>Why this matters:</b> the sources the AI suggested are leads, not findings. Your real work starts here: open each source, check it, and keep only the ones that pass.</p>'+
-  '<h3><span class="stepNum">1</span>Paste the whole Prompt 2 reply</h3>'+
-  '<textarea id="p2Reply" class="mono" style="min-height:130px" oninput="onPrompt2Reply()" placeholder="Paste the AI\'s full reply to Prompt 2 here (use its copy button)...">'+esc(state.prompt2Reply||"")+'</textarea>'+
+  var h='<div class="card"><h2>Step 8 &middot; Human in the loop: check every source yourselves</h2>'+
+  doDone('<ol class="doList"><li>Open every source the AI listed and ask the four questions.</li><li>Copy only the sources that pass into your Week 1 Brief.</li><li>Save your lab record to Notion.</li></ol>',
+    "only sources you have opened and checked are in your Week 1 Brief, and your lab record is saved there.",
+    "AI often suggests sources that don&rsquo;t exist or don&rsquo;t say what it claims. Only sources you have checked count as evidence.")+
+  '<h3><span class="stepNum">1</span>Open every source and ask the four questions</h3>'+
   '<div id="evPreview">'+renderEvPreview()+'</div>'+
-  '<h3><span class="stepNum">2</span>Check each source, then copy the ones that pass into your Brief</h3>'+
-  '<div class="bigNotion"><button class="btn secondary" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
-  '<ol class="steps" style="flex-basis:100%;margin:6px 0 0">'+
-  '<li>Open each source in the list above.</li>'+
-  '<li>Run the four checks: Does it open? Does it say what we claim? Is it about India and this customer? Is it independent, or is someone selling something?</li>'+
-  '<li>Copy your checked sources into <b>Week 1 &mdash; Customer Insights Brief &rarr; Verified evidence signals &mdash; 3 to 5 (1&ndash;2 sentences per cell)</b>.</li></ol></div>'+
-  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence. A source in this list is a lead to check, not a finding.</div></div>';
-
-  h+='<div class="card"><h2>Your next steps in Notion</h2><ol class="steps">';
+  '<div class="metaline">Wrong or missing list? <button class="btn ghost small" onclick="go(6)">Fix the pasted reply in Step 7</button></div>'+
+  '<div class="bigNotion"><ol class="steps" style="flex-basis:100%;margin:0">';
+  SOURCE_QUESTIONS.forEach(function(q){ h+='<li>'+esc(q)+'</li>'; });
+  h+='</ol><span class="metaline" style="flex-basis:100%">A source passes only if a teammate has opened it and it passes all four. Drop the rest.</span></div>'+
+  '<div class="notice warn"><b>Warning:</b> AI output, search-result snippets, and summaries are not verified market evidence. A source in this list is a lead to check, not a finding.</div>'+
+  demandWarning()+
+  '<h3><span class="stepNum">2</span>Finish in Notion</h3>'+
+  '<div class="bigNotion"><button class="btn" onclick="copyText(notionRecord(), this)">Copy for Notion</button>'+
+  '<button class="btn secondary" onclick="openNotion()">Open our Week 1 Brief &#8599;</button>'+
+  '<span class="metaline" style="flex-basis:100%">The lab record has your working statement, your answers in your own words, the decisions you made, and both prompts.</span></div>'+
+  '<details class="help"><summary>Preview what will be pasted</summary><pre class="prompt">'+esc(notionRecord())+'</pre></details>'+
+  '<ol class="steps" style="margin-top:8px">';
   HANDOFF_STEPS.forEach(function(c,i){
     h+='<li><label class="chk" style="border:none;padding:2px 0"><input type="checkbox" '+(state.handoffTicks[i]?"checked":"")+' onchange="tickStep('+i+',this.checked)"><span>'+esc(c)+'</span></label></li>';
   });
-  h+='</ol><h3>Check before you move on &mdash; ask these about every source</h3><ul class="qlist">';
-  SOURCE_QUESTIONS.forEach(function(q){ h+='<li>'+esc(q)+'</li>'; });
-  h+='</ul>'+
+  h+='</ol>'+
   '<div class="notice info" style="margin-top:14px">Your final research may legitimately conclude that the opportunity is promising, needs more investigation, or is <b>not</b> currently supported. All three are successful outcomes of this project.</div>'+
-  '<div class="navRow"><button class="btn ghost" onclick="go(5)">&larr; Finalize</button>'+
+  '<details class="more"><summary>More options (team details, full history file)</summary>'+
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:10px">'+
+  '<input type="text" id="teamName" aria-label="Team name" placeholder="Team name (optional)" value="'+esc(state.team.name)+'" oninput="teamField()">'+
+  '<input type="text" id="teamSection" aria-label="Course section" placeholder="Course section (optional)" value="'+esc(state.team.section)+'" oninput="teamField()">'+
+  '<input type="text" id="teamId" aria-label="Team identifier" placeholder="Team identifier (optional)" value="'+esc(state.team.id)+'" oninput="teamField()">'+
+  '</div>'+
+  '<p class="metaline">The full history file keeps every version, every opinion, and every decision.</p>'+
+  '<button class="btn secondary small" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download full history (.md)</button>'+
+  '<button class="btn secondary small" onclick="copyText(sessionRecord(), this)">Copy full history</button></details>'+
+  '<div class="navRow"><button class="btn ghost" onclick="go(6)">&larr; Go to previous step</button>'+
   '<button class="btn ghost" onclick="resetAll()">Start a new session</button></div></div>';
   return h;
 }
 function tickStep(i,v){ state.handoffTicks[i]=v; save(); }
+/* Start over: asks on the page instead of a pop-up (pop-ups are blocked in some in-app browsers) */
 function resetAll(){
-  if(confirm("This will remove the current segment, prompt versions, and diagnostic results from this browser session. Download your session record first if you want to keep it. Continue?")){
-    var keep=state.settings;
-    state=JSON.parse(JSON.stringify(DEFAULTS)); state.settings=keep; save(); render(); window.scrollTo(0,0);
-  }
+  openModal('<h2>Start a new session?</h2>'+
+    '<p>This erases your segment, prompt versions, diagnoses and answers from this browser. Your Settings (Notion link) are kept.</p>'+
+    '<p class="metaline">Want to keep a copy first? Save your record to Notion, or download the full history.</p>'+
+    '<div class="navRow"><button class="btn secondary small" onclick="downloadFile(\'prompt-lab-session.md\', sessionRecord(), \'text/markdown\')">Download full history first</button></div>'+
+    '<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn" id="confirmReset" onclick="doReset()">Yes, erase and start over</button></div>');
+}
+function doReset(){
+  var keep=state.settings;
+  state=JSON.parse(JSON.stringify(DEFAULTS)); state.settings=keep; save(); closeModal(); render(); window.scrollTo(0,0);
 }
 
 /* ---------- Settings modal ---------- */
