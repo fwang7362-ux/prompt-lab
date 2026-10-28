@@ -46,6 +46,8 @@
 .sa .sa-try em{width:64px;text-align:right;font-style:normal;flex:none;}
 .sa .sa-note{font-size:.8rem;color:var(--muted);margin-top:8px;}
 .sa .sa-foot{font-size:.72rem;color:#9ca3af;text-align:center;padding:10px 12px 16px;}
+/* iPad / iPhone: text boxes at 16px or larger stop Safari from zooming in on every tap */
+@media (pointer:coarse){ input, textarea, select{ font-size:16px !important; } }
 </style>
 <style>
 /* ===== The builder page (for the team only) ===== */
