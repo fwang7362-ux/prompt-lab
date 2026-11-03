@@ -616,7 +616,13 @@ function ownWordsLines(head){
   L.push("- What would make us drop this segment: "+mdCell(state.think.drop));
   return L;
 }
-function go(n){ if(n<=state.maxUnlocked){ state.stage=n; save(); render(); window.scrollTo(0,0); } }
+function go(n){
+  if(state.stage===2 && n<2 && (state.pasteDraft||"").trim()){
+    var g=$("pasteGuard");
+    if(g){ g.style.display="block"; g.scrollIntoView({block:"center"}); }
+    return;
+  }
+  if(n<=state.maxUnlocked){ state.stage=n; save(); render(); window.scrollTo(0,0); } }
 function unlock(n){ if(n>state.maxUnlocked) state.maxUnlocked=n; }
 function fieldsComplete(){ return FIELDS.every(function(f){ return (state.fields[f.key]||"").trim().length>0; }); }
 function wordCount(t){ t=String(t||"").trim(); return t? t.split(/\s+/).length : 0; }
@@ -928,8 +934,7 @@ function renderTest(){
   doDone("<ol class=\"doList\"><li>Read your Search Plan Prompt together, and ask your GLIM teammates whether it is complete and accurate for India, and which Indian sources or channels it is missing.</li><li>Predict what the AI will say.</li><li>Run your Search Plan Prompt in a new chat in your AI tool, then paste the reply back here.</li></ol>","the reply is saved as a version.","Comparing your prediction with the AI&rsquo;s reply shows you what the AI added, missed, or made up.")+
   '<pre class="prompt colored">'+promptHTML(state.fields)+'</pre>'+
   '<div class="metaline">About '+wordCount(assemblePrompt(state.fields))+' words (informational only) &middot; will be saved as Version '+(state.versions.length+1)+'</div>'+
-  '<div class="insertRow"><button type="button" class="btn secondary small" onclick="go(1);window.scrollTo(0,0)">&#9998; Edit Search Plan Prompt</button>'+
-  '<span class="metaline" style="margin:0">Changes? Go back and edit. Your answers on this page are kept.</span></div>'+
+  blanksNotice()+
   testThink()+
   '<div id="testGate" class="'+(testReady()?"":"locked")+'">'+
   '<h3 class="withBtn"><span class="stepNum">1</span>Copy your Search Plan Prompt and open a new chat'+
@@ -941,6 +946,7 @@ function renderTest(){
   '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
   '<label class="f" for="pasteOut" style="margin-top:4px">The model&rsquo;s full search plan <span class="tag">&mdash; use the AI&rsquo;s own copy button under its reply; no special format needed</span></label>'+
   '<textarea id="pasteOut" class="mono" style="min-height:140px" oninput="state.pasteDraft=this.value;save()" placeholder="Paste the full search-plan reply from your AI tool...">'+esc(state.pasteDraft||"")+'</textarea>'+
+  '<div id="pasteGuard" class="notice warn" style="display:none"><b>Save first.</b> This search plan came from your current prompt. Click Save below before you change the prompt. If it isn&rsquo;t the right reply, clear this box first.</div>'+
   '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+' &amp; continue to '+(state.versions.length? 'AI diagnosis' : 'Team diagnosis')+' &rarr;</button>'+
 
   '<details class="more"><summary>Optional: run in-app with your own API key</summary>'+
@@ -949,6 +955,8 @@ function renderTest(){
   '<div id="runStatus"></div></details>'+
 
   '</div>'+lockMsg("testGate", testReady(), "Answer the question"+(state.versions.length?"s":"")+" above in your own words to unlock the copy buttons.")+
+  '<div class="insertRow" style="margin-top:12px"><button type="button" class="btn secondary small" onclick="go(1)">&#9998; Edit Search Plan Prompt</button>'+
+  '<span class="metaline" style="margin:0">Have a reply from the AI? Save it first. Your answers on this page are kept.</span></div>'+
   (cv? '<h3>Latest test &middot; Version '+cv.id+' ('+esc(cv.outputSource)+')</h3><pre class="prompt">'+esc(cv.output)+'</pre>'+
        '<button class="btn secondary small" onclick="copyText(versionById('+cv.id+').output, this)">Copy search plan</button>':"")+
 
@@ -956,6 +964,12 @@ function renderTest(){
   '<span class="gate">Ready to continue when: a search plan has been saved.</span>'+
   '<button class="btn" '+(cv?"":"disabled")+' onclick="toDiagnose()">Continue to '+(cv&&cv.id===1&&!cv.op1&&!cv.op2? 'Team diagnosis' : 'AI diagnosis')+' &rarr;</button></div></div>';
   return h;
+}
+function blanksNotice(){
+  var m=assemblePrompt(state.fields).match(/\[[^\]\n]{1,60}\]/g);
+  if(!m) return "";
+  var seen={}, u=m.filter(function(x){ if(seen[x]) return false; seen[x]=1; return true; });
+  return '<div class="notice warn"><b>Blanks still in your prompt:</b> '+esc(u.join(", "))+'. Fill them in or delete them, so the AI doesn&rsquo;t have to guess. You can still test.</div>';
 }
 function testThink(){
   var h="", prev=state.versions.length? state.versions[state.versions.length-1] : null;
@@ -1105,7 +1119,7 @@ earlierPromptBlock(v),
 "Reply with ONLY a JSON object, no markdown fences, in exactly this shape:",
 "{",
 "  \"prompt_diagnosis\": [ {\"dimension\": \"Task alignment\", \"rating\": \"...\", \"note\": \"one sentence\"}, ... all 6 dimensions in the order listed ... ],",
-"  \"output_diagnosis\": [ {\"dimension\": \"Provisional-assumption clarity\", \"rating\": \"...\", \"note\": \"one sentence\"}, ... all 9 dimensions in the order listed ... ],",
+"  \"output_diagnosis\": [ {\"dimension\": \"Provisional-assumption clarity\", \"rating\": \"...\", \"note\": \"one sentence\"}, ... all 10 dimensions in the order listed ... ],",
 "  \"strengths\": [\"...\"],",
 "  \"weaknesses\": [ {\"issue\": \"...\", \"why_it_matters\": \"...\", \"cause\": \"prompt design|model execution|both\"} ],",
 "  \"priority_revision\": \"...\",",
@@ -1124,7 +1138,7 @@ function normalizeDiag(j){
   function cap(arr,n){ return Array.isArray(arr)?arr.slice(0,n):[]; }
   return {
     prompt_diagnosis: cap(j.prompt_diagnosis,6),
-    output_diagnosis: cap(j.output_diagnosis,9),
+    output_diagnosis: cap(j.output_diagnosis,10),
     strengths: cap(j.strengths,2).map(function(s){return typeof s==="string"?s:(s&&s.strength)||JSON.stringify(s);}),
     weaknesses: cap(j.weaknesses,3).map(function(w){
       if(typeof w==="string") return {issue:w, why:"", cause:""};
@@ -1156,6 +1170,7 @@ function renderDiagnose(){
   h+='<h3><span class="stepNum">1</span>Read the search plan and check it yourselves</h3>'+
     '<p class="metaline" style="margin-top:0">This is the whole reply you pasted in Step 3. Scroll inside the box, or open it full length.</p>'+
     '<pre class="prompt planText" id="planText">'+esc(v.output||"")+'</pre>'+
+    (v.id>1? '<button type="button" class="btn ghost small" onclick="viewVersion('+(v.id-1)+')">See Version '+(v.id-1)+'&rsquo;s search plan</button> ' : '')+
     '<button type="button" class="btn ghost small" onclick="var e=$(\'planText\');var full=e.classList.toggle(\'full\');this.textContent=full?\'Show less\':\'Show the full search plan\';">Show the full search plan</button>';
   if(both){
     if(v.aiWrong) h+='<div class="prev"><b>Your own check:</b> '+esc(v.aiWrong)+'</div>';
