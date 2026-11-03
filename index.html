@@ -375,7 +375,7 @@ var CONFIG = {
 };
 /* ============================ END INSTRUCTOR CONFIGURATION ============================ */
 
-var STAGES = ["Segment","5P Builder","Test","Diagnose","Session 1 wrap-up","Run the search plan","Run the search","Human in the loop"];
+var STAGES = ["Segment","5P Builder","Test","AI diagnosis","Session 1 wrap-up","Run the search plan","Run the search","Human in the loop"];
 
 /* Short framing fields that sharpen the provisional assumption.
    Two sets: business/institution customers (B2B) and households (B2C).
@@ -676,13 +676,17 @@ function render(){
   var r=[renderSegment,renderBuilder,renderTest,renderDiagnose,renderRefine,renderRunPlan,renderRunSearch,renderValidate][state.stage];
   $("app").innerHTML = r();
 }
+function teamDiagMode(){
+  var v=curVersion();
+  return !!(state.stage===3 && v && v.id===1 && !v.op1 && !v.op2 && !v.diag);
+}
 function renderStepper(){
-  var h="";
+  var h="", shown=teamDiagMode()? 2 : state.stage;
   for(var i=0;i<STAGES.length;i++){
     if(i===0) h+='<div class="partRow"><span class="partLbl">Session 1 &middot; Build the prompt</span>';
     if(i===5) h+='</div><div class="partRow"><span class="partLbl">Session 2 &middot; Search and verify</span>';
-    var cls="step"+(i===state.stage?" current":(i<state.stage?" done":""))+(i<=state.maxUnlocked?" unlocked":"");
-    h+='<button type="button" class="'+cls+'" '+(i<=state.maxUnlocked?'onclick="go('+i+')"':'disabled aria-disabled="true" style="opacity:.6"')+' aria-current="'+(i===state.stage?"step":"false")+'"><span class="dot" aria-hidden="true"></span>'+(i+1)+' '+STAGES[i]+'</button>';
+    var cls="step"+(i===shown?" current":(i<shown?" done":""))+(i<=state.maxUnlocked?" unlocked":"");
+    h+='<button type="button" class="'+cls+'" '+(i<=state.maxUnlocked?'onclick="go('+i+')"':'disabled aria-disabled="true" style="opacity:.6"')+' aria-current="'+(i===shown?"step":"false")+'"><span class="dot" aria-hidden="true"></span>'+(i+1)+' '+STAGES[i]+'</button>';
   }
   $("stepper").innerHTML=h+'</div>';
 }
@@ -937,7 +941,7 @@ function renderTest(){
   '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
   '<label class="f" for="pasteOut" style="margin-top:4px">The model&rsquo;s full search plan <span class="tag">&mdash; use the AI&rsquo;s own copy button under its reply; no special format needed</span></label>'+
   '<textarea id="pasteOut" class="mono" style="min-height:140px" oninput="state.pasteDraft=this.value;save()" placeholder="Paste the full search-plan reply from your AI tool...">'+esc(state.pasteDraft||"")+'</textarea>'+
-  '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+' &amp; continue to Diagnose &rarr;</button>'+
+  '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+' &amp; continue to '+(state.versions.length? 'AI diagnosis' : 'Team diagnosis')+' &rarr;</button>'+
 
   '<details class="more"><summary>Optional: run in-app with your own API key</summary>'+
   '<div class="notice info">Only for students who have their <b>own personal</b> API key ('+(hasKey?"configured &#10003;":"none configured")+' &mdash; see Settings). The key stays in this browser and is sent only to the provider you chose. Never use an instructor&rsquo;s or employer&rsquo;s key. Without a key, the copy &amp; paste route above does everything this does.</div>'+
@@ -950,7 +954,7 @@ function renderTest(){
 
   '<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Go to previous step</button>'+
   '<span class="gate">Ready to continue when: a search plan has been saved.</span>'+
-  '<button class="btn" '+(cv?"":"disabled")+' onclick="toDiagnose()">Continue to Diagnose &rarr;</button></div></div>';
+  '<button class="btn" '+(cv?"":"disabled")+' onclick="toDiagnose()">Continue to '+(cv&&cv.id===1&&!cv.op1&&!cv.op2? 'Team diagnosis' : 'AI diagnosis')+' &rarr;</button></div></div>';
   return h;
 }
 function testThink(){
@@ -1139,10 +1143,14 @@ function renderDiagnose(){
   if(v.diag && !v.op1) v.op1={tool:"earlier diagnosis", d:v.diag};
   var hasKey = !!(state.settings.apiKey||"").trim();
   var both = !!(v.op1 && v.op2);
-  var h='<div class="card"><h2>Step 4 &middot; Diagnose Version '+v.id+'</h2>'+
+  var teamMode = v.id===1 && !v.op1 && !v.op2;
+  var h='<div class="card"><h2>'+(teamMode? 'Step 3 &middot; Team diagnosis of Version 1' : 'Step 4 &middot; AI diagnosis of Version '+v.id)+'</h2>'+
+  (teamMode? doDone('<ol class="doList"><li>Read the search plan together and leave your marks in Notion.</li><li>Name what went wrong and what your prompt should do better.</li><li>Revise your prompt and test Version 2.</li></ol>',
+    "you&rsquo;ve named the problem and moved on to revise your prompt.",
+    "This is where your team&rsquo;s critical thinking comes in. You judge the AI&rsquo;s work before any AI judges your prompt.") :
   doDone('<ol class="doList"><li>Read the search plan and check it yourselves.</li><li>Get two opinions from two different AI tools.</li><li>Compare the two opinions and find the top priority both point to.</li><li>Decide what you will change in your Search Plan Prompt.</li><li>Edit your prompt and test again, or wrap up your final Search Plan Prompt.</li></ol>',
     "you&rsquo;ve named the top priority both AIs point to and recorded your decision.",
-    "AI sounds confident even when it is wrong, and different AIs catch different problems. A problem that two AIs both point out is the one most worth fixing first.");
+    "AI sounds confident even when it is wrong, and different AIs catch different problems. A problem that two AIs both point out is the one most worth fixing first."));
 
   /* 1. Check it yourselves */
   h+='<h3><span class="stepNum">1</span>Read the search plan and check it yourselves</h3>'+
@@ -1158,11 +1166,11 @@ function renderDiagnose(){
   }
 
   /* Revise before the AI diagnosis: Version 1 only */
-  if(v.id===1 && !both){
-    h+='<h3><span class="stepNum">&#10148;</span>Next: revise your prompt and test Version 2</h3>'+
+  if(teamMode){
+    h+='<h3><span class="stepNum">2</span>Revise your prompt and test Version 2</h3>'+
        '<div class="metaline">Use your team&rsquo;s own review to improve the prompt first. When you test Version 2, the AI tools below can compare your two prompts and suggest further improvements.</div>'+
        '<div class="navRow" style="margin-top:8px"><button type="button" class="btn" onclick="reviseNow()">Revise our prompt and test Version 2 &rarr;</button><span class="metaline" id="reviseMsg"></span></div>'+
-       '<div class="metaline" style="margin-top:8px">Short on time? You can still continue below with one version.</div>';
+       '<details class="more" style="margin-top:12px"><summary>Short on time? Get AI opinions on Version 1 instead</summary>';
   }
   if(v.id>1 && !both){
     h+='<div class="metaline" style="margin-top:8px">The AI tools will compare Version '+v.id+' with Version '+(v.id-1)+' and suggest how to improve your prompt further.</div>';
@@ -1216,6 +1224,7 @@ function renderDiagnose(){
        '<button class="btn" onclick="go(4)">We&rsquo;re happy: wrap up our final Search Plan Prompt &rarr;</button></div>'+
        sessionSaveBox()+'</div>'+lockMsg("nextGate", nextReady(), "Record your decision in step 4 first.");
   }
+  if(teamMode) h+='</details>';
   h+='<div class="navRow" style="margin-top:14px"><button class="btn ghost" onclick="go(2)">&larr; Test</button></div></div>';
   return h;
 }
