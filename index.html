@@ -375,7 +375,7 @@ var CONFIG = {
 };
 /* ============================ END INSTRUCTOR CONFIGURATION ============================ */
 
-var STAGES = ["Segment","5P Builder","Test","AI diagnosis","Session 1 wrap-up","Run the search plan","Run the search","Human in the loop"];
+var STAGES = ["Segment","5P Builder","Test and team diagnosis","AI diagnosis","Session 1 wrap-up","Run the search plan","Run the search","Human in the loop"];
 
 /* Short framing fields that sharpen the provisional assumption.
    Two sets: business/institution customers (B2B) and households (B2C).
@@ -588,8 +588,8 @@ function setNeed(id, t){ var n=$(id+"_need"); if(n) n.innerHTML=needText(t, id.r
 function onThink(k){ state.think[k]=$("think_"+k).value; save(); setNeed("think_"+k, state.think[k]); refreshGates(); }
 function onAiWrong(){ var v=curVersion(); if(!v) return; v.aiWrong=$("think_aiwrong").value; save(); setNeed("think_aiwrong", v.aiWrong); refreshGates(); }
 function segReady(){ return !!custKind() && thinkOK(state.think.segment,"segment"); }
-function testReady(){ return thinkOK(state.think.predict,"predict") && (!state.versions.length || thinkOK(state.think.change,"change")); }
-function diagReady(){ var v=curVersion(); return !!v && thinkOK(v.aiWrong,"aiwrong"); }
+function testReady(){ return state.versions.length? thinkOK(state.think.change,"change") : thinkOK(state.think.predict,"predict"); }
+function diagReady(){ var v=curVersion(); return !!v && (v.id>1 || thinkOK(v.aiWrong,"aiwrong")); }
 function exportReady(){ return thinkOK(state.think.drop,"drop"); }
 function gateEl(id, ok){ var e=$(id); if(e) e.classList.toggle("locked", !ok); var m=$(id+"Msg"); if(m) m.style.display= ok? "none" : ""; }
 function refreshGates(){
@@ -981,7 +981,7 @@ function testThink(){
     h+=thinkBox("think_change","briefly explain what you changed in your prompt and why.", state.think.change, "onThink(\'change\')",
       "e.g., We added&hellip; because the last plan&hellip;", top);
   }
-  h+=thinkBox("think_predict","briefly predict what you expect the AI to say.", state.think.predict, "onThink(\'predict\')",
+  if(!prev) h+=thinkBox("think_predict","briefly predict what you expect the AI to say.", state.think.predict, "onThink(\'predict\')",
     "e.g., We expect it to focus on&hellip; and probably miss&hellip;");
   return h;
 }
@@ -1170,9 +1170,12 @@ function renderDiagnose(){
   h+='<h3><span class="stepNum">1</span>Read the search plan and check it yourselves</h3>'+
     '<p class="metaline" style="margin-top:0">This is the whole reply you pasted in Step 3. Scroll inside the box, or open it full length.</p>'+
     '<pre class="prompt planText" id="planText">'+esc(v.output||"")+'</pre>'+
+    (teamMode? '<button type="button" class="btn small" onclick="copyText(curVersion().output, this)">Copy search plan for Notion</button> ' : '')+
     (v.id>1? '<button type="button" class="btn ghost small" onclick="viewVersion('+(v.id-1)+')">See Version '+(v.id-1)+'&rsquo;s search plan</button> ' : '')+
     '<button type="button" class="btn ghost small" onclick="var e=$(\'planText\');var full=e.classList.toggle(\'full\');this.textContent=full?\'Show less\':\'Show the full search plan\';">Show the full search plan</button>';
-  if(both){
+  if(v.id>1 && !v.aiWrong){
+    /* Version 2 onward: the team's judgment is recorded in "what you changed" */
+  } else if(both){
     if(v.aiWrong) h+='<div class="prev"><b>Your own check:</b> '+esc(v.aiWrong)+'</div>';
   } else {
     h+=thinkBox("think_aiwrong","name one thing the AI got wrong, couldn&rsquo;t back up, or left out. Add a source link, or write &ldquo;no source.&rdquo;",
@@ -1549,6 +1552,12 @@ function notionRecord(){
   });
   L.push("");
   L=L.concat(ownWordsLines("###")); L.push("");
+  L.push("### Search plans by version");
+  state.versions.forEach(function(v){
+    L.push("**Version "+v.id+": AI search plan, not yet checked**");
+    L.push("```"); L.push(v.output); L.push("```");
+    L.push("");
+  });
   if(fv){
     L.push("### Final Search Plan Prompt (Version "+fv.id+")");
     L.push("```"); L.push(fv.prompt); L.push("```");
