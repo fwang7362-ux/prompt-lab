@@ -696,7 +696,7 @@ function renderClient(){
     '<p style="margin:0"><b>Today in this lab:</b> '+esc(c.today)+'</p></div>';
 }
 function renderSegment(){
-  var h=renderClient()+renderSetup()+'<div class="card"><h2>Step 1 &middot; Choose your provisional segment</h2>'+
+  var h=renderClient()+renderSetup()+'<div class="card"><h2>Step 1 &middot; Choose the segment you want to start with</h2>'+
   doDone("Pick one starting segment, then say why in your own words.","a segment is picked and your reason is written.","A clear starting point keeps your search focused, and explaining your choice makes sure it is a real decision, not a random pick.")+
   '<div class="segGrid">';
   Object.keys(CONFIG.segments).forEach(function(k){
@@ -709,7 +709,7 @@ function renderSegment(){
       h+='<div class="notice info">You switched from '+esc(state.switchNote.from)+' to '+esc(state.switchNote.to)+'. Nothing was deleted, but your Search Plan Prompt parts and versions were written for '+esc(state.switchNote.from)+', so check them before you test, and update your reason below. <button type="button" class="btn ghost small" onclick="state.switchNote=null;save();render()">Got it</button></div>';
     }
     var full=seg().assumption, first=firstSentence(full), rest=full.slice(first.length).trim();
-    h+='<div class="assump"><span class="tagline">Starting assumption &mdash; provisional</span>'+esc(first)+
+    h+='<div class="assump"><span class="tagline">Starting assumption &mdash; not yet proven</span>'+esc(first)+
       (rest? '<details class="why"><summary>Read the full assumption</summary><div>'+esc(rest)+'</div></details>' : '')+'</div>';
     if(!seg().kind){
       h+='<div class="kindAsk"><b>One question first: is your customer a business or institution, or a household?</b>'+
@@ -836,7 +836,7 @@ function renderSharpen(){
     h+='<div><label for="fr_'+x.key+'">'+esc(x.label)+' <span>&mdash; '+esc(x.tip)+'</span></label>'+
        '<input type="text" id="fr_'+x.key+'" value="'+esc((state.frame||{})[x.key])+'" oninput="onFrame(\''+x.key+'\')"></div>';
   });
-  h+='</div><div class="stmt" id="stmt"><span class="tagline">Our working statement &middot; provisional</span>'+stmtHTML()+'</div>'+
+  h+='</div><div class="stmt" id="stmt"><span class="tagline">Our working statement &middot; not yet proven</span>'+stmtHTML()+'</div>'+
   '<div class="metaline">Filled boxes are not evidence &mdash; they only make your search plan sharper. </div>'+
   '<div class="insertRow"><span class="hand" aria-hidden="true">&#128073;</span><span class="handTxt">Press here to insert</span>'+
   '<button type="button" class="btn small" onclick="insertStarter(\'problem\')">Add this statement to Problem &amp; Context</button></div>'+
@@ -847,7 +847,7 @@ function renderSharpen(){
 function onFrame(k){
   state.frame[k]=$("fr_"+k).value;
   var fn=$("frameN"); if(fn) fn.textContent=frameCount();
-  var s=$("stmt"); if(s) s.innerHTML='<span class="tagline">Our working statement &middot; provisional</span>'+stmtHTML();
+  var s=$("stmt"); if(s) s.innerHTML='<span class="tagline">Our working statement &middot; not yet proven</span>'+stmtHTML();
   save();
 }
 function insertStarter(which){
