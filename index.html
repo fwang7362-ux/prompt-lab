@@ -1044,6 +1044,25 @@ function callModel(prompt){
 }
 
 /* ---------- Diagnostic prompt ---------- */
+function earlierPromptBlock(v){
+  var p=v? versionById(v.id-1) : null;
+  if(!p) return "";
+  return [
+"The team revised its prompt after reviewing its earlier search plan. Below is the earlier version of the prompt.",
+"",
+"=== THE TEAM'S EARLIER PROMPT: START ===",
+p.prompt,
+"=== THE TEAM'S EARLIER PROMPT: END ===",
+"",
+"Compare the earlier prompt with the current prompt. In \"strengths\", say what the team's revision improved. In \"weaknesses\" and \"priority_revision\", say how the current prompt could be improved further. If the revision made something worse, say so.",
+""
+  ].join("\n");
+}
+function reviseNow(){
+  var m=$("reviseMsg");
+  if(!diagReady()){ if(m) m.textContent="First answer the question above in your own words."; return; }
+  go(1);
+}
 function buildEvalPrompt(v){
   var s=seg()||{label:"",assumption:""};
   return [
@@ -1061,6 +1080,7 @@ v.prompt,
 v.output,
 "=== THE SEARCH PLAN: END ===",
 "",
+earlierPromptBlock(v),
 "Evaluate BOTH, using this rubric. Write every explanation for the students: call them \"your prompt\" and \"the search plan\". Never use letters such as A or B to refer to them. Rate every dimension exactly one of: \"Meets\", \"Partially meets\", \"Does not meet\", each with a brief one-sentence explanation based on the ACTUAL prompt and output (never keyword matching alone).",
 "",
 "Prompt-quality dimensions (evaluate the team's prompt): Task alignment (asks for a market-intelligence search plan rather than a final conclusion); Context sufficiency (provides the important context the AI cannot safely infer, including a student-refined provisional assumption); Instruction clarity (the central task is clear and distinguishable from secondary instructions); Output usability (requests a practical, usable output); Evidence discipline (prevents unsupported claims and premature conclusions); Instruction efficiency (focused instructions; flag ONLY clear cases of duplication, contradiction, unnecessary restrictions, buried priority, or excessive detail that does not improve the task).",
@@ -1135,6 +1155,17 @@ function renderDiagnose(){
     h+=thinkBox("think_aiwrong","name one thing the AI got wrong, couldn&rsquo;t back up, or left out. Add a source link, or write &ldquo;no source.&rdquo;",
       v.aiWrong, "onAiWrong()", "e.g., It says&hellip; but gives no source. / It never mentions who pays.",
       v.predict? '<div class="prev"><b>You predicted:</b> '+esc(v.predict)+'<br>Did it match? Read the search plan above, then answer below.</div>' : '');
+  }
+
+  /* Revise before the AI diagnosis: Version 1 only */
+  if(v.id===1 && !both){
+    h+='<h3><span class="stepNum">&#10148;</span>Next: revise your prompt and test Version 2</h3>'+
+       '<div class="metaline">Use your team&rsquo;s own review to improve the prompt first. When you test Version 2, the AI tools below can compare your two prompts and suggest further improvements.</div>'+
+       '<div class="navRow" style="margin-top:8px"><button type="button" class="btn" onclick="reviseNow()">Revise our prompt and test Version 2 &rarr;</button><span class="metaline" id="reviseMsg"></span></div>'+
+       '<div class="metaline" style="margin-top:8px">Short on time? You can still continue below with one version.</div>';
+  }
+  if(v.id>1 && !both){
+    h+='<div class="metaline" style="margin-top:8px">The AI tools will compare Version '+v.id+' with Version '+(v.id-1)+' and suggest how to improve your prompt further.</div>';
   }
 
   /* 2. Two opinions */
