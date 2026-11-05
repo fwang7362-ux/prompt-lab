@@ -99,6 +99,13 @@
   .cmpGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
   @media(max-width:640px){.cmpGrid{grid-template-columns:1fr;}}
   .cmpCol{border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.83rem;background:#fff;}
+  /* min-width:0 + wrapping: a long link in one opinion must not push the other opinion off the screen */
+  .cmpCol{min-width:0;overflow-wrap:anywhere;}
+  .cmpCol table.diag, .cmpCol table.diag tbody, .cmpCol table.diag tr, .cmpCol table.diag td{display:block;width:auto;}
+  .cmpCol table.diag tr:first-child{display:none;}
+  .cmpCol table.diag tr{padding:6px 0;border-bottom:1px solid #f1f5f9;}
+  .cmpCol table.diag td{padding:2px 0;border:0;}
+  table.diag td{overflow-wrap:anywhere;}
   .cmpCol h4{margin:0 0 8px;font-size:.9rem;}
   .cmpCol .fld{margin-bottom:10px;}
   .cmpCol .fld b{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);}
@@ -617,13 +624,30 @@ function ownWordsLines(head){
   return L;
 }
 function go(n){
-  if(state.stage===2 && n<2 && (state.pasteDraft||"").trim()){
+  if(state.stage===2 && n!==2 && (state.pasteDraft||"").trim()){
     var g=$("pasteGuard");
     if(g){ g.style.display="block"; g.scrollIntoView({block:"center"}); }
     return;
   }
   if(n<=state.maxUnlocked){ state.stage=n; save(); render(); window.scrollTo(0,0); } }
 function unlock(n){ if(n>state.maxUnlocked) state.maxUnlocked=n; }
+function latestVersion(){ return state.versions.length? state.versions[state.versions.length-1] : null; }
+/* true when the prompt on Step 2 is no longer the prompt saved in the latest version */
+function promptChanged(){
+  var v=latestVersion(); if(!v||!v.fields) return false;
+  return FIELDS.some(function(f){ return (state.fields[f.key]||"").trim()!==(v.fields[f.key]||"").trim(); });
+}
+function staleNotice(){
+  if(!promptChanged()) return "";
+  var v=latestVersion();
+  return '<div class="notice warn"><b>Your edited prompt is not saved in a version yet.</b> This page still shows Version '+v.id+'. To see your changes here, run your edited prompt and save the reply in Step 3. '+
+    '<div class="insertRow" style="margin-top:8px"><button type="button" class="btn small" onclick="go(2)">Go to Step 3</button>'+
+    '<button type="button" class="btn ghost small" onclick="undoPromptEdits()">Undo my edits and go back to Version '+v.id+'&rsquo;s prompt</button></div></div>';
+}
+function undoPromptEdits(){
+  var v=latestVersion(); if(!v) return;
+  state.fields=JSON.parse(JSON.stringify(v.fields)); save(); render();
+}
 function fieldsComplete(){ return FIELDS.every(function(f){ return (state.fields[f.key]||"").trim().length>0; }); }
 function wordCount(t){ t=String(t||"").trim(); return t? t.split(/\s+/).length : 0; }
 function promptHTML(f){
@@ -933,7 +957,7 @@ function renderTest(){
   var h='<div class="card"><h2>Step 3 &middot; Test your Search Plan Prompt</h2>'+
   doDone("<ol class=\"doList\"><li>Read your Search Plan Prompt together, and ask your GLIM teammates whether it is complete and accurate for India, and which Indian sources or channels it is missing.</li><li>Predict what the AI will say.</li><li>Run your Search Plan Prompt in a new chat in your AI tool, then paste the reply back here.</li></ol>","the reply is saved as a version.","Comparing your prediction with the AI&rsquo;s reply shows you what the AI added, missed, or made up.")+
   '<pre class="prompt colored">'+promptHTML(state.fields)+'</pre>'+
-  '<div class="metaline">About '+wordCount(assemblePrompt(state.fields))+' words (informational only) &middot; will be saved as Version '+(state.versions.length+1)+'</div>'+
+  '<div class="metaline">About '+wordCount(assemblePrompt(state.fields))+' words (informational only)'+(state.versions.length? '' : ' &middot; will be saved as Version 1')+'</div>'+
   blanksNotice()+
   testThink()+
   '<div id="testGate" class="'+(testReady()?"":"locked")+'">'+
@@ -946,8 +970,8 @@ function renderTest(){
   '<h3><span class="stepNum">2</span>Paste the reply back here</h3>'+
   '<label class="f" for="pasteOut" style="margin-top:4px">The model&rsquo;s full search plan <span class="tag">&mdash; use the AI&rsquo;s own copy button under its reply; no special format needed</span></label>'+
   '<textarea id="pasteOut" class="mono" style="min-height:140px" oninput="state.pasteDraft=this.value;save()" placeholder="Paste the full search-plan reply from your AI tool...">'+esc(state.pasteDraft||"")+'</textarea>'+
-  '<div id="pasteGuard" class="notice warn" style="display:none"><b>Save first.</b> This search plan came from your current prompt. Click Save below before you change the prompt. If it isn&rsquo;t the right reply, clear this box first.</div>'+
-  '<button class="btn" onclick="acceptPaste()">Save as Version '+(state.versions.length+1)+' &amp; continue to '+(state.versions.length? 'AI diagnosis' : 'Team diagnosis')+' &rarr;</button>'+
+  '<div id="pasteGuard" class="notice warn" style="display:none"><b>This reply is not saved yet.</b> Save it below, or clear it if you don&rsquo;t need it. <button type="button" class="btn ghost small" onclick="clearPasteAndEdit()">Clear this reply and edit our prompt</button></div>'+
+  saveButtons()+
 
   '<details class="more"><summary>Optional: run in-app with your own API key</summary>'+
   '<div class="notice info">Only for students who have their <b>own personal</b> API key ('+(hasKey?"configured &#10003;":"none configured")+' &mdash; see Settings). The key stays in this browser and is sent only to the provider you chose. Never use an instructor&rsquo;s or employer&rsquo;s key. Without a key, the copy &amp; paste route above does everything this does.</div>'+
@@ -957,14 +981,46 @@ function renderTest(){
   '</div>'+lockMsg("testGate", testReady(), "Answer the question"+(state.versions.length?"s":"")+" above in your own words to unlock the copy buttons.")+
   '<div class="insertRow" style="margin-top:12px"><button type="button" class="btn secondary small" onclick="go(1)">&#9998; Edit Search Plan Prompt</button>'+
   '<span class="metaline" style="margin:0">Have a reply from the AI? Save it first. Your answers on this page are kept.</span></div>'+
-  (cv? '<h3>Latest test &middot; Version '+cv.id+' ('+esc(cv.outputSource)+')</h3><pre class="prompt">'+esc(cv.output)+'</pre>'+
+  (cv? '<h3>Last saved test &middot; Version '+cv.id+' ('+esc(cv.outputSource)+')</h3>'+(promptChanged()? '<div class="notice warn">This reply came from Version '+cv.id+'&rsquo;s prompt, not your edited prompt.</div>' : '')+'<pre class="prompt">'+esc(cv.output)+'</pre>'+
        '<button class="btn secondary small" onclick="copyText(versionById('+cv.id+').output, this)">Copy search plan</button>':"")+
 
   '<div class="navRow"><button class="btn ghost" onclick="go(1)">&larr; Go to previous step</button>'+
-  '<span class="gate">Ready to continue when: a search plan has been saved.</span>'+
-  '<button class="btn" '+(cv?"":"disabled")+' onclick="toDiagnose()">Continue to '+(cv&&cv.id===1&&!cv.op1&&!cv.op2? 'Team diagnosis' : 'AI diagnosis')+' &rarr;</button></div></div>';
+  '<span class="gate">'+(promptChanged()? 'You edited your prompt: run it and save the reply above first.' : 'Ready to continue when: a search plan has been saved.')+'</span>'+
+  '<button class="btn" '+(cv&&!promptChanged()?"":"disabled")+' onclick="toDiagnose()">Continue to '+(cv&&cv.id===1&&!cv.op1&&!cv.op2? 'Team diagnosis' : 'AI diagnosis')+' &rarr;</button></div></div>';
   return h;
 }
+function saveButtons(){
+  var v=latestVersion();
+  if(!v) return '<button class="btn" onclick="acceptPaste()">Save as Version 1 &amp; continue to Team diagnosis &rarr;</button>';
+  var hasWork=!!(v.op1||v.op2||v.diag||state.finalId===v.id);
+  return '<div class="insertRow"><button class="btn" onclick="acceptPaste()">Save as new Version '+(v.id+1)+' &amp; continue &rarr;</button>'+
+    '<button class="btn secondary" onclick="replaceLatest(false)">Replace Version '+v.id+' with this &rarr;</button></div>'+
+    '<div class="metaline"><b>New version:</b> keeps Version '+v.id+' so you can compare them. <b>Replace:</b> use this if you are still fixing Version '+v.id+'. Your current prompt and this reply take its place.</div>'+
+    '<div id="replaceMsg" class="notice warn" style="display:none"></div>'+
+    (hasWork? '<div id="replaceConfirm" class="notice warn" style="display:none"><b>Replacing Version '+v.id+' also clears its AI opinions and your notes on them'+(state.finalId===v.id?', and its final choice and the replies you saved in Steps 6 and 7':'')+',</b> because they were about the old reply. <button type="button" class="btn small" onclick="replaceLatest(true)">Yes, replace Version '+v.id+'</button></div>' : '');
+}
+function clearPasteAndEdit(){ state.pasteDraft=""; save(); go(1); }
+function replaceLatest(confirmed){
+  var v=latestVersion(); if(!v) return;
+  var msg=$("replaceMsg"), box=$("pasteOut"), reply=box? box.value.trim() : "";
+  function say(t){ if(msg){ msg.textContent=t; msg.style.display="block"; } else alert(t); }
+  if(!testReady()){ say("First answer the question at the top of this step in your own words."); return; }
+  if(!reply){ say("Paste the AI's new reply in the box above first."); return; }
+  var c=$("replaceConfirm");
+  if(c && !confirmed){ c.style.display="block"; c.scrollIntoView({block:"center"}); return; }
+  v.ts=nowStr(); v.segment=state.segment;
+  v.fields=JSON.parse(JSON.stringify(state.fields));
+  v.prompt=assemblePrompt(state.fields); v.words=wordCount(v.prompt);
+  v.output=reply; v.outputSource="pasted from your AI tool";
+  v.diag=null; v.op1=null; v.op2=null; v.both=""; v.decision=""; v.aiWrong="";
+  if(v.id>1) v.change=state.think.change||"";
+  v.finalPlan=""; v.prompt2Reply="";
+  if(state.finalId===v.id){ state.finalId=null; state.finalizedAt=null; state.finalPlan=""; state.prompt2Reply=""; }
+  state.curVid=v.id; state.think.change="";
+  clearDrafts();
+  state.stage=3; save(); render(); window.scrollTo(0,0);
+}
+function clearDrafts(){ state.pasteDraft=""; state.diagDraft=""; state.opDraft1=""; state.opDraft2=""; state.opTool1=""; state.opTool2=""; }
 function blanksNotice(){
   var m=assemblePrompt(state.fields).match(/\[[^\]\n]{1,60}\]/g);
   if(!m) return "";
@@ -1010,7 +1066,7 @@ function acceptPaste(){
   var v=$("pasteOut").value.trim();
   if(!v){ alert("Paste the model's reply first."); return; }
   pushVersion(v,"pasted from your AI tool");
-  state.pasteDraft=""; state.diagDraft="";
+  clearDrafts();
   state.stage=3; save(); render(); window.scrollTo(0,0);
 }
 function runInApp(){
@@ -1019,6 +1075,7 @@ function runInApp(){
   el.innerHTML='<div class="notice info"><span class="spin"></span>Sending your Search Plan Prompt to the model&hellip; this can take up to a minute.</div>';
   callModel(assemblePrompt(state.fields)).then(function(txt){
     pushVersion(txt,"generated in-app");
+    clearDrafts();
     state.stage=3; save(); render(); window.scrollTo(0,0);
   }).catch(function(err){
     el.innerHTML='<div class="notice err"><b>The AI model could not be reached.</b> Your 5P entries and Search Plan Prompt are still available. You may copy your Search Plan Prompt and test it in your preferred AI tool.<br><span style="opacity:.8">Detail: '+esc(err.message||String(err))+'</span></div>'+
@@ -1027,7 +1084,7 @@ function runInApp(){
     '<button class="btn ghost small" onclick="go(1)">Return to editing</button>';
   });
 }
-function toDiagnose(){ if(curVersion()){ unlock(3); state.stage=3; save(); render(); window.scrollTo(0,0);} }
+function toDiagnose(){ if(curVersion() && !promptChanged()){ go(3); } }
 
 /* ---------- Model calls ---------- */
 function modelCfg(){
@@ -1158,7 +1215,7 @@ function renderDiagnose(){
   var hasKey = !!(state.settings.apiKey||"").trim();
   var both = !!(v.op1 && v.op2);
   var teamMode = v.id===1 && !v.op1 && !v.op2;
-  var h='<div class="card"><h2>'+(teamMode? 'Step 3 &middot; Team diagnosis of Version 1' : 'Step 4 &middot; AI diagnosis of Version '+v.id)+'</h2>'+
+  var h='<div class="card"><h2>'+(teamMode? 'Step 3 &middot; Team diagnosis of Version 1' : 'Step 4 &middot; AI diagnosis of Version '+v.id)+'</h2>'+staleNotice()+
   (teamMode? doDone('<ol class="doList"><li>Read the search plan together and leave your marks in Notion.</li><li>Name what went wrong and what your prompt should do better.</li><li>Revise your prompt and test Version 2.</li></ol>',
     "you&rsquo;ve named the problem and moved on to revise your prompt.",
     "This is where your team&rsquo;s critical thinking comes in. You judge the AI&rsquo;s work before any AI judges your prompt.") :
@@ -1371,6 +1428,7 @@ function renderRefine(){
   doDone('<ol class="doList"><li>Look at your versions and what you changed each time.</li><li>Want to improve it more? Edit your prompt and test again.</li><li>Choose the version your team will use as its Final Search Plan Prompt.</li></ol>',
     "a final version is selected.",
     "Prompts get better through testing, and writing down what you changed shows whether each change helped.");
+  h+=staleNotice();
   if(!state.versions.length){
     return h+'<div class="notice info">No versions yet. Test your prompt first.</div><button class="btn ghost" onclick="go(2)">&larr; Go to previous step</button></div>';
   }
@@ -1388,7 +1446,7 @@ function renderRefine(){
   }
   h+='<h3><span class="stepNum">2</span>Want to improve it more?</h3>'+
     '<div class="insertRow"><button class="btn secondary small" onclick="go(1);window.scrollTo(0,0)">&#9998; Edit our prompt and test again</button>'+
-    '<span class="metaline" style="margin:0">Each new test is saved as a new version. Nothing is lost.</span></div>';
+    '<span class="metaline" style="margin:0">In Step 3 you can save a new version, or replace the latest one if you are still fixing it.</span></div>';
   h+='<h3><span class="stepNum">3</span>Choose your final version</h3>';
   state.versions.slice().reverse().forEach(function(v){
     var isFinal = state.finalId===v.id;
@@ -1417,6 +1475,12 @@ function loadVersion(id){
   state.stage=1; save(); render(); window.scrollTo(0,0);
 }
 function chooseFinal(id){
+  /* the replies in Steps 6 and 7 belong to one final version: keep them with it, so a new final doesn't show the old ones */
+  var was=versionById(state.finalId), now=versionById(id);
+  if(was && now && was.id!==now.id){
+    was.finalPlan=state.finalPlan||""; was.prompt2Reply=state.prompt2Reply||"";
+    state.finalPlan=now.finalPlan||""; state.prompt2Reply=now.prompt2Reply||"";
+  }
   state.finalId=id; state.finalizedAt=nowStr(); unlock(5); save(); render();
 }
 function doCompare(){
