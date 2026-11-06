@@ -569,8 +569,18 @@ function aiButtons(getText, label){
     }).join("")+'</div>';
 }
 function copyAndOpen(txt,i,btn){
-  copyText(txt,btn);
-  var t=CONFIG.aiTools[i]; if(t) window.open(t.url,"_blank","noopener");
+  /* copy before the new tab opens: once the tab takes focus, a slower copy can fail and leave the old text on the clipboard */
+  var t=CONFIG.aiTools[i];
+  function done(){ var s=document.createElement("span"); s.className="copied"; s.textContent="Copied!"; btn.after(s); setTimeout(function(){s.remove();},1600); if(t) window.open(t.url,"_blank","noopener"); }
+  if(fallbackCopy(txt)){ done(); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done, function(){ copyFailed(btn); });
+  } else copyFailed(btn);
+}
+function copyFailed(btn){
+  var s=document.createElement("div"); s.className="notice warn";
+  s.textContent="The copy did not work. Please use Copy only, check what you pasted, then open a new chat yourselves.";
+  btn.parentNode.after(s);
 }
 
 /* ============================== HELPERS ============================== */
@@ -681,8 +691,10 @@ function copyText(txt, btn){
   else { fallbackCopy(txt); ok(); }
 }
 function fallbackCopy(txt){
-  var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select();
-  try{ document.execCommand("copy"); }catch(e){} ta.remove();
+  var ta=document.createElement("textarea"), ok=false; ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.focus(); ta.select();
+  try{ ta.setSelectionRange(0,txt.length); }catch(e){}
+  try{ ok=document.execCommand("copy"); }catch(e){ ok=false; } ta.remove();
+  return ok;
 }
 function nowStr(){ return new Date().toLocaleString(); }
 function downloadFile(name, content, mime){
@@ -1332,7 +1344,14 @@ function saveOp(n, tool, d){
     if(!tool){ opMsg(n,"Choose which AI tool gave this reply."); return; }
     if(!raw){ opMsg(n,"Paste the reply first."); return; }
     d=parseDiag(raw);
+    /* a reply with none of the diagnosis words is usually a second search plan: the wrong prompt reached the AI */
+    if(d.plain && !/diagnos|weakness|strength|priority|rating/i.test(raw) && state["opWarned"+n]!==raw){
+      state["opWarned"+n]=raw;
+      opMsg(n,"This looks like a search plan, not a diagnosis. Click Copy only, paste into a new chat, and check it starts with \"Act as a careful instructional evaluator.\" If this reply is right, press Save again.");
+      return;
+    }
   }
+  state["opWarned"+n]="";
   var other=v["op"+(n===1?2:1)];
   if(other && tool!=="Other" && other.tool===tool){ opMsg(n,"Opinion "+(n===1?2:1)+" already came from "+tool+". Use a different AI tool here, so you get two independent views."); return; }
   v["op"+n]={tool:tool, d:d};
